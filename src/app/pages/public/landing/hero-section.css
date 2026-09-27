@@ -1,0 +1,63 @@
+.hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: min(92svh, 860px);
+  display: flex; align-items: flex-end;
+  color: var(--on-dark);
+  padding: calc(var(--header-height) + var(--space-12)) 0 var(--space-16);
+}
+.hero-photo { position: absolute; inset: 0; z-index: -2; --photo-position: 62% 40%; }
+.overlay {
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(0,40,20,.78), rgba(0,40,20,.15) 60%),
+    linear-gradient(0deg, rgba(0,40,20,.55), transparent 45%);
+}
+@media (max-width: 767px) {
+  .overlay { background: linear-gradient(0deg, rgba(0,40,20,.9) 0%, rgba(0,40,20,.7) 55%, rgba(0,40,20,.35) 100%); }
+}
+
+.hero-inner { display: grid; gap: var(--space-6); }
+.title {
+  font: 800 clamp(40px, 7.2vw, 88px)/0.98 var(--font-display);
+  letter-spacing: -0.03em; max-width: 13ch; text-wrap: balance;
+}
+/* Sobre foto, o marca-texto cobre a palavra inteira (texto ink sobre lime). */
+.title .marker { background: var(--lime-500); color: var(--ink); padding: 0 .1em; border-radius: .08em; }
+.lead { font-size: 18px; line-height: 28px; max-width: 46ch; color: var(--on-dark); text-wrap: pretty; }
+.ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+/* Palavra rotativa: todas ocupam a mesma célula; só a ativa aparece. */
+.rotor { display: inline-grid; vertical-align: bottom; overflow: hidden; padding-bottom: .08em; }
+.rotor-word { grid-area: 1 / 1; opacity: 0; transform: translateY(100%); }
+.rotor-word.is-active { opacity: 1; transform: none; }
+.rotor-word.is-past { transform: translateY(-100%); }
+
+/* Card de vaga (mockup), só no desktop. */
+.job-card { display: none; }
+@media (min-width: 1024px) {
+  .job-card {
+    position: absolute; right: max(24px, calc((100vw - 1120px) / 2)); bottom: var(--space-16);
+    display: grid; gap: var(--space-2); width: 348px; padding: var(--space-6);
+    border-radius: var(--radius-lg); background: var(--surface-raised); color: var(--ink); box-shadow: var(--shadow-float);
+  }
+}
+.job-top { display: flex; justify-content: space-between; align-items: center; }
+.new { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-size: 14px; font-weight: 600; }
+.job-name { font: 700 22px/28px var(--font-display); margin-top: var(--space-1); }
+.job-meta { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); }
+.job-bottom { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); }
+.job-price { font: 700 22px/28px var(--font-display); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Momento de abertura: a foto assenta, o título sobe palavra por palavra, o card flutua. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-photo { animation: settle 1.6s var(--ease-out) both; }
+  .word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .08em; }
+  .word > span { display: inline-block; animation: rise .8s var(--ease-out) calc(.2s + var(--i) * 80ms) both; }
+  .rotor-word { transition: transform .6s var(--ease-out), opacity .6s var(--ease-out); }
+  .rotor { animation: rise-in .8s var(--ease-out) .7s both; }
+  .job-card { animation: float 6s ease-in-out 1.4s infinite alternate; }
+}
+@keyframes settle { from { transform: scale(1.08); } to { transform: none; } }
+@keyframes rise { from { transform: translateY(105%); } to { transform: none; } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(40%); } to { opacity: 1; transform: none; } }
+@keyframes float { from { transform: translateY(0); } to { transform: translateY(-10px); } }

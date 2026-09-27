@@ -7,7 +7,6 @@ import { RemoteData } from '../../shared/utils/remote-data';
 import { Button } from '../../shared/ui/button';
 import { EmptyState } from '../../shared/ui/empty-state';
 import { ErrorState } from '../../shared/ui/error-state';
-import { Icon } from '../../shared/ui/icon';
 import { SegmentOption, SegmentedControl } from '../../shared/ui/segmented-control';
 import { Skeleton } from '../../shared/ui/skeleton';
 
@@ -21,7 +20,7 @@ interface ProfileOption {
 // Seleção de perfil de teste. Não é login: não há senha nem autenticação.
 @Component({
   selector: 'app-sign-in-page',
-  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, SegmentedControl, Skeleton],
+  imports: [RouterLink, Button, EmptyState, ErrorState, SegmentedControl, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">

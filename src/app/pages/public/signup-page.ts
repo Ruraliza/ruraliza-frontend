@@ -10,6 +10,7 @@ import { cpfValidator } from '../../shared/utils/cpf';
 import { Button } from '../../shared/ui/button';
 import { FormField } from '../../shared/ui/form-field';
 import { MaskedInput } from '../../shared/ui/masked-input';
+import { draftParams, hasDraft } from '../../shared/utils/service-draft';
 
 const COPY: Record<UserRole, { title: string; intro: string; home: string }> = {
   farmer: {
@@ -29,10 +30,16 @@ const COPY: Record<UserRole, { title: string; intro: string; home: string }> = {
 @Component({
   selector: 'app-signup-page',
   imports: [ReactiveFormsModule, RouterLink, Button, FormField, MaskedInput],
-  templateUrl: './signup-page.html'
+  templateUrl: './signup-page.html',
+  styles: `.draft-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--lime-100); }`
 })
 export class SignupPage {
   readonly role = input.required<UserRole>();
+  // Rascunho de vaga vindo da landing ("Monte uma vaga"), via query params.
+  readonly servico = input<string>();
+  readonly categoria = input<string>();
+  readonly duracao = input<string>();
+  readonly valor = input<string>();
 
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly farmerService = inject(FarmerService);
@@ -43,6 +50,8 @@ export class SignupPage {
 
   readonly copy = computed(() => COPY[this.role()]);
   readonly saving = signal(false);
+  readonly draft = computed(() => ({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor() }));
+  readonly hasDraft = computed(() => this.role() === 'farmer' && hasDraft(this.draft()));
 
   readonly form = this.fb.group({
     name: ['', Validators.required],
@@ -64,7 +73,11 @@ export class SignupPage {
       next: (id) => {
         this.currentUser.set({ role: this.role(), id });
         this.toast.success('Cadastro concluído. Boas-vindas ao Ruraliza!');
-        this.router.navigateByUrl(this.copy().home);
+        if (this.hasDraft()) {
+          this.router.navigate(['/produtor/servicos/novo'], { queryParams: draftParams(this.draft()) });
+        } else {
+          this.router.navigateByUrl(this.copy().home);
+        }
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
     });

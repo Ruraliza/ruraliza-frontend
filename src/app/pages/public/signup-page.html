@@ -8,6 +8,10 @@
     </div>
   </div>
 
+  @if (hasDraft()) {
+    <p class="draft-note">Sua vaga <b>{{ draft().servico || draft().categoria }}</b> fica guardada. Depois do cadastro, você escolhe a fazenda e publica.</p>
+  }
+
   <form class="form card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <app-form-field label="Nome completo" fieldId="name" [control]="form.controls.name">
       <input formControlName="name" autocomplete="name" placeholder="Ex.: Carlos Aguiar">

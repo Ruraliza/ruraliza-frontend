@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 
-// accent e inverse: só sobre o fundo escuro do hero (campo).
+// accent: laranja com texto escuro (CTA secundário). inverse: contornado, sobre foto ou verde.
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'accent' | 'inverse';
 
 // Uso: <button appButton variant="primary" [loading]="saving()">Publicar serviço</button>
@@ -42,8 +42,10 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'acce
     :host(.btn--danger) { background: var(--danger); color: var(--surface); }
     :host(.btn--ghost) { background: transparent; color: var(--mata); padding-inline: var(--space-3); }
     :host(.btn--ghost:hover:not([disabled])) { background: var(--surface-sunken); }
-    :host(.btn--accent) { background: var(--field-sun); color: var(--on-broto); }
-    :host(.btn--inverse) { background: transparent; color: var(--on-field); border-color: var(--on-field-line); }
+    :host(.btn--accent) { background: var(--orange-500); color: var(--ink); }
+    :host(.btn--accent:hover:not([disabled])) { box-shadow: inset 0 0 0 999px rgba(255,255,255,.16); }
+    :host(.btn--inverse) { background: transparent; color: var(--on-dark); border-color: var(--on-dark-line); }
+    :host(.btn--inverse:hover:not([disabled])) { background: rgba(255,255,255,.12); }
     :host(.btn--block) { width: 100%; }
     :host([disabled]) { cursor: not-allowed; opacity: .55; }
     :host(.is-loading) { opacity: .85; cursor: progress; }

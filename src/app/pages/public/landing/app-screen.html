@@ -1,0 +1,82 @@
+@switch (screen()) {
+  @case ('publish') {
+    <p class="bar">Publicar serviço</p>
+    <p class="step">Passo 2 de 2</p>
+    <div class="field"><span>Fazenda</span><b>Boa Vista, Três Rios, RJ</b></div>
+    <div class="field"><span>Duração (horas)</span><b>40</b></div>
+    <div class="field"><span>Valor a pagar</span><b>R$ 1.800,00</b></div>
+    <span class="btn">Publicar serviço</span>
+  }
+  @case ('candidates') {
+    <p class="bar">Colheita de café</p>
+    <app-status-badge status="Pending" />
+    <p class="h">Candidatos (2)</p>
+    @for (w of workers; track w.name) {
+      <div class="worker">
+        <span class="avatar">{{ w.initials }}</span>
+        <div><b>{{ w.name }}</b><small>{{ w.exp }}</small></div>
+      </div>
+      <div class="row"><span class="btn sm">Aceitar trabalhador</span><span class="btn sm ghost">Recusar</span></div>
+    }
+  }
+  @case ('pay') {
+    <p class="bar">Colheita de café</p>
+    <app-status-badge status="In Progress" />
+    <div class="card">
+      <small>Trabalhador</small><b>Maria Souza</b>
+    </div>
+    <div class="card hl">
+      <b>Serviço terminado?</b>
+      <small>Libere R$ 1.800,00 para Maria e conclua o serviço.</small>
+      <span class="btn"><app-icon name="money" [size]="16" />Liberar pagamento</span>
+      <small class="sim">Simulação: nenhum dinheiro é movimentado.</small>
+    </div>
+  }
+  @case ('jobs') {
+    <p class="bar">Vagas abertas</p>
+    <div class="search"><app-icon name="search" [size]="16" />Buscar por serviço ou cidade</div>
+    <div class="chips"><span appCategoryChip>Todas</span><span appCategoryChip>Colheita</span><span appCategoryChip>Plantio</span></div>
+    @for (j of jobs; track j.name) {
+      <div class="job">
+        <b>{{ j.name }}</b>
+        <small><app-icon name="map-pin" [size]="14" />{{ j.place }}</small>
+        <span class="price">{{ j.price }}</span>
+      </div>
+    }
+  }
+  @case ('apply') {
+    <p class="bar">Vaga</p>
+    <span appCategoryChip>Colheita</span>
+    <p class="title">Colheita de café</p>
+    <div class="field"><span>Local</span><b>Três Rios, RJ</b></div>
+    <div class="field"><span>Duração</span><b>40 horas</b></div>
+    <div class="field"><span>Pagamento</span><b>R$ 1.800,00</b></div>
+    <span class="btn">Candidatar-me</span>
+    <div class="toast"><app-icon name="check" [size]="16" />Candidatura enviada!</div>
+  }
+  @case ('earn') {
+    <p class="bar">Seus serviços</p>
+    <div class="job">
+      <b>Colheita de café</b>
+      <app-status-badge status="In Progress" />
+      <small>Três Rios, RJ, 40 horas</small>
+    </div>
+    <div class="job">
+      <b>Plantio de milho</b>
+      <app-status-badge status="Completed" />
+      <small class="ok"><app-icon name="money" [size]="14" />Pagamento de R$ 1.200,00 liberado</small>
+    </div>
+  }
+  @case ('dashboard') {
+    <p class="bar">Olá, João</p>
+    <div class="metric hero"><small>Candidaturas para analisar</small><b>3</b></div>
+    <div class="row">
+      <div class="metric"><small>Abertos</small><b>2</b></div>
+      <div class="metric"><small>Em andamento</small><b>1</b></div>
+    </div>
+    <div class="job">
+      <b>Colheita de café</b>
+      <small>3 candidaturas para analisar</small>
+    </div>
+  }
+}

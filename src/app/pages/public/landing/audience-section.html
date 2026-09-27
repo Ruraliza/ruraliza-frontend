@@ -1,0 +1,27 @@
+<section [id]="copy().id" class="audience" [attr.aria-labelledby]="copy().id + '-title'">
+  <app-photo class="bleed" [file]="copy().photo" sizes="(min-width: 1024px) 50vw, 100vw" />
+
+  <div class="container grid">
+    <div class="content">
+      <h2 [id]="copy().id + '-title'">{{ copy().title }}</h2>
+      <p class="support">{{ copy().support }}</p>
+
+      <div class="block" appReveal>
+        <app-talhao-pattern [density]="10" />
+        <ul class="benefits" role="list">
+          @for (b of copy().benefits; track b.title) {
+            <li>
+              <span class="icon"><app-icon [name]="b.icon" /></span>
+              <div>
+                <h3>{{ b.title }} @if (b.soon) { <span class="soon">Em breve</span> }</h3>
+                <p>{{ b.text }}</p>
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <a appButton [routerLink]="copy().link">{{ copy().cta }}</a>
+    </div>
+  </div>
+</section>

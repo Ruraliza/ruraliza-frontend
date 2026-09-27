@@ -1,0 +1,55 @@
+<section id="monte-uma-vaga" class="builder" aria-labelledby="builder-title">
+  <div class="container">
+    <h2 id="builder-title">Monte uma vaga em 30 segundos</h2>
+    <p class="support">Mexa nos campos e veja, ao lado, o card exatamente como o trabalhador vai encontrar.</p>
+
+    <div class="grid">
+      <form class="form-card" [formGroup]="form" (ngSubmit)="publish()">
+        <label class="field">
+          <span class="label">Nome do serviço</span>
+          <input formControlName="name" maxlength="60">
+        </label>
+
+        <fieldset class="field">
+          <legend class="label">Categoria</legend>
+          <div class="chips">
+            @for (c of categories; track c) {
+              <button appCategoryChip type="button" [interactive]="true" [selected]="form.controls.category.value === c" (click)="selectCategory(c)">{{ c }}</button>
+            }
+          </div>
+        </fieldset>
+
+        <label class="field">
+          <span class="label">Duração <output class="hours">{{ preview().hours }}</output></span>
+          <input type="range" formControlName="duration" min="1" max="80" step="1">
+        </label>
+
+        <label class="field">
+          <span class="label">Valor a pagar</span>
+          <input appMask="currency" formControlName="price" inputmode="numeric">
+        </label>
+
+        <button appButton type="submit" [block]="true">Publicar de verdade</button>
+        <p class="note">Você cria sua conta de produtor e a vaga já vem preenchida.</p>
+      </form>
+
+      <div class="stage" aria-live="polite">
+        <app-talhao-pattern [density]="12" />
+        <article class="job" aria-label="Prévia da vaga">
+          <div class="job-top">
+            <span appCategoryChip>{{ preview().category }}</span>
+            <span class="new">Nova</span>
+          </div>
+          <h3>{{ preview().name }}</h3>
+          <p class="meta"><app-icon name="map-pin" [size]="18" />Sua fazenda, sua cidade</p>
+          <p class="meta"><app-icon name="clock" [size]="18" />{{ preview().hours }}</p>
+          <div class="job-bottom">
+            <p class="price">{{ preview().price }}</p>
+            <span class="apply" aria-hidden="true">Candidatar-me</span>
+          </div>
+        </article>
+        <p class="stage-caption">Assim aparece em Vagas abertas</p>
+      </div>
+    </div>
+  </div>
+</section>

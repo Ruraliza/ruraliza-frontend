@@ -1,0 +1,53 @@
+<section id="como-funciona" class="how" aria-labelledby="como-title">
+  <div class="container">
+    <div class="head">
+      <h2 id="como-title">Como funciona</h2>
+      <p class="support">Três passos, do anúncio ao pagamento. Veja pelo lado de quem você é.</p>
+      <div class="toggle" role="group" aria-label="Ver o passo a passo como">
+        <button type="button" [class.on]="role() === 'farmer'" [attr.aria-pressed]="role() === 'farmer'" (click)="setRole('farmer')">Sou produtor</button>
+        <button type="button" [class.on]="role() === 'worker'" [attr.aria-pressed]="role() === 'worker'" (click)="setRole('worker')">Sou trabalhador</button>
+      </div>
+    </div>
+
+    <!-- Desktop: passos à esquerda, celular fixo à direita -->
+    <div class="sticky-layout">
+      <ol class="steps">
+        @for (step of steps(); track step.screen; let i = $index) {
+          <li #stepEl class="step" [class.is-active]="i === active()" [attr.data-index]="i">
+            <span class="num" aria-hidden="true">{{ i + 1 }}</span>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.text }}</p>
+          </li>
+        }
+      </ol>
+      <div class="phone-slot">
+        <app-phone>
+          @for (step of steps(); track step.screen; let i = $index) {
+            <app-screen class="screen" [class.is-active]="i === active()" [screen]="step.screen" />
+          }
+        </app-phone>
+      </div>
+    </div>
+
+    <!-- Mobile: carrossel com o passo embaixo do celular -->
+    <div class="carousel-layout">
+      <ol #carousel class="carousel" (scroll)="onCarouselScroll($event)">
+        @for (step of steps(); track step.screen; let i = $index) {
+          <li class="slide">
+            <app-phone><app-screen [screen]="step.screen" /></app-phone>
+            <div class="slide-copy">
+              <span class="num" aria-hidden="true">{{ i + 1 }}</span>
+              <h3>{{ step.title }}</h3>
+              <p>{{ step.text }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+      <div class="dots" role="group" aria-label="Escolher passo">
+        @for (step of steps(); track step.screen; let i = $index) {
+          <button type="button" [class.on]="i === active()" [attr.aria-label]="'Passo ' + (i + 1) + ': ' + step.title" [attr.aria-current]="i === active() ? 'step' : null" (click)="goTo(i)"></button>
+        }
+      </div>
+    </div>
+  </div>
+</section>

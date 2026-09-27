@@ -1,0 +1,33 @@
+:host { display: block; --block-bg: var(--lime-100); --pattern-color: var(--lime-500); --icon-bg: var(--lime-500); }
+:host(.mirror) { --block-bg: var(--orange-100); --pattern-color: var(--orange-500); --icon-bg: var(--orange-500); }
+
+.audience { position: relative; padding-bottom: var(--space-24); scroll-margin-top: var(--header-height); }
+.bleed { aspect-ratio: 4 / 3; margin-bottom: var(--space-12); }
+
+.content { display: grid; gap: var(--space-6); justify-items: start; }
+h2 { font: 800 clamp(34px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: -0.03em; max-width: 14ch; }
+.support { font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 44ch; }
+
+.block {
+  position: relative; overflow: hidden; width: 100%;
+  padding: var(--space-6); border-radius: var(--radius-lg); background: var(--block-bg);
+  --pattern-opacity: .35;
+}
+.benefits { position: relative; display: grid; gap: var(--space-4); }
+.benefits li { display: flex; gap: var(--space-4); align-items: flex-start; }
+.icon { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--icon-bg); color: var(--ink); }
+h3 { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font: 700 18px/26px var(--font-sans); }
+.benefits p { color: var(--ink-muted); }
+.soon { padding: 2px var(--space-2); border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-size: 13px; line-height: 18px; font-weight: 600; }
+
+@media (min-width: 1024px) {
+  .audience { min-height: 720px; display: flex; align-items: center; padding-block: var(--space-24); }
+  .bleed {
+    position: absolute; top: var(--space-12); bottom: var(--space-12); left: 0; width: calc(50vw - var(--space-6));
+    aspect-ratio: auto; margin: 0; border-radius: 0 var(--radius-photo) var(--radius-photo) 0;
+  }
+  :host(.mirror) .bleed { left: auto; right: 0; border-radius: var(--radius-photo) 0 0 var(--radius-photo); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16); }
+  .content { grid-column: 2; }
+  :host(.mirror) .content { grid-column: 1; }
+}

@@ -69,3 +69,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { border-color
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- Superfícies do navegador --- */
+::selection { background: var(--lime-500); color: var(--ink); }
+html { accent-color: var(--green-900); caret-color: var(--green-900); scrollbar-color: var(--line-strong) var(--bg-alt); }

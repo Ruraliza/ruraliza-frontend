@@ -1,0 +1,45 @@
+<section class="hero" aria-labelledby="hero-title">
+  <app-photo class="hero-photo" file="hero-colheita" sizes="100vw" [priority]="true" />
+  <div class="overlay" aria-hidden="true"></div>
+
+  <div class="container hero-inner">
+    <h1 id="hero-title" class="title">
+      <span class="visually-hidden">Mão de obra no campo, na hora certa.</span>
+      <span aria-hidden="true">
+        @for (word of lead; track $index) {
+          <span class="word"><span [style.--i]="$index">{{ word }}</span></span>{{ ' ' }}
+        }
+        <span class="word"><span class="marker" [style.--i]="5">na hora certa</span></span>{{ ' ' }}
+        <span class="rotor">
+          @for (word of rotating; track word; let i = $index) {
+            <span class="rotor-word" [class.is-active]="i === active()" [class.is-past]="i < active()">{{ word }}.</span>
+          }
+        </span>
+      </span>
+    </h1>
+
+    <p class="lead">
+      A RURALIZA conecta produtores rurais a trabalhadores e estudantes capacitados para colheita, plantio,
+      manutenção e mais.
+    </p>
+
+    <div class="ctas">
+      <a appButton variant="accent" routerLink="/cadastro/produtor">Preciso de gente no campo</a>
+      <a appButton variant="inverse" routerLink="/cadastro/trabalhador">Quero trabalhar</a>
+    </div>
+  </div>
+
+  <aside class="job-card" aria-label="Exemplo de vaga como aparece no app">
+    <div class="job-top">
+      <span appCategoryChip>Colheita</span>
+      <span class="new">Nova</span>
+    </div>
+    <p class="job-name">Colheita de café</p>
+    <p class="job-meta"><app-icon name="map-pin" [size]="18" />Fazenda Boa Vista, Três Rios, RJ</p>
+    <p class="job-meta"><app-icon name="clock" [size]="18" />40 horas</p>
+    <div class="job-bottom">
+      <p class="job-price">R$ 1.800,00</p>
+      <a appButton routerLink="/cadastro/trabalhador">Candidatar-me</a>
+    </div>
+  </aside>
+</section>

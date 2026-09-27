@@ -5,6 +5,7 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 // atual (sessionStorage) e de rotas dinâmicas (:id), então renderizam no browser.
 export const serverRoutes: ServerRoute[] = [
   { path: '', renderMode: RenderMode.Prerender },
+  { path: 'creditos', renderMode: RenderMode.Prerender },
   { path: 'produtor/**', renderMode: RenderMode.Client },
   { path: 'trabalhador/**', renderMode: RenderMode.Client },
   { path: 'cadastro/**', renderMode: RenderMode.Client },

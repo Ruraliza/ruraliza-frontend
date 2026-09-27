@@ -1,0 +1,64 @@
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="header" [class.is-transparent]="transparent()" [class.is-scrolled]="scrolled() || !isLanding()">
+  <div class="container bar">
+    <a routerLink="/" class="brand" aria-label="RURALIZA, página inicial" (click)="closeMenu()"><app-logo /></a>
+
+    <nav class="nav" aria-label="Principal">
+      @for (link of links; track link.fragment) {
+        <a routerLink="/" [fragment]="link.fragment">{{ link.label }}</a>
+      }
+    </nav>
+
+    <div class="actions">
+      <a class="signin" routerLink="/entrar">Entrar</a>
+      <a appButton routerLink="/cadastro">Criar conta</a>
+    </div>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      aria-controls="menu-mobile"
+      [attr.aria-expanded]="menuOpen()"
+      [attr.aria-label]="menuOpen() ? 'Fechar menu' : 'Abrir menu'"
+      (click)="toggleMenu()"
+    >
+      <app-icon [name]="menuOpen() ? 'x' : 'menu'" />
+    </button>
+  </div>
+
+  @if (menuOpen()) {
+    <nav id="menu-mobile" class="menu-mobile" aria-label="Principal">
+      @for (link of links; track link.fragment) {
+        <a routerLink="/" [fragment]="link.fragment" (click)="closeMenu()">{{ link.label }}</a>
+      }
+      <div class="menu-actions">
+        <a appButton [block]="true" routerLink="/cadastro" (click)="closeMenu()">Criar conta</a>
+        <a appButton variant="secondary" [block]="true" routerLink="/entrar" (click)="closeMenu()">Entrar</a>
+      </div>
+    </nav>
+  }
+</header>
+
+<main id="conteudo" tabindex="-1" [class.under-header]="!isLanding()"><router-outlet /></main>
+
+<footer class="footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <app-logo [size]="32" />
+      <p>Mão de obra no campo, na hora certa.</p>
+    </div>
+    <nav class="footer-links" aria-label="Rodapé">
+      <a routerLink="/" fragment="como-funciona">Como funciona</a>
+      <a routerLink="/" fragment="categorias">Categorias</a>
+      <a routerLink="/" fragment="duvidas">Dúvidas</a>
+      <a routerLink="/cadastro">Criar conta</a>
+      <a routerLink="/entrar">Entrar</a>
+      <a routerLink="/creditos">Créditos das fotos</a>
+    </nav>
+    <p class="test-note">
+      <app-icon name="alert" [size]="18" />
+      Ambiente de teste: os dados somem quando o servidor reinicia e nenhum pagamento é real.
+    </p>
+  </div>
+</footer>

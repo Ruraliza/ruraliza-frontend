@@ -1,43 +1,41 @@
-import { Component, afterNextRender, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { CategoryService } from '../../core/api/category.service';
-import { RemoteData } from '../../shared/utils/remote-data';
-import { Button } from '../../shared/ui/button';
-import { CategoryChip } from '../../shared/ui/category-chip';
-import { ErrorState } from '../../shared/ui/error-state';
-import { Icon } from '../../shared/ui/icon';
-import { Skeleton } from '../../shared/ui/skeleton';
+import { Component } from '@angular/core';
+import { AudienceSection } from './landing/audience-section';
+import { CategoriesBento } from './landing/categories-bento';
+import { CategoryMarquee } from './landing/category-marquee';
+import { FaqSection } from './landing/faq-section';
+import { FinalCta } from './landing/final-cta';
+import { HeroSection } from './landing/hero-section';
+import { HowItWorks } from './landing/how-it-works';
+import { JobBuilder } from './landing/job-builder';
+import { PlatformSection } from './landing/platform-section';
+import { ProblemSection } from './landing/problem-section';
+import { TalhaoDefs } from './landing/talhao';
+import { TracksSection } from './landing/tracks-section';
 
-// Linhas de plantio do hero em perspectiva: cada linha é um triângulo fino que
-// sai da base e converge no ponto de fuga, onde nasce o sol (como no logo).
-const VANISHING_X = 600;
-const HORIZON_Y = 60;
-const BOTTOM_Y = 360;
-const ROW_HALF_WIDTH = 22;
-const FIELD_ROWS = Array.from({ length: 31 }, (_, i) => -1800 + i * 160).map(
-  (x) => `${x - ROW_HALF_WIDTH},${BOTTOM_Y} ${x + ROW_HALF_WIDTH},${BOTTOM_Y} ${VANISHING_X},${HORIZON_Y}`
-);
-
+// Landing v2: revista do campo, fotos reais e a própria UI como prova.
+// Hero e faixa de categorias hidratam na hora. As demais seções vêm completas no
+// HTML pré-renderizado (SEO), mas o JS de cada uma só carrega quando ela aparece
+// na tela (hidratação incremental). Em navegação no browser, carregam no idle.
 @Component({
   selector: 'app-landing-page',
-  imports: [RouterLink, Button, CategoryChip, ErrorState, Icon, Skeleton],
-  templateUrl: './landing-page.html',
-  styleUrl: './landing-page.css'
+  imports: [
+    AudienceSection, CategoriesBento, CategoryMarquee, FaqSection, FinalCta, HeroSection,
+    HowItWorks, JobBuilder, PlatformSection, ProblemSection, TalhaoDefs, TracksSection
+  ],
+  template: `
+    <app-talhao-defs />
+    <app-hero-section />
+    <app-category-marquee />
+    @defer (on idle; hydrate on viewport) { <app-problem-section /> }
+    @defer (on idle; hydrate on viewport) { <app-how-it-works /> }
+    @defer (on idle; hydrate on viewport) { <app-audience-section audience="farmer" /> }
+    @defer (on idle; hydrate on viewport) { <app-audience-section audience="worker" /> }
+    @defer (on idle; hydrate on viewport) { <app-categories-bento /> }
+    @defer (on idle; hydrate on viewport) { <app-job-builder /> }
+    @defer (on idle; hydrate on viewport) { <app-tracks-section /> }
+    @defer (on idle; hydrate on viewport) { <app-platform-section /> }
+    @defer (on idle; hydrate on viewport) { <app-faq-section /> }
+    @defer (on idle; hydrate on viewport) { <app-final-cta /> }
+  `
 })
-export class LandingPage {
-  private readonly categoryService = inject(CategoryService);
-
-  readonly categories = new RemoteData(() => this.categoryService.getCategories());
-  readonly fieldRows = FIELD_ROWS;
-
-  readonly steps = [
-    { title: 'Publicar', text: 'O produtor diz o que precisa, em qual fazenda, quantas horas e quanto paga.' },
-    { title: 'Candidatar-se', text: 'Quem sabe fazer encontra a vaga pela categoria e se candidata.' },
-    { title: 'Aceitar e pagar', text: 'O produtor escolhe quem vai fazer e libera o pagamento no final.' }
-  ];
-
-  constructor() {
-    // A landing é pré-renderizada no build: as categorias vêm só no browser.
-    afterNextRender(() => this.categories.load());
-  }
-}
+export class LandingPage {}

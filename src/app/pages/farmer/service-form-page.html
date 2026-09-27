@@ -14,7 +14,7 @@
     @case ('success') {
       @if (!farms.data()?.length) {
         <app-empty-state icon="farm" title="Cadastre uma fazenda primeiro" message="O serviço precisa de um local. Leva menos de um minuto.">
-          <a appButton routerLink="/produtor/fazendas/nova" [queryParams]="{ voltar: 'servico' }">Cadastrar fazenda</a>
+          <a appButton routerLink="/produtor/fazendas/nova" [queryParams]="farmLinkParams()">Cadastrar fazenda</a>
         </app-empty-state>
       } @else {
         <ol class="progress" role="list" aria-label="Etapas">

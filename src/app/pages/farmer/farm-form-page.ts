@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { FarmerService } from '../../core/api/farmer.service';
@@ -6,6 +6,7 @@ import { CurrentUserService } from '../../core/session/current-user.service';
 import { ToastService } from '../../core/toast/toast.service';
 import { Button } from '../../shared/ui/button';
 import { FormField } from '../../shared/ui/form-field';
+import { draftParams } from '../../shared/utils/service-draft';
 
 const UFS = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA',
@@ -17,7 +18,7 @@ const UFS = [
   imports: [ReactiveFormsModule, RouterLink, Button, FormField],
   template: `
     <div class="container page">
-      <a class="back-link" [routerLink]="returnUrl()">← Voltar</a>
+      <a class="back-link" [routerLink]="returnUrl()" [queryParams]="returnParams()">← Voltar</a>
       <div class="page-header">
         <div>
           <h1>Cadastrar fazenda</h1>
@@ -43,7 +44,7 @@ const UFS = [
 
         <div class="form-actions">
           <button appButton type="submit" [loading]="saving()">Cadastrar fazenda</button>
-          <a appButton variant="ghost" [routerLink]="returnUrl()">Cancelar</a>
+          <a appButton variant="ghost" [routerLink]="returnUrl()" [queryParams]="returnParams()">Cancelar</a>
         </div>
       </form>
     </div>
@@ -52,6 +53,16 @@ const UFS = [
 export class FarmFormPage {
   // ?voltar=servico: veio do formulário de novo serviço e deve voltar para ele.
   readonly voltar = input<string>();
+  readonly servico = input<string>();
+  readonly categoria = input<string>();
+  readonly duracao = input<string>();
+  readonly valor = input<string>();
+  // Ao voltar para o novo serviço, o rascunho da landing segue junto.
+  readonly returnParams = computed(() =>
+    this.voltar() === 'servico'
+      ? draftParams({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor() })
+      : {}
+  );
 
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly farmerService = inject(FarmerService);
@@ -81,7 +92,7 @@ export class FarmFormPage {
     this.farmerService.createFarm(this.farmerId, { address: address.trim(), city: city.trim(), state }).subscribe({
       next: () => {
         this.toast.success('Fazenda cadastrada.');
-        this.router.navigateByUrl(this.returnUrl());
+        this.router.navigate([this.returnUrl()], { queryParams: this.returnParams() });
       },
       error: () => this.saving.set(false)
     });

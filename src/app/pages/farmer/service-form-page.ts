@@ -1,4 +1,4 @@
-import { Component, ElementRef, Injector, afterNextRender, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, Injector, OnInit, afterNextRender, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CategoryService } from '../../core/api/category.service';
@@ -7,6 +7,7 @@ import { CurrentUserService } from '../../core/session/current-user.service';
 import { ToastService } from '../../core/toast/toast.service';
 import { RemoteData } from '../../shared/utils/remote-data';
 import { positiveNumberValidator } from '../../shared/utils/validators';
+import { draftNumber, draftParams } from '../../shared/utils/service-draft';
 import { Button } from '../../shared/ui/button';
 import { EmptyState } from '../../shared/ui/empty-state';
 import { ErrorState } from '../../shared/ui/error-state';
@@ -21,7 +22,17 @@ import { Skeleton } from '../../shared/ui/skeleton';
   templateUrl: './service-form-page.html',
   styleUrl: './service-form-page.css'
 })
-export class ServiceFormPage {
+export class ServiceFormPage implements OnInit {
+  // Rascunho vindo da landing ("Monte uma vaga"), via query params.
+  readonly servico = input<string>();
+  readonly categoria = input<string>();
+  readonly duracao = input<string>();
+  readonly valor = input<string>();
+  readonly farmLinkParams = computed(() => ({
+    voltar: 'servico',
+    ...draftParams({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor() })
+  }));
+
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly farmerService = inject(FarmerService);
   private readonly categoryService = inject(CategoryService);
@@ -51,6 +62,16 @@ export class ServiceFormPage {
 
   readonly durationMessages = { positive: 'Informe quantas horas o serviço deve levar (maior que zero).' };
   readonly priceMessages = { positive: 'Informe um valor maior que zero.' };
+
+  ngOnInit(): void {
+    const { what, where } = this.form.controls;
+    if (this.servico()) what.controls.name.setValue(this.servico() as string);
+    if (this.categoria()) what.controls.category.setValue(this.categoria() as string);
+    const duration = draftNumber(this.duracao());
+    const price = draftNumber(this.valor());
+    if (duration) where.controls.duration.setValue(duration);
+    if (price) where.controls.price.setValue(price);
+  }
 
   constructor() {
     this.farms.load();
