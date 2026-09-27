@@ -1,5 +1,5 @@
 // src/app/components/worker-list/worker-list.ts
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkerService } from '../../services/worker';
 import { Worker } from '../../../models/worker.model';
@@ -14,8 +14,9 @@ import { Worker } from '../../../models/worker.model';
 export class WorkerListComponent implements OnInit {
   private workerService = inject(WorkerService);
 
-  workers: Worker[] = [];
-  errorMessage: string = '';
+  // Estados convertidos para Signals
+  workers = signal<Worker[]>([]);
+  errorMessage = signal<string>('');
 
   ngOnInit(): void {
     this.loadWorkers();
@@ -24,11 +25,11 @@ export class WorkerListComponent implements OnInit {
   loadWorkers() {
     this.workerService.getWorkers().subscribe({
       next: (data) => {
-        this.workers = data;
+        this.workers.set(data);
       },
       error: (err) => {
         console.error(err);
-        this.errorMessage = 'Erro ao carregar a lista de trabalhadores.';
+        this.errorMessage.set('Erro ao carregar a lista de trabalhadores.');
       }
     });
   }

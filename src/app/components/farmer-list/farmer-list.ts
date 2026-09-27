@@ -1,5 +1,4 @@
-// src/app/components/farmer-list/farmer-list.ts
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FarmerService } from '../../services/farmer';
 import { Farmer } from '../../../models/farmer.model';
@@ -14,8 +13,9 @@ import { Farmer } from '../../../models/farmer.model';
 export class FarmerListComponent implements OnInit {
   private farmerService = inject(FarmerService);
 
-  farmers: Farmer[] = [];
-  errorMessage: string = '';
+  // Transformando os estados em Signals
+  farmers = signal<Farmer[]>([]);
+  errorMessage = signal<string>('');
 
   ngOnInit(): void {
     this.loadFarmers();
@@ -24,11 +24,12 @@ export class FarmerListComponent implements OnInit {
   loadFarmers() {
     this.farmerService.getFarmers().subscribe({
       next: (data) => {
-        this.farmers = data;
+        // Atualiza o Signal, forçando a tela a redesenhar
+        this.farmers.set(data);
       },
       error: (err) => {
         console.error(err);
-        this.errorMessage = 'Erro ao carregar a lista de produtores.';
+        this.errorMessage.set('Erro ao carregar a lista de produtores.');
       }
     });
   }

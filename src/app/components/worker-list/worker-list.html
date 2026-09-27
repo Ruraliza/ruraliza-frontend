@@ -2,8 +2,9 @@
   <h2>Trabalhadores e Estudantes</h2>
   <p>Lista de perfis disponíveis para prestação de serviços.</p>
 
-  <div *ngIf="errorMessage" class="alert error">
-    {{ errorMessage }}
+  <!-- Lendo o Signal de erro -->
+  <div *ngIf="errorMessage()" class="alert error">
+    {{ errorMessage() }}
   </div>
 
   <table>
@@ -17,7 +18,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let worker of workers">
+      <!-- Iterando sobre o array do Signal -->
+      <tr *ngFor="let worker of workers()">
         <td>{{ worker.id }}</td>
         <td>{{ worker.name }}</td>
         <td>{{ worker.email }}</td>
@@ -27,7 +29,8 @@
     </tbody>
   </table>
 
-  <div *ngIf="workers.length === 0 && !errorMessage" class="empty-state">
+  <!-- Verificando tamanho do array do Signal -->
+  <div *ngIf="workers().length === 0 && !errorMessage()" class="empty-state">
     Nenhum trabalhador registado no momento.
   </div>
 </div>

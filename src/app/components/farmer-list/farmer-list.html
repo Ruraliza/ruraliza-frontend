@@ -2,8 +2,9 @@
   <h2>Produtores Registados</h2>
   <p>Lista de todos os produtores rurais ativos na plataforma.</p>
 
-  <div *ngIf="errorMessage" class="alert error">
-    {{ errorMessage }}
+  <!-- Lendo o valor do Signal com () -->
+  <div *ngIf="errorMessage()" class="alert error">
+    {{ errorMessage() }}
   </div>
 
   <table>
@@ -17,7 +18,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let farmer of farmers">
+      <!-- Lendo o array do Signal com () -->
+      <tr *ngFor="let farmer of farmers()">
         <td>{{ farmer.id }}</td>
         <td>{{ farmer.name }}</td>
         <td>{{ farmer.email }}</td>
@@ -27,7 +29,8 @@
     </tbody>
   </table>
 
-  <div *ngIf="farmers.length === 0 && !errorMessage" class="empty-state">
+  <!-- Atualizando as validações de estado vazio -->
+  <div *ngIf="farmers().length === 0 && !errorMessage()" class="empty-state">
     Nenhum produtor registado no momento.
   </div>
 </div>
