@@ -1,0 +1,81 @@
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { environment } from '../../../environments/environment';
+import { FarmerService } from './farmer.service';
+
+describe('FarmerService', () => {
+  const base = `${environment.apiUrl}/farmers`;
+  let service: FarmerService;
+  let http: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    service = TestBed.inject(FarmerService);
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => http.verify());
+
+  it('lists the farmer services filtered by status', () => {
+    service.getFarmerServices(7, 'In Progress').subscribe((list) => expect(list).toEqual([]));
+
+    const req = http.expectOne((r) => r.url === `${base}/7/services`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('status')).toBe('In Progress');
+    req.flush([]);
+  });
+
+  it('lists all farmer services when no status is given', () => {
+    service.getFarmerServices(7).subscribe();
+
+    const req = http.expectOne(`${base}/7/services`);
+    expect(req.request.params.has('status')).toBe(false);
+    req.flush([]);
+  });
+
+  it('creates a farmer', () => {
+    const input = { name: 'Ana', email: 'ana@exemplo.com', phone: '24999990000', cpf: '52998224725' };
+    service.createFarmer(input).subscribe((res) => expect(res.farmer.id).toBe(1));
+
+    const req = http.expectOne(base);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(input);
+    req.flush({ message: 'ok', farmer: { ...input, id: 1, farms: 0, insertion_date: '2026-01-01' } });
+  });
+
+  it('sends application_id and action when analyzing an offer', () => {
+    service.analyzeOffer(3, 11, 'Accept').subscribe();
+
+    const req = http.expectOne(`${base}/services/3/analyze`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ application_id: 11, action: 'Accept' });
+    req.flush({ message: 'ok', application: {} });
+  });
+
+  it('releases the payment of a service', () => {
+    service.processPayment(3).subscribe((res) => expect(res.payment.value).toBe(900));
+
+    const req = http.expectOne(`${base}/services/3/payment`);
+    expect(req.request.method).toBe('POST');
+    req.flush({ message: 'ok', service: {}, payment: { value: 900 } });
+  });
+
+  it('reads the applications of a service', () => {
+    service.getServiceApplications(3).subscribe((list) => expect(list.length).toBe(1));
+
+    http.expectOne(`${base}/services/3/applications`).flush([{ id: 1 }]);
+  });
+
+  it('reads and creates farms', () => {
+    service.getFarms(2).subscribe();
+    http.expectOne(`${base}/2/farms`).flush([]);
+
+    const farm = { address: 'Estrada, Km 2', city: 'Três Rios', state: 'RJ' };
+    service.createFarm(2, farm).subscribe();
+    const req = http.expectOne(`${base}/2/farms`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(farm);
+    req.flush({ message: 'ok', farm: {} });
+  });
+});

@@ -1,59 +1,49 @@
-# RuralizaFrontend
+# 🌾 Ruraliza — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
+Angular 22 (standalone, signals, SSR) para o RURALIZA: conecta produtores rurais a trabalhadores e prestadores de serviço no campo.
 
-## Development server
+## Como rodar
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Pré-requisitos: Node.js 20+ e o [backend](https://github.com/Henrique549/ruraliza-backend) rodando em `http://localhost:3000/api`.
 
 ```bash
-ng generate component component-name
+npm install
+npm start        # ng serve → http://localhost:4200
+npm test         # ng test (Vitest)
+npm run build    # ng build
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Sem autenticação nesta fase: em **Entrar** você escolhe um perfil de teste (fica em `sessionStorage`). Os dados vivem em memória no backend e somem quando ele reinicia.
 
-```bash
-ng generate --help
+## Fluxo de teste
+
+1. `/cadastro/produtor` → cadastre um produtor (ou use o de teste em `/entrar`).
+2. **Fazendas** → cadastre uma fazenda.
+3. **＋ Novo serviço** → publique em 2 passos.
+4. Troque de perfil (Perfil → *Trocar perfil de teste*) e entre como trabalhador.
+5. **Vagas** → abra a vaga → *Candidatar-me*.
+6. Volte ao produtor → **Serviços** → abra o serviço → *Aceitar trabalhador*.
+7. Com o serviço em andamento → *Liberar pagamento* (simulação).
+
+## Estrutura
+
+```text
+src/
+  styles/            tokens.css (brand system), base.css, layout.css
+  models/            tipos da API + status.ts (tradução, cor e ícone de cada status)
+  app/
+    core/api/        FarmerService, WorkerService, CategoryService (único lugar com HttpClient)
+    core/http/       errorInterceptor + ApiError (mensagens claras, repassa o erro)
+    core/session/    CurrentUserService (perfil de teste) + guard requireRole (não é segurança)
+    core/toast/      ToastService
+    shared/ui/       Button, FormField, MaskedInput, StatusBadge, ServiceCard, ConfirmDialog...
+    shared/utils/    CPF, máscaras, formatação pt-BR, RemoteData (carregando/erro/sucesso)
+    layouts/         PublicLayout, AppShell (bottom nav < 1024px / sidebar ≥ 1024px)
+    pages/public/    landing, cadastro, entrar
+    pages/farmer/    área do produtor (lazy em /produtor)
+    pages/worker/    área do trabalhador (lazy em /trabalhador)
 ```
 
-## Building
+## Renderização
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Só a landing (`/`) é pré-renderizada no build. `/produtor/**`, `/trabalhador/**`, `/cadastro/**` e `/entrar` renderizam no browser, porque dependem do perfil atual e de rotas com `:id`.

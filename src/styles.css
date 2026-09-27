@@ -1,1 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+/* Estilos globais: tokens do brand system, base e layout. */
+@import './styles/tokens.css';
+@import './styles/base.css';
+@import './styles/layout.css';

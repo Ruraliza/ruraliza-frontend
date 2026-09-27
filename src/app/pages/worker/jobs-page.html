@@ -1,0 +1,51 @@
+<div class="container page">
+  <div class="page-header">
+    <div>
+      <h1>Vagas abertas</h1>
+    </div>
+  </div>
+
+  <div class="filters">
+    <label class="search">
+      <span class="visually-hidden">Buscar vagas</span>
+      <app-icon name="search" [size]="20" />
+      <input
+        #searchInput
+        type="search"
+        placeholder="Buscar por serviço ou cidade"
+        [value]="query()"
+        (input)="onSearch($event)"
+      >
+    </label>
+
+    @if (categories.state().status === 'success') {
+      <div class="cluster" role="group" aria-label="Filtrar por categoria">
+        <button appCategoryChip [interactive]="true" [selected]="category() === null" (click)="selectCategory(null)">Todas</button>
+        @for (c of categories.data(); track c) {
+          <button appCategoryChip [interactive]="true" [selected]="category() === c" (click)="selectCategory(c)">{{ c }}</button>
+        }
+      </div>
+    }
+  </div>
+
+  @switch (jobs.state().status) {
+    @case ('loading') { <app-skeleton [count]="3" [height]="180" /> }
+    @case ('error') { <app-error-state [message]="jobs.error()" (retry)="jobs.load()" /> }
+    @case ('success') {
+      @if (filtered().length) {
+        <p class="t-body-sm muted" role="status">{{ filtered().length }} {{ filtered().length === 1 ? 'vaga encontrada' : 'vagas encontradas' }}</p>
+        <div class="grid-cards">
+          @for (job of filtered(); track job.id) {
+            <app-service-card [service]="job" [link]="['/trabalhador/vagas', job.id]" [showStatus]="false" />
+          }
+        </div>
+      } @else if (query() || category()) {
+        <app-empty-state icon="search" title="Nenhuma vaga com esses filtros" message="Tente outra categoria ou outro termo de busca.">
+          <button appButton variant="secondary" type="button" (click)="clearFilters()">Limpar filtros</button>
+        </app-empty-state>
+      } @else {
+        <app-empty-state icon="briefcase" title="Nenhuma vaga aberta agora" message="Os produtores publicam serviços o tempo todo. Volte mais tarde." />
+      }
+    }
+  }
+</div>

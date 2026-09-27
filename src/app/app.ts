@@ -1,13 +1,11 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { ToastContainer } from './shared/ui/toast-container';
 
 @Component({
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  standalone: true,
   selector: 'app-root',
-  styleUrl: './app.css',
+  imports: [RouterOutlet, ToastContainer],
   templateUrl: './app.html',
+  styleUrl: './app.css'
 })
-export class App {
-  protected readonly title = signal('ruraliza-frontend');
-}
+export class App {}

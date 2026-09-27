@@ -1,0 +1,71 @@
+/* Reset leve, tipografia e controles de formulário. */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, p, figure, dl, dd, blockquote { margin: 0; }
+ul, ol { margin: 0; padding: 0; }
+ul[role="list"], ol[role="list"] { list-style: none; }
+img, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--mata); text-underline-offset: 3px; }
+
+:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
+.visually-hidden {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* --- Tipografia --- */
+.t-display { font: 700 clamp(36px, 7vw, 48px)/1.08 var(--font-display); letter-spacing: -0.02em; }
+h1, .t-h1 { font: 700 32px/38px var(--font-display); letter-spacing: -0.01em; }
+h2, .t-h2 { font: 650 24px/30px var(--font-display); }
+h3, .t-h3 { font: 600 18px/24px var(--font-sans); }
+.t-metric { font: 700 40px/44px var(--font-display); font-variant-numeric: tabular-nums; }
+.t-body { font-size: 16px; line-height: 24px; }
+.t-body-sm { font-size: 14px; line-height: 20px; }
+.t-label { font-size: 14px; line-height: 20px; font-weight: 600; }
+.t-overline { font-size: 12px; line-height: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.muted { color: var(--ink-muted); }
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* --- Controles de formulário --- */
+input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  font-size: 16px;
+  line-height: 24px;
+}
+textarea { min-height: 96px; resize: vertical; }
+input::placeholder, textarea::placeholder { color: var(--ink-muted); opacity: 1; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { border-color: var(--mata); }
+[aria-invalid="true"] { border-color: var(--danger) !important; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

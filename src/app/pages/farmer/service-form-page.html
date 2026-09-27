@@ -1,0 +1,88 @@
+<div class="container page">
+  <a class="back-link" routerLink="/produtor/servicos">← Serviços</a>
+
+  <div class="page-header">
+    <div>
+      <p class="muted">Passo {{ step() }} de 2</p>
+      <h1>Publicar serviço</h1>
+    </div>
+  </div>
+
+  @switch (farms.state().status) {
+    @case ('loading') { <app-skeleton [count]="1" [height]="320" /> }
+    @case ('error') { <app-error-state [message]="farms.error()" (retry)="farms.load()" /> }
+    @case ('success') {
+      @if (!farms.data()?.length) {
+        <app-empty-state icon="farm" title="Cadastre uma fazenda primeiro" message="O serviço precisa de um local. Leva menos de um minuto.">
+          <a appButton routerLink="/produtor/fazendas/nova" [queryParams]="{ voltar: 'servico' }">Cadastrar fazenda</a>
+        </app-empty-state>
+      } @else {
+        <ol class="progress" role="list" aria-label="Etapas">
+          <li [class.done]="step() === 2" [attr.aria-current]="step() === 1 ? 'step' : null">1. O quê</li>
+          <li [attr.aria-current]="step() === 2 ? 'step' : null" [class.current]="step() === 2">2. Onde e quanto</li>
+        </ol>
+
+        <form class="form card" [formGroup]="form" (ngSubmit)="step() === 1 ? next() : submit()" novalidate>
+          @if (step() === 1) {
+            <h2 #stepHeading tabindex="-1">O que precisa ser feito?</h2>
+            <ng-container formGroupName="what">
+              <app-form-field label="Nome do serviço" fieldId="name" hint="Curto e direto. Ex.: Colheita de café." [control]="form.controls.what.controls.name">
+                <input formControlName="name" placeholder="Colheita de café">
+              </app-form-field>
+
+              <fieldset class="categories">
+                <legend class="t-label">Categoria</legend>
+                @switch (categories.state().status) {
+                  @case ('loading') { <app-skeleton [count]="1" [height]="44" /> }
+                  @case ('error') { <app-error-state [message]="categories.error()" (retry)="categories.load()" /> }
+                  @case ('success') {
+                    <div class="cluster">
+                      @for (category of categories.data(); track category) {
+                        <label class="chip-radio">
+                          <input type="radio" formControlName="category" [value]="category">
+                          <span>{{ category }}</span>
+                        </label>
+                      }
+                    </div>
+                  }
+                }
+                @if (form.controls.what.controls.category.touched && form.controls.what.controls.category.invalid) {
+                  <p class="field-error t-body-sm" role="alert">Escolha uma categoria.</p>
+                }
+              </fieldset>
+            </ng-container>
+
+            <div class="form-actions">
+              <button appButton type="submit">Continuar</button>
+            </div>
+          } @else {
+            <h2 #stepHeading tabindex="-1">Onde e quanto?</h2>
+            <ng-container formGroupName="where">
+              <app-form-field label="Fazenda" fieldId="farm" [control]="form.controls.where.controls.farm_id">
+                <select formControlName="farm_id">
+                  <option [ngValue]="null" disabled>Escolha a fazenda</option>
+                  @for (farm of farms.data(); track farm.id) {
+                    <option [ngValue]="farm.id">{{ farm.address }}, {{ farm.city }}, {{ farm.state }}</option>
+                  }
+                </select>
+              </app-form-field>
+
+              <app-form-field label="Duração (horas)" fieldId="duration" hint="Total de horas de trabalho." [control]="form.controls.where.controls.duration" [messages]="durationMessages">
+                <input type="number" formControlName="duration" inputmode="decimal" min="0" step="1" placeholder="8">
+              </app-form-field>
+
+              <app-form-field label="Valor a pagar" fieldId="price" hint="Valor total do serviço." [control]="form.controls.where.controls.price" [messages]="priceMessages">
+                <input appMask="currency" formControlName="price" inputmode="numeric" placeholder="R$ 0,00">
+              </app-form-field>
+            </ng-container>
+
+            <div class="form-actions">
+              <button appButton type="submit" [loading]="saving()">Publicar serviço</button>
+              <button appButton variant="ghost" type="button" [disabled]="saving()" (click)="back()">Voltar</button>
+            </div>
+          }
+        </form>
+      }
+    }
+  }
+</div>

@@ -1,0 +1,8 @@
+.filters { display: grid; gap: var(--space-4); }
+
+.search { position: relative; display: block; max-width: 560px; }
+.search app-icon { position: absolute; left: 14px; top: 14px; color: var(--ink-muted); pointer-events: none; }
+.search input { padding-left: 44px; border-radius: var(--radius-pill); }
+
+.cluster { flex-wrap: nowrap; overflow-x: auto; padding: var(--space-1) 0 var(--space-2); scrollbar-width: thin; }
+@media (min-width: 768px) { .cluster { flex-wrap: wrap; overflow-x: visible; } }

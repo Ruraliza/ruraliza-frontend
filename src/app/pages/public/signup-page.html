@@ -1,0 +1,42 @@
+<div class="container page">
+  <a class="back-link" routerLink="/cadastro">← Voltar</a>
+
+  <div class="page-header">
+    <div>
+      <h1>{{ copy().title }}</h1>
+      <p class="muted">{{ copy().intro }}</p>
+    </div>
+  </div>
+
+  <form class="form card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <app-form-field label="Nome completo" fieldId="name" [control]="form.controls.name">
+      <input formControlName="name" autocomplete="name" placeholder="Ex.: Carlos Aguiar">
+    </app-form-field>
+
+    <app-form-field label="E-mail" fieldId="email" [control]="form.controls.email">
+      <input type="email" formControlName="email" autocomplete="email" placeholder="carlos@exemplo.com">
+    </app-form-field>
+
+    <app-form-field label="Telefone (WhatsApp)" fieldId="phone" [control]="form.controls.phone" [messages]="phoneMessages">
+      <input appMask="phone" formControlName="phone" inputmode="numeric" autocomplete="tel" placeholder="(24) 99999-8888">
+    </app-form-field>
+
+    <app-form-field label="CPF" fieldId="cpf" hint="Só para identificar seu perfil. Em listas, aparece mascarado." [control]="form.controls.cpf">
+      <input appMask="cpf" formControlName="cpf" inputmode="numeric" placeholder="000.000.000-00">
+    </app-form-field>
+
+    @if (role() === 'worker') {
+      <app-form-field label="Experiência" fieldId="experience" [optional]="true" hint="Ex.: 5 anos em colheita de café." [control]="form.controls.experience">
+        <input formControlName="experience">
+      </app-form-field>
+
+      <app-form-field label="Certificados" fieldId="certificates" [optional]="true" hint="Ex.: NR-31, curso de tratorista." [control]="form.controls.certificates">
+        <input formControlName="certificates">
+      </app-form-field>
+    }
+
+    <div class="form-actions">
+      <button appButton type="submit" [loading]="saving()">Criar conta</button>
+    </div>
+  </form>
+</div>

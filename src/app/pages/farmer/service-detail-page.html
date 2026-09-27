@@ -1,0 +1,84 @@
+<div class="container page">
+  <a class="back-link" routerLink="/produtor/servicos">← Serviços</a>
+
+  @switch (state().status) {
+    @case ('loading') { <app-skeleton [count]="2" [height]="180" /> }
+    @case ('error') { <app-error-state [message]="service.error() || applications.error()" (retry)="load()" /> }
+    @case ('success') {
+      @if (service.data(); as s) {
+        @if (!isOwner()) {
+          <app-empty-state icon="alert" title="Este serviço é de outro produtor" message="Entre com o perfil de quem publicou o serviço para gerenciá-lo.">
+            <a appButton routerLink="/produtor/servicos">Ver meus serviços</a>
+          </app-empty-state>
+        } @else {
+          <header class="page-header">
+            <div>
+              <div class="cluster">
+                <span appCategoryChip>{{ s.category }}</span>
+                <app-status-badge [status]="s.status" />
+              </div>
+              <h1>{{ s.name }}</h1>
+            </div>
+          </header>
+
+          <section class="card" aria-labelledby="details-title">
+            <h2 id="details-title" class="visually-hidden">Detalhes do serviço</h2>
+            <dl class="details">
+              <div><dt>Fazenda</dt><dd>{{ s.farm.address }}<br>{{ s.farm.city }}, {{ s.farm.state }}</dd></div>
+              <div><dt>Duração</dt><dd>{{ hours() }}</dd></div>
+              <div><dt>Valor</dt><dd class="price">{{ price() }}</dd></div>
+              <div><dt>Publicado em</dt><dd>{{ publishedAt() }}</dd></div>
+            </dl>
+          </section>
+
+          @if (s.status === 'In Progress') {
+            <section class="card payment" aria-labelledby="payment-title">
+              <div>
+                <h2 id="payment-title" class="t-h3">Serviço terminado?</h2>
+                <p class="muted">Libere o pagamento de {{ price() }} para {{ acceptedWorker()?.name }} e conclua o serviço.</p>
+                <p class="t-body-sm sim-note">Simulação: nenhum dinheiro é movimentado.</p>
+              </div>
+              <button appButton type="button" (click)="ask({ kind: 'pay' })"><app-icon name="money" [size]="20" />Liberar pagamento</button>
+            </section>
+          }
+
+          @if (s.status === 'Completed') {
+            <section class="done" role="status">
+              <app-icon name="check" />
+              <p>Pagamento de {{ price() }} liberado para {{ acceptedWorker()?.name }} (simulação). Serviço concluído.</p>
+            </section>
+          }
+
+          <section class="stack" aria-labelledby="candidates-title">
+            <h2 id="candidates-title">Candidatos ({{ applications.data()?.length ?? 0 }})</h2>
+            @if (applications.data()?.length) {
+              <div class="grid-cards">
+                @for (application of applications.data(); track application.id) {
+                  <app-worker-card [worker]="application.worker" [status]="application.status">
+                    @if (s.status === 'Pending' && application.status === 'Pending') {
+                      <button appButton type="button" (click)="ask({ kind: 'accept', application: application })">Aceitar trabalhador</button>
+                      <button appButton variant="secondary" type="button" (click)="ask({ kind: 'reject', application: application })">Recusar</button>
+                    }
+                  </app-worker-card>
+                }
+              </div>
+            } @else {
+              <app-empty-state icon="user" title="Ainda não há candidatos" message="Assim que alguém se candidatar, a pessoa aparece aqui." />
+            }
+          </section>
+        }
+      }
+    }
+  }
+</div>
+
+<app-confirm-dialog
+  [open]="pending() !== null"
+  [title]="dialog().title"
+  [message]="dialog().message"
+  [confirmLabel]="dialog().confirmLabel"
+  [confirmVariant]="dialog().variant"
+  [loading]="acting()"
+  (confirmed)="confirm()"
+  (cancelled)="cancel()"
+/>

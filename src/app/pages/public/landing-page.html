@@ -1,0 +1,78 @@
+<section class="hero">
+  <div class="container hero-copy">
+    <h1>Conectar quem precisa produzir a quem sabe executar</h1>
+    <p class="lead">O produtor publica o serviço, o trabalhador se candidata e o pagamento sai quando o trabalho termina.</p>
+    <div class="ctas">
+      <a appButton variant="accent" routerLink="/cadastro">Criar conta</a>
+      <a appButton variant="inverse" routerLink="/entrar">Entrar com perfil de teste</a>
+    </div>
+  </div>
+
+  <svg class="field" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">
+    <circle class="sun" cx="600" cy="60" r="34" />
+    <rect class="ground" y="60" width="1200" height="300" />
+    <g class="rows">
+      @for (points of fieldRows; track $index) { <polygon [attr.points]="points" /> }
+    </g>
+  </svg>
+</section>
+
+<section id="como-funciona" class="section">
+  <div class="container">
+    <h2>Do anúncio ao pagamento, em três passos</h2>
+    <ol class="furrow">
+      @for (step of steps; track step.title; let i = $index) {
+        <li>
+          <span class="step-number" aria-hidden="true">{{ i + 1 }}</span>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.text }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
+
+<section class="section section--sunken">
+  <div class="container audiences">
+    <article id="produtores" class="audience">
+      <h2>Para produtores</h2>
+      <p class="audience-lead">Mão de obra certa, na hora da safra.</p>
+      <ul class="checks" role="list">
+        <li><app-icon name="check" [size]="20" />Publique o serviço com local, duração e valor.</li>
+        <li><app-icon name="check" [size]="20" />Veja a experiência e os certificados de quem se candidatou.</li>
+        <li><app-icon name="check" [size]="20" />Aceite quem faz sentido e libere o pagamento no final.</li>
+      </ul>
+      <a appButton routerLink="/cadastro/produtor">Criar conta de produtor</a>
+    </article>
+
+    <article id="trabalhadores" class="audience">
+      <h2>Para trabalhadores</h2>
+      <p class="audience-lead">Serviço no campo perto de você.</p>
+      <ul class="checks" role="list">
+        <li><app-icon name="check" [size]="20" />Encontre vagas abertas por categoria.</li>
+        <li><app-icon name="check" [size]="20" />Candidate-se sem papelada.</li>
+        <li><app-icon name="check" [size]="20" />Acompanhe a resposta de cada candidatura.</li>
+      </ul>
+      <a appButton routerLink="/cadastro/trabalhador">Criar conta de trabalhador</a>
+    </article>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container stack">
+    <h2>O que dá para contratar aqui</h2>
+    @switch (categories.state().status) {
+      @case ('loading') { <app-skeleton [count]="1" [height]="44" /> }
+      @case ('error') {
+        <app-error-state title="Não foi possível carregar as categorias" [message]="categories.error()" (retry)="categories.load()" />
+      }
+      @case ('success') {
+        <ul class="cluster" role="list">
+          @for (category of categories.data(); track category) {
+            <li><span appCategoryChip>{{ category }}</span></li>
+          }
+        </ul>
+      }
+    }
+  </div>
+</section>

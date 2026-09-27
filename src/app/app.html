@@ -1,24 +1,2 @@
-<header class="navbar">
-  <div class="navbar-brand">
-    <span class="logo-icon">🌾</span>
-    <span class="logo-text">Ruraliza</span>
-  </div>
-
-  <nav class="navbar-nav">
-    <div class="nav-group">
-      <span class="group-label">Produtores</span>
-      <a routerLink="/register/farmer" routerLinkActive="active" class="nav-link">Cadastrar</a>
-      <a routerLink="/farmers" routerLinkActive="active" class="nav-link">Listar</a>
-    </div>
-
-    <div class="nav-group">
-      <span class="group-label">Trabalhadores</span>
-      <a routerLink="/register/worker" routerLinkActive="active" class="nav-link">Cadastrar</a>
-      <a routerLink="/workers" routerLinkActive="active" class="nav-link">Listar</a>
-    </div>
-  </nav>
-</header>
-
-<main class="content-container">
-  <router-outlet></router-outlet>
-</main>
+<router-outlet />
+<app-toast-container />

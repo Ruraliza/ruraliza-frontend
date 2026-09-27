@@ -1,32 +1,35 @@
 import { Routes } from '@angular/router';
-import { FarmerRegistrationComponent } from './components/farmer-registration/farmer-registration';
-import { WorkerRegistrationComponent } from './components/worker-registration/worker-registration';
-import { FarmerListComponent } from './components/farmer-list/farmer-list';
-import { WorkerListComponent } from './components/worker-list/worker-list';
+import { requireRole } from './core/session/require-role.guard';
+import { PublicLayout } from './layouts/public-layout';
+import { LandingPage } from './pages/public/landing-page';
+import { SignInPage } from './pages/public/sign-in-page';
+import { SignupChoicePage } from './pages/public/signup-choice-page';
+import { SignupPage } from './pages/public/signup-page';
 
+// URLs em português; nomes de componentes em inglês.
 export const routes: Routes = [
-    // Rota para o cadastro do produtor
-    {
-        path: 'register/farmer',
-        component: FarmerRegistrationComponent
-    },
-
-    {
-        path: 'register/worker',
-        component: WorkerRegistrationComponent // Nova rota
-    },
-
-    {
-        path: 'farmers', component: FarmerListComponent
-    },
-    {
-        path: 'workers', component: WorkerListComponent
-    },
-
-    // Redireciona a URL base (localhost:4200) direto para o cadastro provisoriamente
-    {
-        path: '',
-        redirectTo: 'register/farmer',
-        pathMatch: 'full'
-    }
+  {
+    path: '',
+    component: PublicLayout,
+    children: [
+      { path: '', component: LandingPage, title: 'Ruraliza — serviços no campo' },
+      { path: 'cadastro', component: SignupChoicePage, title: 'Criar conta · Ruraliza' },
+      { path: 'cadastro/produtor', component: SignupPage, data: { role: 'farmer' }, title: 'Cadastro de produtor · Ruraliza' },
+      { path: 'cadastro/trabalhador', component: SignupPage, data: { role: 'worker' }, title: 'Cadastro de trabalhador · Ruraliza' },
+      { path: 'entrar', component: SignInPage, title: 'Entrar · Ruraliza' }
+    ]
+  },
+  {
+    path: 'produtor',
+    canActivate: [requireRole('farmer')],
+    loadChildren: () => import('./pages/farmer/farmer.routes').then((m) => m.FARMER_ROUTES)
+  },
+  {
+    path: 'trabalhador',
+    canActivate: [requireRole('worker')],
+    loadChildren: () => import('./pages/worker/worker.routes').then((m) => m.WORKER_ROUTES)
+  },
+  // Endereço antigo do cadastro.
+  { path: 'register/farmer', redirectTo: 'cadastro/produtor' },
+  { path: '**', redirectTo: '' }
 ];

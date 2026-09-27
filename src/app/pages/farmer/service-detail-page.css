@@ -1,0 +1,13 @@
+.page-header .cluster { margin-bottom: var(--space-2); }
+.price { font: 700 24px/30px var(--font-display); font-variant-numeric: tabular-nums; }
+
+.payment { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; justify-content: space-between; border-color: var(--mata); }
+.payment > div { display: grid; gap: var(--space-1); max-width: 56ch; }
+
+.done {
+  display: flex; gap: var(--space-3); align-items: flex-start;
+  padding: var(--space-4) var(--space-6); border-radius: var(--radius-lg);
+  background: var(--success-soft); color: var(--success);
+}
+.done p { color: var(--ink); font-weight: 600; }
+.sim-note { color: var(--warning); font-weight: 600; }

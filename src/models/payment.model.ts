@@ -1,9 +1,11 @@
+import { PaymentStatus } from './status';
+
 export interface Payment {
-  id?: number;
+  id: number;
   service_id: number;
   farmer_id: number;
-  worker_id: number; // Adaptado de contractor_id[cite: 4]
+  worker_id: number;
   value: number;
-  status: string;
-  insertion_date?: string;
+  status: PaymentStatus;
+  insertion_date: string;
 }

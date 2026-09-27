@@ -1,0 +1,42 @@
+/* RURALIZA design tokens. Único lugar com valores de cor. */
+:root {
+  color-scheme: light;
+  --surface:#F6F7F2; --surface-raised:#FFFFFF; --surface-sunken:#ECEFE6;
+  --ink:#18211A; --ink-muted:#56625A; --line:#D9DED4; --line-strong:#8C978E;
+  --mata:#1F4D2E; --mata-deep:#143620; --on-mata:#FFFFFF;
+  --broto:#B7D63A; --broto-soft:#EAF3C4; --ipe:#E3A81B; --ipe-soft:#FBEFCB;
+  --success:#2E7D4F; --success-soft:#DCEFE2; --warning:#8A5A00;
+  --danger:#B3261E; --danger-soft:#FBE3E1; --info:#2560A8; --info-soft:#DDE8F6;
+
+  /* Fixos nos dois temas: texto sobre broto, cores do logo e véu de diálogo. */
+  --on-broto:#18211A;
+  --logo-bg:#1F4D2E; --logo-line:#B7D63A; --logo-accent:#E3A81B;
+  --scrim:rgba(20,54,32,.45);
+  /* Campo do hero: mesma cena nos dois temas. */
+  --field-sky:#143620; --field-ground:#1F4D2E; --field-row:#B7D63A; --field-sun:#E3A81B;
+  --on-field:#FFFFFF; --on-field-line:rgba(255,255,255,.5);
+
+  --font-display:"Bricolage Grotesque","Figtree",system-ui,sans-serif;
+  --font-sans:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+  --space-6:24px; --space-8:32px; --space-12:48px; --space-16:64px;
+  --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-pill:999px;
+  --shadow-card:0 1px 2px rgba(20,54,32,.06),0 4px 16px rgba(20,54,32,.06);
+  --shadow-float:0 8px 24px rgba(20,54,32,.18);
+  --focus-ring:0 0 0 2px var(--surface),0 0 0 5px var(--mata);
+
+  --bottom-nav-height:72px;
+  --sidebar-width:248px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --surface:#121712; --surface-raised:#1B221C; --surface-sunken:#0D110E;
+    --ink:#EEF2EC; --ink-muted:#A3AFA6; --line:#2C352E; --line-strong:#5E6A61;
+    --mata:#7CC08F; --mata-deep:#A6D9B3; --on-mata:#0E1A12;
+    --broto-soft:#2A3316; --ipe:#E9B53A; --ipe-soft:#3A2F12;
+    --success:#5FBF86; --success-soft:#16301F; --warning:#E3B341;
+    --danger:#F2867E; --danger-soft:#3A1614; --info:#7FB0EE; --info-soft:#15253A;
+  }
+}
