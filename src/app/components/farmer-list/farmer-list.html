@@ -1,0 +1,33 @@
+<div class="list-container">
+  <h2>Produtores Registados</h2>
+  <p>Lista de todos os produtores rurais ativos na plataforma.</p>
+
+  <div *ngIf="errorMessage" class="alert error">
+    {{ errorMessage }}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>E-mail</th>
+        <th>Telefone</th>
+        <th>Qtd. Fazendas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let farmer of farmers">
+        <td>{{ farmer.id }}</td>
+        <td>{{ farmer.name }}</td>
+        <td>{{ farmer.email }}</td>
+        <td>{{ farmer.phone }}</td>
+        <td>{{ farmer.farms || 'N/A' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="farmers.length === 0 && !errorMessage" class="empty-state">
+    Nenhum produtor registado no momento.
+  </div>
+</div>
