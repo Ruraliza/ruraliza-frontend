@@ -3,9 +3,11 @@ import { RouterLink } from '@angular/router';
 import { FarmPhoto } from '../../../models/farm.model';
 import { Service } from '../../../models/service.model';
 import { expiryLabel, isExpired } from '../utils/expiry';
+import { categoryEmoji } from '../utils/farm-emoji';
 import { formatBRL, formatHours } from '../utils/format';
 import { apiAsset } from '../utils/images';
 import { CategoryChip } from './category-chip';
+import { FarmEmoji } from './farm-emoji';
 import { Icon } from './icon';
 import { StatusBadge } from './status-badge';
 
@@ -16,11 +18,13 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
 // Card de serviço/vaga. O card inteiro é um link para o detalhe.
 @Component({
   selector: 'app-service-card',
-  imports: [RouterLink, CategoryChip, Icon, StatusBadge],
+  imports: [RouterLink, CategoryChip, FarmEmoji, Icon, StatusBadge],
   template: `
     <a class="card-link" [routerLink]="link()">
       @if (cover(); as src) {
         <img class="cover" [src]="src" alt="" loading="lazy" decoding="async" />
+      } @else if (showCover()) {
+        <span class="cover placeholder"><app-farm-emoji [emoji]="emoji()" [size]="48" /></span>
       }
       <div class="body">
         <div class="top">
@@ -58,6 +62,8 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
     }
     .card-link:hover { border-color: var(--line-strong); }
     .cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--bg-alt); }
+    /* Sem foto: faixa mais baixa que a foto, para não alongar a lista no celular. */
+    .placeholder { display: grid; place-items: center; aspect-ratio: 3 / 1; background: var(--broto-soft); }
     .body { display: grid; gap: var(--space-2); align-content: start; padding: var(--space-6); }
     .top { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: space-between; align-items: center; margin-bottom: var(--space-1); }
     .meta { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); }
@@ -77,6 +83,8 @@ export class ServiceCard {
   readonly hours = computed(() => formatHours(this.service().duration));
   readonly expired = computed(() => isExpired(this.service()));
   readonly deadline = computed(() => expiryLabel(this.service()));
+  // Sem foto da fazenda: emoji da categoria do serviço.
+  readonly emoji = computed(() => categoryEmoji(this.service().category));
   readonly cover = computed(() => {
     const first = this.showCover() ? this.service().farm?.photos[0] : undefined;
     if (first === undefined) return null;
