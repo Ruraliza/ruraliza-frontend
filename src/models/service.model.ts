@@ -24,6 +24,9 @@ export interface ServiceInput {
   price: number;
 }
 
+// PATCH /farmers/services/:id (só enquanto Pending; o produtor não muda)
+export type ServiceUpdate = Partial<Omit<ServiceInput, 'farmer_id'>>;
+
 // GET /farmers/services/:id
 export interface ServiceWithFarm extends Service {
   farm: Farm;

@@ -1,18 +1,26 @@
 <div class="container page">
-  <a class="back-link" routerLink="/produtor/servicos">← Serviços</a>
+  @if (isEdit()) {
+    <a class="back-link" [routerLink]="['/produtor/servicos', serviceId()]">← Serviço</a>
+  } @else {
+    <a class="back-link" routerLink="/produtor/servicos">← Serviços</a>
+  }
 
   <div class="page-header">
     <div>
       <p class="muted">Passo {{ step() }} de 2</p>
-      <h1>Publicar serviço</h1>
+      <h1>{{ isEdit() ? 'Editar serviço' : 'Publicar serviço' }}</h1>
     </div>
   </div>
 
-  @switch (farms.state().status) {
+  @switch (loadState().status) {
     @case ('loading') { <app-skeleton [count]="1" [height]="320" /> }
-    @case ('error') { <app-error-state [message]="farms.error()" (retry)="farms.load()" /> }
+    @case ('error') { <app-error-state [message]="loadError()" (retry)="reload()" /> }
     @case ('success') {
-      @if (!farms.data()?.length) {
+      @if (editBlocked(); as reason) {
+        <app-empty-state icon="alert" title="Não é possível editar" [message]="reason">
+          <a appButton [routerLink]="['/produtor/servicos', serviceId()]">Voltar ao serviço</a>
+        </app-empty-state>
+      } @else if (!farms.data()?.length) {
         <app-empty-state icon="farm" title="Cadastre uma fazenda primeiro" message="O serviço precisa de um local. Leva menos de um minuto.">
           <a appButton routerLink="/produtor/fazendas/nova" [queryParams]="farmLinkParams()">Cadastrar fazenda</a>
         </app-empty-state>
@@ -77,7 +85,7 @@
             </ng-container>
 
             <div class="form-actions">
-              <button appButton type="submit" [loading]="saving()">Publicar serviço</button>
+              <button appButton type="submit" [loading]="saving()">{{ isEdit() ? 'Salvar alterações' : 'Publicar serviço' }}</button>
               <button appButton variant="ghost" type="button" [disabled]="saving()" (click)="back()">Voltar</button>
             </div>
           }

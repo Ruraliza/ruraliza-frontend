@@ -66,6 +66,19 @@ describe('FarmerService', () => {
     req.flush({ message: 'ok', application: {} });
   });
 
+  it('edits and cancels a service', () => {
+    service.updateService(3, { price: 1200 }).subscribe();
+    const patch = http.expectOne(`${base}/services/3`);
+    expect(patch.request.method).toBe('PATCH');
+    expect(patch.request.body).toEqual({ price: 1200 });
+    patch.flush({ message: 'ok', service: {} });
+
+    service.cancelService(3).subscribe((res) => expect(res.service.status).toBe('Cancelled'));
+    const cancel = http.expectOne(`${base}/services/3/cancel`);
+    expect(cancel.request.method).toBe('PATCH');
+    cancel.flush({ message: 'ok', service: { status: 'Cancelled' } });
+  });
+
   it('releases the payment of a service', () => {
     service.processPayment(3).subscribe((res) => expect(res.payment.value).toBe(900));
 

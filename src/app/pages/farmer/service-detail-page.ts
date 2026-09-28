@@ -20,7 +20,8 @@ import { WorkerCard } from '../../shared/ui/worker-card';
 type PendingAction =
   | { kind: 'accept'; application: ApplicationWithWorker }
   | { kind: 'reject'; application: ApplicationWithWorker }
-  | { kind: 'pay' };
+  | { kind: 'pay' }
+  | { kind: 'cancel' };
 
 interface DialogCopy {
   title: string;
@@ -86,6 +87,13 @@ export class ServiceDetailPage implements OnInit {
           confirmLabel: 'Liberar pagamento',
           variant: 'primary'
         };
+      case 'cancel':
+        return {
+          title: 'Cancelar serviço?',
+          message: 'O serviço sai da lista de vagas e as candidaturas pendentes são recusadas. Essa ação não pode ser desfeita.',
+          confirmLabel: 'Cancelar serviço',
+          variant: 'danger'
+        };
       default:
         return { title: '', message: '', confirmLabel: '', variant: 'primary' };
     }
@@ -141,6 +149,11 @@ export class ServiceDetailPage implements OnInit {
         return {
           request: this.farmerService.processPayment(id),
           success: 'Pagamento liberado (simulação). Serviço concluído.'
+        };
+      case 'cancel':
+        return {
+          request: this.farmerService.cancelService(id),
+          success: 'Serviço cancelado.'
         };
     }
   }

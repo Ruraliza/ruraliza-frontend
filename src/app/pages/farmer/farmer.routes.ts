@@ -20,6 +20,7 @@ export const FARMER_ROUTES: Routes = [
       { path: 'servicos', component: FarmerServicesPage, title: 'Serviços · Ruraliza' },
       { path: 'servicos/novo', component: ServiceFormPage, title: 'Novo serviço · Ruraliza' },
       { path: 'servicos/:id', component: ServiceDetailPage, title: 'Serviço · Ruraliza' },
+      { path: 'servicos/:id/editar', component: ServiceFormPage, title: 'Editar serviço · Ruraliza' },
       { path: 'perfil', component: FarmerProfilePage, title: 'Perfil · Ruraliza' }
     ]
   }

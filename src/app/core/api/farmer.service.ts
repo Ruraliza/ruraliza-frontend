@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Farmer, FarmerInput, FarmerUpdate } from '../../../models/farmer.model';
 import { Farm, FarmInput } from '../../../models/farm.model';
-import { FarmerServiceItem, Service, ServiceInput, ServiceWithFarm } from '../../../models/service.model';
+import { FarmerServiceItem, Service, ServiceInput, ServiceUpdate, ServiceWithFarm } from '../../../models/service.model';
 import { AnalyzeAction, ApplicationWithWorker, ServiceApplication } from '../../../models/service-application.model';
 import { Payment } from '../../../models/payment.model';
 import { ServiceStatus } from '../../../models/status';
@@ -59,6 +59,14 @@ export class FarmerService {
 
   requestService(service: ServiceInput): Observable<{ message: string; service: Service }> {
     return this.http.post<{ message: string; service: Service }>(`${this.apiUrl}/services`, service);
+  }
+
+  updateService(serviceId: number, changes: ServiceUpdate): Observable<{ message: string; service: Service }> {
+    return this.http.patch<{ message: string; service: Service }>(`${this.apiUrl}/services/${serviceId}`, changes);
+  }
+
+  cancelService(serviceId: number): Observable<{ message: string; service: Service }> {
+    return this.http.patch<{ message: string; service: Service }>(`${this.apiUrl}/services/${serviceId}/cancel`, {});
   }
 
   getServiceApplications(serviceId: number): Observable<ApplicationWithWorker[]> {
