@@ -7,6 +7,7 @@ export interface ServiceApplication {
   service_id: number;
   worker_id: number;
   status: ApplicationStatus;
+  auto_rejected?: boolean; // recusada pelo aceite de outro; volta a Pending se o aceito desistir
   insertion_date: string;
 }
 

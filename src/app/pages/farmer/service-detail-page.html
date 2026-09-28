@@ -24,7 +24,7 @@
           <section class="card" aria-labelledby="details-title">
             <h2 id="details-title" class="visually-hidden">Detalhes do serviço</h2>
             <dl class="details">
-              <div><dt>Fazenda</dt><dd>{{ s.farm.address }}<br>{{ s.farm.city }}, {{ s.farm.state }}</dd></div>
+              <div><dt>Fazenda</dt><dd>{{ s.farm.address }}<br>{{ s.farm.city }}, {{ s.farm.state }}@if (s.farm.deleted_at) {<br><span class="muted">(fazenda removida)</span>}</dd></div>
               <div><dt>Duração</dt><dd>{{ hours() }}</dd></div>
               <div><dt>Valor</dt><dd class="price">{{ price() }}</dd></div>
               <div><dt>Publicado em</dt><dd>{{ publishedAt() }}</dd></div>

@@ -104,4 +104,17 @@ describe('FarmerService', () => {
     expect(req.request.body).toEqual(farm);
     req.flush({ message: 'ok', farm: {} });
   });
+
+  it('edits and deletes a farm', () => {
+    service.updateFarm(2, 8, { city: 'Vassouras' }).subscribe();
+    const patch = http.expectOne(`${base}/2/farms/8`);
+    expect(patch.request.method).toBe('PATCH');
+    expect(patch.request.body).toEqual({ city: 'Vassouras' });
+    patch.flush({ message: 'ok', farm: {} });
+
+    service.deleteFarm(2, 8).subscribe();
+    const del = http.expectOne(`${base}/2/farms/8`);
+    expect(del.request.method).toBe('DELETE');
+    del.flush({ message: 'ok' });
+  });
 });

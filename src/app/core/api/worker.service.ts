@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Worker, WorkerInput, WorkerUpdate } from '../../../models/worker.model';
-import { OpenService } from '../../../models/service.model';
+import { OpenService, Service } from '../../../models/service.model';
 import { ApplicationWithService, ServiceApplication } from '../../../models/service-application.model';
 
 @Injectable({ providedIn: 'root' })
@@ -55,6 +55,14 @@ export class WorkerService {
   applyForService(serviceId: number, workerId: number): Observable<{ message: string; application: ServiceApplication }> {
     return this.http.post<{ message: string; application: ServiceApplication }>(
       `${this.apiUrl}/services/${serviceId}/apply`,
+      { worker_id: workerId }
+    );
+  }
+
+  // Desiste: candidatura pendente é removida; se já aceito, o serviço volta a Pending.
+  withdrawFromService(serviceId: number, workerId: number): Observable<{ message: string; service: Service }> {
+    return this.http.patch<{ message: string; service: Service }>(
+      `${this.apiUrl}/services/${serviceId}/withdraw`,
       { worker_id: workerId }
     );
   }

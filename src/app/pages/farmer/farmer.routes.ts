@@ -17,6 +17,7 @@ export const FARMER_ROUTES: Routes = [
       { path: '', component: FarmerDashboardPage, title: 'Início · Ruraliza' },
       { path: 'fazendas', component: FarmsPage, title: 'Fazendas · Ruraliza' },
       { path: 'fazendas/nova', component: FarmFormPage, title: 'Nova fazenda · Ruraliza' },
+      { path: 'fazendas/:id/editar', component: FarmFormPage, title: 'Editar fazenda · Ruraliza' },
       { path: 'servicos', component: FarmerServicesPage, title: 'Serviços · Ruraliza' },
       { path: 'servicos/novo', component: ServiceFormPage, title: 'Novo serviço · Ruraliza' },
       { path: 'servicos/:id', component: ServiceDetailPage, title: 'Serviço · Ruraliza' },

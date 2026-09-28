@@ -5,6 +5,7 @@ export interface Farm {
   city: string;
   state: string;
   insertion_date: string;
+  deleted_at?: string; // fazenda removida pelo produtor, mantida só no histórico dos serviços
 }
 
 export interface FarmInput {
@@ -12,6 +13,8 @@ export interface FarmInput {
   city: string;
   state: string;
 }
+
+export type FarmUpdate = Partial<FarmInput>;
 
 // Local da fazenda exposto ao trabalhador (sem o endereço completo).
 export interface FarmLocation {

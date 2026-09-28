@@ -43,6 +43,15 @@ describe('WorkerService', () => {
     req.flush({ message: 'ok', application: { id: 1, service_id: 5, worker_id: 9, status: 'Pending' } });
   });
 
+  it('withdraws from a service with the worker id', () => {
+    service.withdrawFromService(5, 9).subscribe((res) => expect(res.service.status).toBe('Pending'));
+
+    const req = http.expectOne(`${base}/services/5/withdraw`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ worker_id: 9 });
+    req.flush({ message: 'ok', service: { id: 5, status: 'Pending' } });
+  });
+
   it('reads the worker applications and services', () => {
     service.getWorkerApplications(9).subscribe();
     http.expectOne(`${base}/9/applications`).flush([]);

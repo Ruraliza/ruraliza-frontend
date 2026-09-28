@@ -7,6 +7,7 @@ import { RemoteData, mergeStates } from '../../shared/utils/remote-data';
 import { formatBRL, formatDate, formatHours } from '../../shared/utils/format';
 import { Button } from '../../shared/ui/button';
 import { CategoryChip } from '../../shared/ui/category-chip';
+import { ConfirmDialog } from '../../shared/ui/confirm-dialog';
 import { ErrorState } from '../../shared/ui/error-state';
 import { Icon } from '../../shared/ui/icon';
 import { Skeleton } from '../../shared/ui/skeleton';
@@ -14,7 +15,7 @@ import { StatusBadge } from '../../shared/ui/status-badge';
 
 @Component({
   selector: 'app-job-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ErrorState, Icon, Skeleton, StatusBadge],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, Icon, Skeleton, StatusBadge],
   template: `
     <div class="container page">
       <a class="back-link" routerLink="/trabalhador/vagas">← Vagas</a>
@@ -46,10 +47,18 @@ import { StatusBadge } from '../../shared/ui/status-badge';
             <section class="apply card" aria-live="polite">
               @if (myApplication(); as application) {
                 <div>
-                  <h2 class="t-h3">Você já se candidatou</h2>
+                  <h2 class="t-h3">{{ withdrawKind() === 'service' ? 'O serviço é seu' : 'Você já se candidatou' }}</h2>
                   <p class="muted">Situação da sua candidatura:</p>
+                  <app-status-badge [status]="application.status" />
                 </div>
-                <app-status-badge [status]="application.status" />
+                @switch (withdrawKind()) {
+                  @case ('application') {
+                    <button appButton variant="secondary" type="button" (click)="confirmingWithdraw.set(true)">Cancelar candidatura</button>
+                  }
+                  @case ('service') {
+                    <button appButton variant="danger" type="button" (click)="confirmingWithdraw.set(true)">Desistir do serviço</button>
+                  }
+                }
               } @else if (j.status !== 'Pending') {
                 <div>
                   <h2 class="t-h3">Vaga encerrada</h2>
@@ -68,6 +77,19 @@ import { StatusBadge } from '../../shared/ui/status-badge';
         }
       }
     </div>
+
+    <app-confirm-dialog
+      [open]="confirmingWithdraw()"
+      [title]="withdrawKind() === 'service' ? 'Desistir do serviço?' : 'Cancelar candidatura?'"
+      [message]="withdrawKind() === 'service'
+        ? 'O serviço volta a ficar aberto e o produtor poderá escolher outra pessoa entre os candidatos.'
+        : 'Sua candidatura será retirada. Se a vaga continuar aberta, você pode se candidatar de novo.'"
+      [confirmLabel]="withdrawKind() === 'service' ? 'Desistir do serviço' : 'Cancelar candidatura'"
+      confirmVariant="danger"
+      [loading]="withdrawing()"
+      (confirmed)="withdraw()"
+      (cancelled)="confirmingWithdraw.set(false)"
+    />
   `,
   styles: `
     .tags { margin-bottom: var(--space-2); }
@@ -101,6 +123,18 @@ export class JobDetailPage implements OnInit {
   });
 
   readonly applying = signal(false);
+  readonly confirmingWithdraw = signal(false);
+  readonly withdrawing = signal(false);
+
+  // O que "desistir" significa agora: retirar a candidatura ou largar o serviço já aceito.
+  readonly withdrawKind = computed<'application' | 'service' | null>(() => {
+    const application = this.myApplication();
+    const job = this.job.data();
+    if (!application || !job) return null;
+    if (application.status === 'Pending' && job.status === 'Pending') return 'application';
+    if (application.status === 'Accepted' && job.status === 'In Progress') return 'service';
+    return null;
+  });
 
   ngOnInit(): void {
     this.load();
@@ -120,6 +154,23 @@ export class JobDetailPage implements OnInit {
         this.applications.load();
       },
       error: () => this.applying.set(false)
+    });
+  }
+
+  withdraw(): void {
+    const kind = this.withdrawKind();
+    this.withdrawing.set(true);
+    this.workerService.withdrawFromService(this.serviceId(), this.workerId).subscribe({
+      next: () => {
+        this.withdrawing.set(false);
+        this.confirmingWithdraw.set(false);
+        this.toast.success(kind === 'service' ? 'Você desistiu do serviço. Ele voltou a ficar aberto.' : 'Candidatura cancelada.');
+        this.load();
+      },
+      error: () => {
+        this.withdrawing.set(false);
+        this.confirmingWithdraw.set(false);
+      }
     });
   }
 }

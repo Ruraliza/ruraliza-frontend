@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Farmer, FarmerInput, FarmerUpdate } from '../../../models/farmer.model';
-import { Farm, FarmInput } from '../../../models/farm.model';
+import { Farm, FarmInput, FarmUpdate } from '../../../models/farm.model';
 import { FarmerServiceItem, Service, ServiceInput, ServiceUpdate, ServiceWithFarm } from '../../../models/service.model';
 import { AnalyzeAction, ApplicationWithWorker, ServiceApplication } from '../../../models/service-application.model';
 import { Payment } from '../../../models/payment.model';
@@ -44,6 +44,14 @@ export class FarmerService {
 
   createFarm(farmerId: number, farm: FarmInput): Observable<{ message: string; farm: Farm }> {
     return this.http.post<{ message: string; farm: Farm }>(`${this.apiUrl}/${farmerId}/farms`, farm);
+  }
+
+  updateFarm(farmerId: number, farmId: number, changes: FarmUpdate): Observable<{ message: string; farm: Farm }> {
+    return this.http.patch<{ message: string; farm: Farm }>(`${this.apiUrl}/${farmerId}/farms/${farmId}`, changes);
+  }
+
+  deleteFarm(farmerId: number, farmId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${farmerId}/farms/${farmId}`);
   }
 
   // --- Serviços ---
