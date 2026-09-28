@@ -38,6 +38,12 @@
                 <input formControlName="name" placeholder="Colheita de café">
               </app-form-field>
 
+              <app-form-field label="Descrição" fieldId="description" [optional]="true" [control]="form.controls.what.controls.description" [messages]="descriptionMessages"
+                [hint]="'O que fazer, o que levar, horário, se tem almoço ou transporte. ' + form.controls.what.controls.description.value.length + ' de ' + maxDescription + ' caracteres.'">
+                <textarea formControlName="description" rows="5" [attr.maxlength]="maxDescription"
+                  placeholder="Ex.: Colheita manual de café arábica. Levar luvas e chapéu. Das 7h às 16h, com almoço na fazenda."></textarea>
+              </app-form-field>
+
               <fieldset class="categories">
                 <legend class="t-label">Categoria</legend>
                 @switch (categories.state().status) {
@@ -81,6 +87,14 @@
 
               <app-form-field label="Valor a pagar" fieldId="price" hint="Valor total do serviço." [control]="form.controls.where.controls.price" [messages]="priceMessages">
                 <input appMask="currency" formControlName="price" inputmode="numeric" placeholder="R$ 0,00">
+              </app-form-field>
+
+              @if (expiredNote(); as note) {
+                <p class="expired-note" role="note">{{ note }}</p>
+              }
+              <app-form-field label="Prazo para candidaturas" fieldId="expires_at" [optional]="true" [control]="form.controls.where.controls.expires_at" [messages]="expiryMessages"
+                hint="Último dia para receber candidaturas. Depois dele a vaga sai da lista. Em branco, fica aberta até você aceitar alguém ou cancelar.">
+                <input type="date" formControlName="expires_at" [min]="today">
               </app-form-field>
             </ng-container>
 

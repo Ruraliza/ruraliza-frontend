@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WorkerService } from '../../core/api/worker.service';
@@ -7,6 +7,7 @@ import { ToastService } from '../../core/toast/toast.service';
 import { Worker } from '../../../models/worker.model';
 import { RemoteData } from '../../shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '../../shared/utils/format';
+import { AvatarEditor } from '../../shared/ui/avatar-editor';
 import { Button } from '../../shared/ui/button';
 import { ConfirmDialog } from '../../shared/ui/confirm-dialog';
 import { ErrorState } from '../../shared/ui/error-state';
@@ -15,89 +16,16 @@ import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
 import { Skeleton } from '../../shared/ui/skeleton';
 
-// Perfil do trabalhador: leitura, edição (id e cpf fixos) e remoção da conta.
+// Limites iguais aos da API.
+const MAX_BIO = 500;
+const MAX_TEXT = 1000;
+
+// Perfil do trabalhador: foto, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
 @Component({
   selector: 'app-worker-profile-page',
-  imports: [ReactiveFormsModule, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, Skeleton],
-  template: `
-    <div class="container page">
-      <div class="page-header">
-        <div>
-          <h1>{{ worker.data()?.name ?? 'Perfil' }}</h1>
-        </div>
-      </div>
-
-      @switch (worker.state().status) {
-        @case ('loading') { <app-skeleton [count]="1" [height]="200" /> }
-        @case ('error') { <app-error-state [message]="worker.error()" (retry)="worker.load()" /> }
-        @case ('success') {
-          @if (worker.data(); as w) {
-            @if (editing()) {
-              <form class="form card" [formGroup]="form" (ngSubmit)="save()" novalidate>
-                <app-form-field label="Nome completo" fieldId="name" [control]="form.controls.name">
-                  <input formControlName="name" autocomplete="name">
-                </app-form-field>
-
-                <app-form-field label="E-mail" fieldId="email" [control]="form.controls.email">
-                  <input type="email" formControlName="email" autocomplete="email">
-                </app-form-field>
-
-                <app-form-field label="Telefone (WhatsApp)" fieldId="phone" [control]="form.controls.phone" [messages]="phoneMessages">
-                  <input appMask="phone" formControlName="phone" inputmode="numeric" autocomplete="tel">
-                </app-form-field>
-
-                <app-form-field label="Experiência" fieldId="experience" [optional]="true" hint="Ex.: 5 anos em colheita de café." [control]="form.controls.experience">
-                  <input formControlName="experience">
-                </app-form-field>
-
-                <app-form-field label="Certificados" fieldId="certificates" [optional]="true" hint="Ex.: NR-31, curso de tratorista." [control]="form.controls.certificates">
-                  <input formControlName="certificates">
-                </app-form-field>
-
-                <p class="t-body-sm muted">CPF: {{ cpf(w.cpf) }} (não pode ser alterado)</p>
-
-                <div class="form-actions">
-                  <button appButton variant="secondary" type="button" [disabled]="saving()" (click)="editing.set(false)">Cancelar</button>
-                  <button appButton type="submit" [loading]="saving()">Salvar alterações</button>
-                </div>
-              </form>
-            } @else {
-              <section class="card">
-                <dl class="details">
-                  <div><dt>E-mail</dt><dd>{{ w.email }}</dd></div>
-                  <div><dt>Telefone</dt><dd>{{ phone(w.phone) }}</dd></div>
-                  <div><dt>CPF</dt><dd>{{ cpf(w.cpf) }}</dd></div>
-                  <div><dt>Experiência</dt><dd>{{ w.experience || 'Não informada' }}</dd></div>
-                  <div><dt>Certificados</dt><dd>{{ w.certificates || 'Nenhum informado' }}</dd></div>
-                  <div><dt>No Ruraliza desde</dt><dd>{{ date(w.insertion_date) }}</dd></div>
-                </dl>
-              </section>
-
-              <div class="form-actions">
-                <button appButton variant="secondary" type="button" (click)="startEdit(w)">Editar perfil</button>
-                <button appButton variant="danger" type="button" (click)="confirmingDelete.set(true)">Excluir conta</button>
-              </div>
-            }
-          }
-        }
-      }
-
-      <div>
-        <button appButton variant="secondary" type="button" (click)="switchProfile()"><app-icon name="logout" [size]="20" />Trocar perfil de teste</button>
-      </div>
-    </div>
-
-    <app-confirm-dialog
-      [open]="confirmingDelete()"
-      title="Excluir conta?"
-      message="Seu perfil e suas candidaturas serão removidos do Ruraliza. Essa ação não pode ser desfeita."
-      confirmLabel="Excluir conta"
-      confirmVariant="danger"
-      [loading]="deleting()"
-      (confirmed)="remove()"
-      (cancelled)="confirmingDelete.set(false)"
-    />
-  `
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, Skeleton],
+  templateUrl: './worker-profile-page.html',
+  styleUrl: './worker-profile-page.css'
 })
 export class WorkerProfilePage {
   private readonly fb = inject(NonNullableFormBuilder);
@@ -111,18 +39,37 @@ export class WorkerProfilePage {
 
   readonly editing = signal(false);
   readonly saving = signal(false);
+  readonly photoBusy = signal(false);
   readonly confirmingDelete = signal(false);
   readonly deleting = signal(false);
+
+  readonly maxBio = MAX_BIO;
+  readonly maxText = MAX_TEXT;
 
   readonly form = this.fb.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required, Validators.minLength(10)]],
-    experience: [''],
-    certificates: ['']
+    bio: ['', Validators.maxLength(MAX_BIO)],
+    experience: ['', Validators.maxLength(MAX_TEXT)],
+    certificates: ['', Validators.maxLength(MAX_TEXT)],
+    courses: ['', Validators.maxLength(MAX_TEXT)]
   });
 
   readonly phoneMessages = { minlength: 'Digite o telefone com DDD, só números.' };
+  readonly lengthMessages = { maxlength: 'Texto maior que o permitido.' };
+
+  // O que ainda falta no perfil (o produtor decide olhando essas informações).
+  readonly missing = computed(() => {
+    const w = this.worker.data();
+    if (!w) return [];
+    return [
+      !w.photo_url && 'foto',
+      !w.bio && 'apresentação',
+      !w.experience && 'experiência',
+      !w.certificates && !w.courses && 'certificados ou cursos'
+    ].filter((item): item is string => !!item);
+  });
 
   readonly phone = formatPhone;
   readonly cpf = formatCpf;
@@ -137,8 +84,10 @@ export class WorkerProfilePage {
       name: worker.name,
       email: worker.email,
       phone: worker.phone,
+      bio: worker.bio ?? '',
       experience: worker.experience ?? '',
-      certificates: worker.certificates ?? ''
+      certificates: worker.certificates ?? '',
+      courses: worker.courses ?? ''
     });
     this.editing.set(true);
   }
@@ -147,25 +96,52 @@ export class WorkerProfilePage {
     this.form.markAllAsTouched();
     if (this.form.invalid) return;
 
-    const { name, email, phone, experience, certificates } = this.form.getRawValue();
+    const v = this.form.getRawValue();
+    const optional = (text: string): string | null => text.trim() || null;
     this.saving.set(true);
     this.workerService
       .updateWorker(this.workerId, {
-        name: name.trim(),
-        email: email.trim(),
-        phone,
-        experience: experience.trim() || null,
-        certificates: certificates.trim() || null
+        name: v.name.trim(),
+        email: v.email.trim(),
+        phone: v.phone,
+        bio: optional(v.bio),
+        experience: optional(v.experience),
+        certificates: optional(v.certificates),
+        courses: optional(v.courses)
       })
       .subscribe({
-        next: () => {
+        next: ({ worker }) => {
           this.saving.set(false);
           this.editing.set(false);
           this.toast.success('Perfil atualizado.');
-          this.worker.load();
+          this.worker.replace(worker);
         },
         error: () => this.saving.set(false) // a mensagem já saiu no toast
       });
+  }
+
+  uploadPhoto(photo: Blob): void {
+    this.photoBusy.set(true);
+    this.workerService.uploadPhoto(this.workerId, photo).subscribe({
+      next: ({ worker }) => {
+        this.photoBusy.set(false);
+        this.toast.success('Foto de perfil atualizada.');
+        this.worker.replace(worker);
+      },
+      error: () => this.photoBusy.set(false)
+    });
+  }
+
+  removePhoto(): void {
+    this.photoBusy.set(true);
+    this.workerService.deletePhoto(this.workerId).subscribe({
+      next: ({ worker }) => {
+        this.photoBusy.set(false);
+        this.toast.success('Foto removida.');
+        this.worker.replace(worker);
+      },
+      error: () => this.photoBusy.set(false)
+    });
   }
 
   remove(): void {

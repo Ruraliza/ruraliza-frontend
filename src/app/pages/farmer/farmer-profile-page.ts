@@ -7,6 +7,7 @@ import { ToastService } from '../../core/toast/toast.service';
 import { Farmer } from '../../../models/farmer.model';
 import { RemoteData } from '../../shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '../../shared/utils/format';
+import { AvatarEditor } from '../../shared/ui/avatar-editor';
 import { Button } from '../../shared/ui/button';
 import { ConfirmDialog } from '../../shared/ui/confirm-dialog';
 import { ErrorState } from '../../shared/ui/error-state';
@@ -18,7 +19,7 @@ import { Skeleton } from '../../shared/ui/skeleton';
 // Perfil do produtor: leitura, edição (id e cpf fixos) e remoção da conta.
 @Component({
   selector: 'app-farmer-profile-page',
-  imports: [ReactiveFormsModule, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -32,6 +33,10 @@ import { Skeleton } from '../../shared/ui/skeleton';
         @case ('error') { <app-error-state [message]="farmer.error()" (retry)="farmer.load()" /> }
         @case ('success') {
           @if (farmer.data(); as f) {
+            <section class="card">
+              <app-avatar-editor [name]="f.name" [photoUrl]="f.photo_url" [busy]="photoBusy()" (picked)="uploadPhoto($event)" (removed)="removePhoto()" />
+            </section>
+
             @if (editing()) {
               <form class="form card" [formGroup]="form" (ngSubmit)="save()" novalidate>
                 <app-form-field label="Nome completo" fieldId="name" [control]="form.controls.name">
@@ -81,7 +86,7 @@ import { Skeleton } from '../../shared/ui/skeleton';
     <app-confirm-dialog
       [open]="confirmingDelete()"
       title="Excluir conta?"
-      message="Seu perfil, suas fazendas e seus serviços serão removidos do Ruraliza. Essa ação não pode ser desfeita."
+      message="Seu perfil, sua foto, suas fazendas (com as fotos) e seus serviços serão removidos do Ruraliza. Essa ação não pode ser desfeita."
       confirmLabel="Excluir conta"
       confirmVariant="danger"
       [loading]="deleting()"
@@ -102,6 +107,7 @@ export class FarmerProfilePage {
 
   readonly editing = signal(false);
   readonly saving = signal(false);
+  readonly photoBusy = signal(false);
   readonly confirmingDelete = signal(false);
   readonly deleting = signal(false);
 
@@ -133,13 +139,37 @@ export class FarmerProfilePage {
     const { name, email, phone } = this.form.getRawValue();
     this.saving.set(true);
     this.farmerService.updateFarmer(this.farmerId, { name: name.trim(), email: email.trim(), phone }).subscribe({
-      next: () => {
+      next: ({ farmer }) => {
         this.saving.set(false);
         this.editing.set(false);
         this.toast.success('Perfil atualizado.');
-        this.farmer.load();
+        this.farmer.replace(farmer);
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
+    });
+  }
+
+  uploadPhoto(photo: Blob): void {
+    this.photoBusy.set(true);
+    this.farmerService.uploadPhoto(this.farmerId, photo).subscribe({
+      next: ({ farmer }) => {
+        this.photoBusy.set(false);
+        this.toast.success('Foto de perfil atualizada.');
+        this.farmer.replace(farmer);
+      },
+      error: () => this.photoBusy.set(false)
+    });
+  }
+
+  removePhoto(): void {
+    this.photoBusy.set(true);
+    this.farmerService.deletePhoto(this.farmerId).subscribe({
+      next: ({ farmer }) => {
+        this.photoBusy.set(false);
+        this.toast.success('Foto removida.');
+        this.farmer.replace(farmer);
+      },
+      error: () => this.photoBusy.set(false)
     });
   }
 

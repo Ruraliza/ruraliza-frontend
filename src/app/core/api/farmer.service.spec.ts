@@ -105,6 +105,25 @@ describe('FarmerService', () => {
     req.flush({ message: 'ok', farm: {} });
   });
 
+  it('adds and removes farm photos', () => {
+    const photo = new Blob(['x'], { type: 'image/jpeg' });
+    service.addFarmPhoto(2, 8, photo).subscribe();
+    const add = http.expectOne(`${base}/2/farms/8/photos`);
+    expect(add.request.method).toBe('POST');
+    expect(add.request.headers.get('Content-Type')).toBe('image/jpeg');
+    add.flush({ message: 'ok', farm: {} });
+
+    service.deleteFarmPhoto(2, 8, 'abc.webp').subscribe();
+    expect(http.expectOne(`${base}/2/farms/8/photos/abc.webp`).request.method).toBe('DELETE');
+  });
+
+  it('deletes a service', () => {
+    service.deleteService(3).subscribe();
+    const req = http.expectOne(`${base}/services/3`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush({ message: 'ok' });
+  });
+
   it('edits and deletes a farm', () => {
     service.updateFarm(2, 8, { city: 'Vassouras' }).subscribe();
     const patch = http.expectOne(`${base}/2/farms/8`);

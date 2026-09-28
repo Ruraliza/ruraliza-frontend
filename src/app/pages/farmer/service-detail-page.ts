@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FarmerService } from '../../core/api/farmer.service';
 import { CurrentUserService } from '../../core/session/current-user.service';
@@ -10,6 +10,8 @@ import { formatBRL, formatDate, formatHours } from '../../shared/utils/format';
 import { Button, ButtonVariant } from '../../shared/ui/button';
 import { CategoryChip } from '../../shared/ui/category-chip';
 import { ConfirmDialog } from '../../shared/ui/confirm-dialog';
+import { PhotoStrip } from '../../shared/ui/photo-strip';
+import { expiryLabel, formatDay, isExpired } from '../../shared/utils/expiry';
 import { EmptyState } from '../../shared/ui/empty-state';
 import { ErrorState } from '../../shared/ui/error-state';
 import { Icon } from '../../shared/ui/icon';
@@ -21,7 +23,8 @@ type PendingAction =
   | { kind: 'accept'; application: ApplicationWithWorker }
   | { kind: 'reject'; application: ApplicationWithWorker }
   | { kind: 'pay' }
-  | { kind: 'cancel' };
+  | { kind: 'cancel' }
+  | { kind: 'delete' };
 
 interface DialogCopy {
   title: string;
@@ -32,7 +35,7 @@ interface DialogCopy {
 
 @Component({
   selector: 'app-service-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, Icon, Skeleton, StatusBadge, WorkerCard],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, Icon, PhotoStrip, Skeleton, StatusBadge, WorkerCard],
   templateUrl: './service-detail-page.html',
   styleUrl: './service-detail-page.css'
 })
@@ -42,6 +45,7 @@ export class ServiceDetailPage implements OnInit {
   private readonly farmerService = inject(FarmerService);
   private readonly farmerId = inject(CurrentUserService).requireId('farmer');
   private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
 
   private readonly serviceId = computed(() => Number(this.id()));
 
@@ -50,6 +54,21 @@ export class ServiceDetailPage implements OnInit {
   readonly state = computed(() => mergeStates(this.service.state(), this.applications.state()));
 
   readonly isOwner = computed(() => this.service.data()?.farmer_id === this.farmerId);
+  readonly photoUrls = computed(() => this.service.data()?.farm.photos.map((p) => p.url) ?? []);
+  readonly expired = computed(() => {
+    const s = this.service.data();
+    return s ? isExpired(s) : false;
+  });
+  readonly deadline = computed(() => {
+    const s = this.service.data();
+    if (!s || s.expires_at === null) return 'Sem prazo';
+    return s.status === 'Pending' ? (expiryLabel(s) ?? formatDay(s.expires_at)) : formatDay(s.expires_at);
+  });
+  // Excluir de vez só serviço aberto ou cancelado que nunca recebeu candidatura (regra da API).
+  readonly canDelete = computed(() => {
+    const s = this.service.data();
+    return !!s && (s.status === 'Pending' || s.status === 'Cancelled') && (this.applications.data()?.length ?? 0) === 0;
+  });
   readonly acceptedWorker = computed(
     () => this.applications.data()?.find((a) => a.status === 'Accepted')?.worker ?? null
   );
@@ -94,6 +113,13 @@ export class ServiceDetailPage implements OnInit {
           confirmLabel: 'Cancelar serviço',
           variant: 'danger'
         };
+      case 'delete':
+        return {
+          title: 'Excluir serviço?',
+          message: 'O serviço será apagado de vez. Como ninguém se candidatou, nenhum histórico é perdido.',
+          confirmLabel: 'Excluir serviço',
+          variant: 'danger'
+        };
       default:
         return { title: '', message: '', confirmLabel: '', variant: 'primary' };
     }
@@ -126,7 +152,9 @@ export class ServiceDetailPage implements OnInit {
       next: () => {
         this.toast.success(success);
         this.finish();
-        this.load();
+        // Excluído não existe mais: volta para a lista.
+        if (action.kind === 'delete') this.router.navigate(['/produtor/servicos']);
+        else this.load();
       },
       error: () => this.finish() // a mensagem já saiu no toast
     });
@@ -154,6 +182,11 @@ export class ServiceDetailPage implements OnInit {
         return {
           request: this.farmerService.cancelService(id),
           success: 'Serviço cancelado.'
+        };
+      case 'delete':
+        return {
+          request: this.farmerService.deleteService(id),
+          success: 'Serviço excluído.'
         };
     }
   }

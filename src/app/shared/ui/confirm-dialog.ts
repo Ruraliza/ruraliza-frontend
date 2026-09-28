@@ -27,6 +27,11 @@ import { Button, ButtonVariant } from './button';
     dialog::backdrop { background: var(--scrim); }
     dialog[open] { display: grid; gap: var(--space-4); }
     .actions { display: flex; flex-wrap: wrap-reverse; justify-content: flex-end; gap: var(--space-3); padding-top: var(--space-2); }
+    /* Celular: botões em largura total, ação principal em cima (mais perto do polegar). */
+    @media (max-width: 479px) {
+      .actions { flex-direction: column-reverse; }
+      .actions > button { width: 100%; }
+    }
   `
 })
 export class ConfirmDialog {

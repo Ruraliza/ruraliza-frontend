@@ -1,0 +1,78 @@
+<div class="container page">
+  <div class="page-header">
+    <div>
+      <h1>Serviços</h1>
+    </div>
+    <a appButton routerLink="/produtor/servicos/novo"><app-icon name="plus" [size]="20" />Publicar serviço</a>
+  </div>
+
+  <app-segmented-control label="Situação dos serviços" [options]="tabs()" [value]="tab()" (valueChange)="setTab($event)" />
+
+  <div class="filters">
+    <label class="search">
+      <span class="visually-hidden">Buscar nos seus serviços</span>
+      <app-icon name="search" [size]="20" />
+      <input type="search" placeholder="Buscar por nome ou descrição" [value]="draftQuery()" (input)="onSearch($event)">
+    </label>
+
+    <label class="select">
+      <span class="t-body-sm">Categoria</span>
+      <select [value]="categoria() ?? ''" (change)="setSelect('categoria', $event)">
+        <option value="">Todas</option>
+        @for (c of categories(); track c) { <option [value]="c">{{ c }}</option> }
+      </select>
+    </label>
+
+    @if (farms().length > 1) {
+      <label class="select">
+        <span class="t-body-sm">Fazenda</span>
+        <select [value]="fazenda() ?? ''" (change)="setSelect('fazenda', $event)">
+          <option value="">Todas</option>
+          @for (f of farms(); track f.id) { <option [value]="f.id">{{ f.label }}</option> }
+        </select>
+      </label>
+    }
+
+    <label class="select">
+      <span class="t-body-sm">Ordenar por</span>
+      <select [value]="sort()" (change)="setSelect('ordem', $event)">
+        @for (s of sorts; track s.value) { <option [value]="s.value">{{ s.label }}</option> }
+      </select>
+    </label>
+  </div>
+
+  @if (tab() === 'abertos') {
+    <div class="cluster" role="group" aria-label="Atalhos">
+      <button appCategoryChip [interactive]="true" [selected]="so() === 'candidatos'" (click)="toggleOnly('candidatos')">Com candidatos para analisar</button>
+      <button appCategoryChip [interactive]="true" [selected]="so() === 'vencidos'" (click)="toggleOnly('vencidos')">Prazo encerrado</button>
+    </div>
+  }
+
+  @switch (services.state().status) {
+    @case ('loading') { <app-skeleton [count]="3" [height]="180" /> }
+    @case ('error') { <app-error-state [message]="services.error()" (retry)="services.load()" /> }
+    @case ('success') {
+      @if (anyFilter()) {
+        <div class="result-bar">
+          <p class="t-body-sm muted" role="status">{{ filtered().length }} {{ filtered().length === 1 ? 'serviço' : 'serviços' }}</p>
+          <button appButton variant="ghost" type="button" (click)="clearFilters()">Limpar filtros</button>
+        </div>
+      }
+      @if (filtered().length) {
+        <div class="grid-cards">
+          @for (service of filtered(); track service.id) {
+            <app-service-card [service]="service" [link]="['/produtor/servicos', service.id]" />
+          }
+        </div>
+      } @else if (anyFilter()) {
+        <app-empty-state icon="search" title="Nenhum serviço com esses filtros" message="Tente outra palavra, outra categoria ou limpe os filtros.">
+          <button appButton variant="secondary" type="button" (click)="clearFilters()">Limpar filtros</button>
+        </app-empty-state>
+      } @else {
+        <app-empty-state [title]="emptyCopy().title" [message]="emptyCopy().message">
+          @if (tab() === 'abertos') { <a appButton routerLink="/produtor/servicos/novo">Publicar serviço</a> }
+        </app-empty-state>
+      }
+    }
+  }
+</div>

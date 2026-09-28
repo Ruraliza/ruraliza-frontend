@@ -19,7 +19,7 @@ describe('WorkerService', () => {
   afterEach(() => http.verify());
 
   it('searches open services by category', () => {
-    service.searchServices('Colheita').subscribe();
+    service.searchServices({ category: 'Colheita' }).subscribe();
 
     const req = http.expectOne((r) => r.url === `${base}/services`);
     expect(req.request.params.get('category')).toBe('Colheita');
@@ -32,6 +32,34 @@ describe('WorkerService', () => {
     const req = http.expectOne(`${base}/services`);
     expect(req.request.params.has('category')).toBe(false);
     req.flush([]);
+  });
+
+  it('sends every filled job filter as a query param and skips the empty ones', () => {
+    service.searchServices({ q: 'café', category: '', min_hours: 8, max_hours: 24, from: '2026-10-01', sort: 'price_desc' }).subscribe();
+
+    const req = http.expectOne((r) => r.url === `${base}/services`);
+    expect(req.request.params.get('q')).toBe('café');
+    expect(req.request.params.has('category')).toBe(false);
+    expect(req.request.params.get('min_hours')).toBe('8');
+    expect(req.request.params.get('max_hours')).toBe('24');
+    expect(req.request.params.get('from')).toBe('2026-10-01');
+    expect(req.request.params.has('to')).toBe(false);
+    expect(req.request.params.get('sort')).toBe('price_desc');
+    req.flush([]);
+  });
+
+  it('uploads the profile photo as the raw file with its content type', () => {
+    const photo = new Blob(['x'], { type: 'image/webp' });
+    service.uploadPhoto(9, photo).subscribe();
+
+    const req = http.expectOne(`${base}/9/photo`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toBe(photo);
+    expect(req.request.headers.get('Content-Type')).toBe('image/webp');
+    req.flush({ message: 'ok', worker: {} });
+
+    service.deletePhoto(9).subscribe();
+    expect(http.expectOne(`${base}/9/photo`).request.method).toBe('DELETE');
   });
 
   it('applies for a service with the worker id', () => {

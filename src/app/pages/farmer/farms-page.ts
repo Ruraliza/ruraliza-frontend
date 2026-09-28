@@ -5,6 +5,7 @@ import { CurrentUserService } from '../../core/session/current-user.service';
 import { ToastService } from '../../core/toast/toast.service';
 import { Farm } from '../../../models/farm.model';
 import { RemoteData } from '../../shared/utils/remote-data';
+import { apiAsset } from '../../shared/utils/images';
 import { Button } from '../../shared/ui/button';
 import { ConfirmDialog } from '../../shared/ui/confirm-dialog';
 import { EmptyState } from '../../shared/ui/empty-state';
@@ -32,14 +33,21 @@ import { Skeleton } from '../../shared/ui/skeleton';
             <ul class="grid-cards" role="list">
               @for (farm of farms.data(); track farm.id) {
                 <li class="card farm">
-                  <span class="icon"><app-icon name="farm" /></span>
+                  @if (farm.photos[0]; as cover) {
+                    <img class="cover" [src]="src(cover.url)" [alt]="'Foto da fazenda em ' + farm.city" loading="lazy" decoding="async" />
+                  } @else {
+                    <span class="icon"><app-icon name="farm" /></span>
+                  }
                   <div class="body">
                     <div>
                       <h2 class="t-h3">{{ farm.city }}, {{ farm.state }}</h2>
                       <p class="muted">{{ farm.address }}</p>
+                      <p class="t-body-sm muted">
+                        {{ farm.photos.length ? farm.photos.length + (farm.photos.length === 1 ? ' foto' : ' fotos') : 'Sem fotos: adicione na edição para atrair trabalhadores.' }}
+                      </p>
                     </div>
                     <div class="cluster">
-                      <a appButton variant="secondary" [routerLink]="['/produtor/fazendas', farm.id, 'editar']">Editar</a>
+                      <a appButton variant="secondary" [routerLink]="['/produtor/fazendas', farm.id, 'editar']">Editar e fotos</a>
                       <button appButton variant="ghost" type="button" (click)="removing.set(farm)">Remover</button>
                     </div>
                   </div>
@@ -67,7 +75,8 @@ import { Skeleton } from '../../shared/ui/skeleton';
     />
   `,
   styles: `
-    .farm { display: flex; gap: var(--space-4); align-items: flex-start; }
+    .farm { display: grid; gap: var(--space-4); align-content: start; }
+    .cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-md); }
     .body { display: grid; gap: var(--space-4); min-width: 0; }
     .icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--broto-soft); }
   `
@@ -84,6 +93,10 @@ export class FarmsPage {
 
   constructor() {
     this.farms.load();
+  }
+
+  src(url: string): string {
+    return apiAsset(url);
   }
 
   remove(): void {
