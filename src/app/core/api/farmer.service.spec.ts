@@ -41,7 +41,20 @@ describe('FarmerService', () => {
     const req = http.expectOne(base);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(input);
-    req.flush({ message: 'ok', farmer: { ...input, id: 1, farms: 0, insertion_date: '2026-01-01' } });
+    req.flush({ message: 'ok', farmer: { ...input, id: 1, farms: [], insertion_date: '2026-01-01' } });
+  });
+
+  it('updates and deletes a farmer', () => {
+    service.updateFarmer(4, { name: 'Ana Maria' }).subscribe();
+    const patch = http.expectOne(`${base}/4`);
+    expect(patch.request.method).toBe('PATCH');
+    expect(patch.request.body).toEqual({ name: 'Ana Maria' });
+    patch.flush({ message: 'ok', farmer: {} });
+
+    service.deleteFarmer(4).subscribe();
+    const del = http.expectOne(`${base}/4`);
+    expect(del.request.method).toBe('DELETE');
+    del.flush({ message: 'ok' });
   });
 
   it('sends application_id and action when analyzing an offer', () => {

@@ -51,6 +51,19 @@ describe('WorkerService', () => {
     http.expectOne(`${base}/9/services`).flush([]);
   });
 
+  it('updates and deletes a worker', () => {
+    service.updateWorker(9, { experience: '6 anos' }).subscribe();
+    const patch = http.expectOne(`${base}/9`);
+    expect(patch.request.method).toBe('PATCH');
+    expect(patch.request.body).toEqual({ experience: '6 anos' });
+    patch.flush({ message: 'ok', worker: {} });
+
+    service.deleteWorker(9).subscribe();
+    const del = http.expectOne(`${base}/9`);
+    expect(del.request.method).toBe('DELETE');
+    del.flush({ message: 'ok' });
+  });
+
   it('reads one open service', () => {
     service.getOpenService(5).subscribe((job) => expect(job.farm.city).toBe('Três Rios'));
     http.expectOne(`${base}/services/5`).flush({ id: 5, farm: { city: 'Três Rios', state: 'RJ' } });

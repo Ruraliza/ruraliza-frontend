@@ -17,3 +17,6 @@ export interface WorkerInput {
   certificates?: string | null;
   experience?: string | null;
 }
+
+// Edição do perfil: id e cpf não podem ser alterados.
+export type WorkerUpdate = Partial<Omit<WorkerInput, 'cpf'>>;

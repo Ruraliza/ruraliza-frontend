@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Farmer, FarmerInput } from '../../../models/farmer.model';
+import { Farmer, FarmerInput, FarmerUpdate } from '../../../models/farmer.model';
 import { Farm, FarmInput } from '../../../models/farm.model';
 import { FarmerServiceItem, Service, ServiceInput, ServiceWithFarm } from '../../../models/service.model';
 import { AnalyzeAction, ApplicationWithWorker, ServiceApplication } from '../../../models/service-application.model';
@@ -26,6 +26,14 @@ export class FarmerService {
 
   createFarmer(farmer: FarmerInput): Observable<{ message: string; farmer: Farmer }> {
     return this.http.post<{ message: string; farmer: Farmer }>(this.apiUrl, farmer);
+  }
+
+  updateFarmer(farmerId: number, changes: FarmerUpdate): Observable<{ message: string; farmer: Farmer }> {
+    return this.http.patch<{ message: string; farmer: Farmer }>(`${this.apiUrl}/${farmerId}`, changes);
+  }
+
+  deleteFarmer(farmerId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${farmerId}`);
   }
 
   // --- Fazendas ---

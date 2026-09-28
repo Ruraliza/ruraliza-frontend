@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Worker, WorkerInput } from '../../../models/worker.model';
+import { Worker, WorkerInput, WorkerUpdate } from '../../../models/worker.model';
 import { OpenService } from '../../../models/service.model';
 import { ApplicationWithService, ServiceApplication } from '../../../models/service-application.model';
 
@@ -23,6 +23,14 @@ export class WorkerService {
 
   createWorker(worker: WorkerInput): Observable<{ message: string; worker: Worker }> {
     return this.http.post<{ message: string; worker: Worker }>(this.apiUrl, worker);
+  }
+
+  updateWorker(workerId: number, changes: WorkerUpdate): Observable<{ message: string; worker: Worker }> {
+    return this.http.patch<{ message: string; worker: Worker }>(`${this.apiUrl}/${workerId}`, changes);
+  }
+
+  deleteWorker(workerId: number): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${workerId}`);
   }
 
   getWorkerApplications(workerId: number): Observable<ApplicationWithService[]> {
