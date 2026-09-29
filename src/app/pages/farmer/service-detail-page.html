@@ -54,9 +54,6 @@
             <div class="form-actions">
               <a appButton variant="secondary" [routerLink]="['/produtor/servicos', s.id, 'editar']">Editar serviço</a>
               <button appButton variant="danger" type="button" (click)="ask({ kind: 'cancel' })">Cancelar serviço</button>
-              @if (canDelete()) {
-                <button appButton variant="ghost" type="button" (click)="ask({ kind: 'delete' })">Excluir</button>
-              }
             </div>
           }
 

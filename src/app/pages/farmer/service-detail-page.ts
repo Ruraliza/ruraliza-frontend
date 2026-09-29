@@ -64,7 +64,8 @@ export class ServiceDetailPage implements OnInit {
     if (!s || s.expires_at === null) return 'Sem prazo';
     return s.status === 'Pending' ? (expiryLabel(s) ?? formatDay(s.expires_at)) : formatDay(s.expires_at);
   });
-  // Excluir de vez só serviço aberto ou cancelado que nunca recebeu candidatura (regra da API).
+  // "Excluir de vez" só aparece no serviço já cancelado e que nunca recebeu candidatura.
+  // No serviço aberto a ação é "Cancelar serviço" (mais completa: recusa as candidaturas pendentes).
   readonly canDelete = computed(() => {
     const s = this.service.data();
     return !!s && (s.status === 'Pending' || s.status === 'Cancelled') && (this.applications.data()?.length ?? 0) === 0;
