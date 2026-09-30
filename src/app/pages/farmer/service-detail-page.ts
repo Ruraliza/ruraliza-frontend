@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FarmerService } from '../../core/api/farmer.service';
 import { CurrentUserService } from '../../core/session/current-user.service';
@@ -23,8 +23,7 @@ type PendingAction =
   | { kind: 'accept'; application: ApplicationWithWorker }
   | { kind: 'reject'; application: ApplicationWithWorker }
   | { kind: 'pay' }
-  | { kind: 'cancel' }
-  | { kind: 'delete' };
+  | { kind: 'cancel' };
 
 interface DialogCopy {
   title: string;
@@ -45,7 +44,6 @@ export class ServiceDetailPage implements OnInit {
   private readonly farmerService = inject(FarmerService);
   private readonly farmerId = inject(CurrentUserService).requireId('farmer');
   private readonly toast = inject(ToastService);
-  private readonly router = inject(Router);
 
   private readonly serviceId = computed(() => Number(this.id()));
 
@@ -63,12 +61,6 @@ export class ServiceDetailPage implements OnInit {
     const s = this.service.data();
     if (!s || s.expires_at === null) return 'Sem prazo';
     return s.status === 'Pending' ? (expiryLabel(s) ?? formatDay(s.expires_at)) : formatDay(s.expires_at);
-  });
-  // "Excluir de vez" só aparece no serviço já cancelado e que nunca recebeu candidatura.
-  // No serviço aberto a ação é "Cancelar serviço" (mais completa: recusa as candidaturas pendentes).
-  readonly canDelete = computed(() => {
-    const s = this.service.data();
-    return !!s && (s.status === 'Pending' || s.status === 'Cancelled') && (this.applications.data()?.length ?? 0) === 0;
   });
   readonly acceptedWorker = computed(
     () => this.applications.data()?.find((a) => a.status === 'Accepted')?.worker ?? null
@@ -114,13 +106,6 @@ export class ServiceDetailPage implements OnInit {
           confirmLabel: 'Cancelar serviço',
           variant: 'danger'
         };
-      case 'delete':
-        return {
-          title: 'Excluir serviço?',
-          message: 'O serviço será apagado de vez. Como ninguém se candidatou, nenhum histórico é perdido.',
-          confirmLabel: 'Excluir serviço',
-          variant: 'danger'
-        };
       default:
         return { title: '', message: '', confirmLabel: '', variant: 'primary' };
     }
@@ -153,9 +138,7 @@ export class ServiceDetailPage implements OnInit {
       next: () => {
         this.toast.success(success);
         this.finish();
-        // Excluído não existe mais: volta para a lista.
-        if (action.kind === 'delete') this.router.navigate(['/produtor/servicos']);
-        else this.load();
+        this.load();
       },
       error: () => this.finish() // a mensagem já saiu no toast
     });
@@ -183,11 +166,6 @@ export class ServiceDetailPage implements OnInit {
         return {
           request: this.farmerService.cancelService(id),
           success: 'Serviço cancelado.'
-        };
-      case 'delete':
-        return {
-          request: this.farmerService.deleteService(id),
-          success: 'Serviço excluído.'
         };
     }
   }

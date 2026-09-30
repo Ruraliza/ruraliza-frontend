@@ -60,9 +60,6 @@
           @if (s.status === 'Cancelled') {
             <section class="card" role="status">
               <p class="muted">Este serviço foi cancelado e não aparece mais para os trabalhadores.</p>
-              @if (canDelete()) {
-                <button appButton variant="ghost" type="button" (click)="ask({ kind: 'delete' })">Excluir de vez</button>
-              }
             </section>
           }
 

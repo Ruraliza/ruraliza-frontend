@@ -117,13 +117,6 @@ describe('FarmerService', () => {
     expect(http.expectOne(`${base}/2/farms/8/photos/abc.webp`).request.method).toBe('DELETE');
   });
 
-  it('deletes a service', () => {
-    service.deleteService(3).subscribe();
-    const req = http.expectOne(`${base}/services/3`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush({ message: 'ok' });
-  });
-
   it('edits and deletes a farm', () => {
     service.updateFarm(2, 8, { city: 'Vassouras' }).subscribe();
     const patch = http.expectOne(`${base}/2/farms/8`);

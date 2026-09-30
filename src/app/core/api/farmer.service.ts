@@ -94,11 +94,6 @@ export class FarmerService {
     return this.http.patch<{ message: string; service: Service }>(`${this.apiUrl}/services/${serviceId}`, changes);
   }
 
-  // Só para serviço aberto ou cancelado que nunca recebeu candidatura (senão 409: use cancelService).
-  deleteService(serviceId: number): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.apiUrl}/services/${serviceId}`);
-  }
-
   cancelService(serviceId: number): Observable<{ message: string; service: Service }> {
     return this.http.patch<{ message: string; service: Service }>(`${this.apiUrl}/services/${serviceId}/cancel`, {});
   }
