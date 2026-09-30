@@ -22,4 +22,5 @@ h2:focus { outline: none; }
 .chip-radio input:checked + span { background: var(--broto); border-color: var(--broto); color: var(--on-broto); }
 .chip-radio input:focus-visible + span { box-shadow: var(--focus-ring); }
 
+.expired-note { padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--orange-100); color: var(--ink); font-weight: 600; }
 .field-error { color: var(--danger); font-weight: 600; }

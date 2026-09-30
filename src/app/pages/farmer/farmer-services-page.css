@@ -1,0 +1,9 @@
+.filters { display: grid; gap: var(--space-3); grid-template-columns: 1fr; align-items: end; }
+@media (min-width: 768px) { .filters { grid-template-columns: minmax(240px, 2fr) repeat(3, minmax(160px, 1fr)); } }
+
+.search { position: relative; display: block; }
+.search app-icon { position: absolute; left: 14px; top: 14px; color: var(--ink-muted); pointer-events: none; }
+.search input { padding-left: 44px; border-radius: var(--radius-pill); }
+.select { display: grid; gap: var(--space-1); }
+
+.result-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }

@@ -36,6 +36,17 @@ export class FarmerService {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${farmerId}`);
   }
 
+  // Foto de perfil: o corpo é o próprio arquivo (o servidor reduz para ≤ 1000px e converte para WebP).
+  uploadPhoto(farmerId: number, photo: Blob): Observable<{ message: string; farmer: Farmer }> {
+    return this.http.post<{ message: string; farmer: Farmer }>(`${this.apiUrl}/${farmerId}/photo`, photo, {
+      headers: { 'Content-Type': photo.type }
+    });
+  }
+
+  deletePhoto(farmerId: number): Observable<{ message: string; farmer: Farmer }> {
+    return this.http.delete<{ message: string; farmer: Farmer }>(`${this.apiUrl}/${farmerId}/photo`);
+  }
+
   // --- Fazendas ---
 
   getFarms(farmerId: number): Observable<Farm[]> {
@@ -52,6 +63,16 @@ export class FarmerService {
 
   deleteFarm(farmerId: number, farmId: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${farmerId}/farms/${farmId}`);
+  }
+
+  addFarmPhoto(farmerId: number, farmId: number, photo: Blob): Observable<{ message: string; farm: Farm }> {
+    return this.http.post<{ message: string; farm: Farm }>(`${this.apiUrl}/${farmerId}/farms/${farmId}/photos`, photo, {
+      headers: { 'Content-Type': photo.type }
+    });
+  }
+
+  deleteFarmPhoto(farmerId: number, farmId: number, photoId: string): Observable<{ message: string; farm: Farm }> {
+    return this.http.delete<{ message: string; farm: Farm }>(`${this.apiUrl}/${farmerId}/farms/${farmId}/photos/${photoId}`);
   }
 
   // --- Serviços ---

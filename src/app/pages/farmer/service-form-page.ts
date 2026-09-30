@@ -1,5 +1,5 @@
 import { Component, ElementRef, Injector, OnInit, afterNextRender, computed, effect, inject, input, signal, viewChild } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CategoryService } from '../../core/api/category.service';
 import { FarmerService } from '../../core/api/farmer.service';
@@ -8,6 +8,9 @@ import { ToastService } from '../../core/toast/toast.service';
 import { RemoteData, mergeStates } from '../../shared/utils/remote-data';
 import { positiveNumberValidator } from '../../shared/utils/validators';
 import { draftNumber, draftParams } from '../../shared/utils/service-draft';
+import { formatDay, isExpired, todayBr } from '../../shared/utils/expiry';
+
+const MAX_DESCRIPTION = 2000;
 import { Button } from '../../shared/ui/button';
 import { EmptyState } from '../../shared/ui/empty-state';
 import { ErrorState } from '../../shared/ui/error-state';
@@ -62,6 +65,17 @@ export class ServiceFormPage implements OnInit {
     return null;
   });
   private filledFromExisting = false;
+  // Validade atual do serviço em edição: só é reenviada se mudar (uma data já vencida seria recusada).
+  private originalExpiry: string | null = null;
+
+  readonly today = todayBr();
+  readonly maxDescription = MAX_DESCRIPTION;
+  readonly expiredNote = computed(() => {
+    const service = this.existing.data();
+    return this.isEdit() && service && isExpired(service) && service.expires_at
+      ? `Esta vaga venceu em ${formatDay(service.expires_at)} e não aparece para os trabalhadores. Escolha uma nova data para reabrir, ou deixe em branco para ficar sem prazo.`
+      : null;
+  });
 
   readonly step = signal<1 | 2>(1);
   readonly saving = signal(false);
@@ -70,17 +84,21 @@ export class ServiceFormPage implements OnInit {
   readonly form = this.fb.group({
     what: this.fb.group({
       name: ['', Validators.required],
+      description: ['', Validators.maxLength(MAX_DESCRIPTION)],
       category: ['', Validators.required]
     }),
     where: this.fb.group({
       farm_id: this.fb.control<number | null>(null, Validators.required),
       duration: this.fb.control<number | null>(null, [Validators.required, positiveNumberValidator]),
-      price: this.fb.control<number | null>(null, [Validators.required, positiveNumberValidator])
+      price: this.fb.control<number | null>(null, [Validators.required, positiveNumberValidator]),
+      expires_at: ['', (control: AbstractControl<string>) => this.notPastDay(control)]
     })
   });
 
   readonly durationMessages = { positive: 'Informe quantas horas o serviço deve levar (maior que zero).' };
   readonly priceMessages = { positive: 'Informe um valor maior que zero.' };
+  readonly descriptionMessages = { maxlength: 'A descrição pode ter no máximo 2000 caracteres.' };
+  readonly expiryMessages = { past: 'Escolha hoje ou uma data futura.' };
 
   ngOnInit(): void {
     if (this.isEdit()) {
@@ -106,9 +124,10 @@ export class ServiceFormPage implements OnInit {
       const service = this.existing.data();
       if (!service || this.filledFromExisting) return;
       this.filledFromExisting = true;
+      this.originalExpiry = service.expires_at;
       this.form.setValue({
-        what: { name: service.name, category: service.category },
-        where: { farm_id: service.farm_id, duration: service.duration, price: service.price }
+        what: { name: service.name, description: service.description ?? '', category: service.category },
+        where: { farm_id: service.farm_id, duration: service.duration, price: service.price, expires_at: service.expires_at ?? '' }
       });
     });
 
@@ -144,12 +163,16 @@ export class ServiceFormPage implements OnInit {
     if (where.invalid) return;
 
     const { what, where: place } = this.form.getRawValue();
+    const expiresAt = place.expires_at || null;
     const fields = {
       farm_id: place.farm_id as number,
       name: what.name.trim(),
+      description: what.description.trim() || null,
       category: what.category,
       duration: place.duration as number,
-      price: place.price as number
+      price: place.price as number,
+      // Na edição, só envia a validade se ela mudou.
+      ...(this.isEdit() && expiresAt === this.originalExpiry ? {} : { expires_at: expiresAt })
     };
     this.saving.set(true);
 
@@ -174,6 +197,13 @@ export class ServiceFormPage implements OnInit {
         },
         error: () => this.saving.set(false)
       });
+  }
+
+  // Data no passado não é aceita (a não ser a validade atual, sem mudança, de um serviço em edição).
+  private notPastDay(control: AbstractControl<string>): ValidationErrors | null {
+    const value = control.value;
+    if (!value || value === this.originalExpiry) return null;
+    return value < todayBr() ? { past: true } : null;
   }
 
   // Troca de passo e leva o foco para o título do passo (leitores de tela anunciam).

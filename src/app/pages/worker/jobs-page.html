@@ -6,25 +6,87 @@
   </div>
 
   <div class="filters">
-    <label class="search">
-      <span class="visually-hidden">Buscar vagas</span>
-      <app-icon name="search" [size]="20" />
-      <input
-        #searchInput
-        type="search"
-        placeholder="Buscar por serviço ou cidade"
-        [value]="query()"
-        (input)="onSearch($event)"
+    <div class="search-row">
+      <label class="search">
+        <span class="visually-hidden">Buscar vagas</span>
+        <app-icon name="search" [size]="20" />
+        <input
+          #searchInput
+          type="search"
+          placeholder="Buscar por serviço, descrição ou cidade"
+          [value]="draftQuery()"
+          (input)="onSearch($event)"
+        >
+      </label>
+      <button
+        type="button"
+        class="toggle"
+        aria-controls="more-filters"
+        [attr.aria-expanded]="panelOpen()"
+        (click)="panelOpen.set(!panelOpen())"
       >
-    </label>
+        Mais filtros
+        @if (extraCount()) { <span class="count" aria-label="filtros ativos">{{ extraCount() }}</span> }
+      </button>
+    </div>
 
     @if (categories.state().status === 'success') {
-      <div class="cluster" role="group" aria-label="Filtrar por categoria">
-        <button appCategoryChip [interactive]="true" [selected]="category() === null" (click)="selectCategory(null)">Todas</button>
+      <div class="cluster chips" role="group" aria-label="Filtrar por categoria">
+        <button appCategoryChip [interactive]="true" [selected]="!categoria()" (click)="selectCategory(null)">Todas</button>
         @for (c of categories.data(); track c) {
-          <button appCategoryChip [interactive]="true" [selected]="category() === c" (click)="selectCategory(c)">{{ c }}</button>
+          <button appCategoryChip [interactive]="true" [selected]="categoria() === c" (click)="selectCategory(c)">{{ c }}</button>
         }
       </div>
+    }
+
+    @if (panelOpen()) {
+      <section id="more-filters" class="panel" aria-label="Mais filtros">
+        <fieldset>
+          <legend class="t-label">Carga horária</legend>
+          <div class="cluster">
+            @for (p of hourPresets; track p.label) {
+              <button appCategoryChip [interactive]="true" [selected]="isPreset(p)" (click)="toggleHours(p)">{{ p.label }}</button>
+            }
+          </div>
+          <div class="pair">
+            <label>
+              <span class="t-body-sm">Mínimo (h)</span>
+              <input type="number" inputmode="numeric" min="0" step="1" [value]="filters().min_hours ?? ''" (change)="setHours('min', $event)">
+            </label>
+            <label>
+              <span class="t-body-sm">Máximo (h)</span>
+              <input type="number" inputmode="numeric" min="0" step="1" [value]="filters().max_hours ?? ''" (change)="setHours('max', $event)">
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="t-label">Publicadas</legend>
+          <div class="cluster">
+            <button appCategoryChip [interactive]="true" [selected]="!de() && !ate()" (click)="setPeriod(null)">Qualquer data</button>
+            <button appCategoryChip [interactive]="true" [selected]="isPeriod(0)" (click)="setPeriod(0)">Hoje</button>
+            <button appCategoryChip [interactive]="true" [selected]="isPeriod(7)" (click)="setPeriod(7)">Últimos 7 dias</button>
+            <button appCategoryChip [interactive]="true" [selected]="isPeriod(30)" (click)="setPeriod(30)">Últimos 30 dias</button>
+          </div>
+          <div class="pair">
+            <label>
+              <span class="t-body-sm">De</span>
+              <input type="date" [max]="today" [value]="de() ?? ''" (change)="setDate('de', $event)">
+            </label>
+            <label>
+              <span class="t-body-sm">Até</span>
+              <input type="date" [max]="today" [value]="ate() ?? ''" (change)="setDate('ate', $event)">
+            </label>
+          </div>
+        </fieldset>
+
+        <label class="sort">
+          <span class="t-label">Ordenar por</span>
+          <select [value]="filters().sort ?? 'recent'" (change)="setSort($event)">
+            @for (o of sortOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+          </select>
+        </label>
+      </section>
     }
   </div>
 
@@ -32,15 +94,21 @@
     @case ('loading') { <app-skeleton [count]="3" [height]="180" /> }
     @case ('error') { <app-error-state [message]="jobs.error()" (retry)="jobs.load()" /> }
     @case ('success') {
-      @if (filtered().length) {
-        <p class="t-body-sm muted" role="status">{{ filtered().length }} {{ filtered().length === 1 ? 'vaga encontrada' : 'vagas encontradas' }}</p>
+      @let list = jobs.data() ?? [];
+      <div class="result-bar">
+        <p class="t-body-sm muted" role="status">{{ list.length }} {{ list.length === 1 ? 'vaga encontrada' : 'vagas encontradas' }}</p>
+        @if (anyFilter()) {
+          <button appButton variant="ghost" type="button" (click)="clearFilters()">Limpar filtros</button>
+        }
+      </div>
+      @if (list.length) {
         <div class="grid-cards">
-          @for (job of filtered(); track job.id) {
+          @for (job of list; track job.id) {
             <app-service-card [service]="job" [link]="['/trabalhador/vagas', job.id]" [showStatus]="false" />
           }
         </div>
-      } @else if (query() || category()) {
-        <app-empty-state icon="search" title="Nenhuma vaga com esses filtros" message="Tente outra categoria ou outro termo de busca.">
+      } @else if (anyFilter()) {
+        <app-empty-state icon="search" title="Nenhuma vaga com esses filtros" message="Tente outra palavra, outra categoria ou amplie a carga horária e o período.">
           <button appButton variant="secondary" type="button" (click)="clearFilters()">Limpar filtros</button>
         </app-empty-state>
       } @else {

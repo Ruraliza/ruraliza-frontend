@@ -1,8 +1,30 @@
 .filters { display: grid; gap: var(--space-4); }
 
-.search { position: relative; display: block; max-width: 560px; }
+.search-row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.search { position: relative; display: block; flex: 1 1 280px; max-width: 560px; }
 .search app-icon { position: absolute; left: 14px; top: 14px; color: var(--ink-muted); pointer-events: none; }
 .search input { padding-left: 44px; border-radius: var(--radius-pill); }
 
-.cluster { flex-wrap: nowrap; overflow-x: auto; padding: var(--space-1) 0 var(--space-2); scrollbar-width: thin; }
-@media (min-width: 768px) { .cluster { flex-wrap: wrap; overflow-x: visible; } }
+.toggle {
+  display: inline-flex; align-items: center; gap: var(--space-2); min-height: 48px; padding: 0 var(--space-6);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface-raised);
+  color: var(--ink); font-weight: 600;
+}
+.toggle[aria-expanded="true"] { border-color: var(--green-900); }
+.count { display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--green-900); color: var(--on-dark); font-size: 13px; }
+
+.chips { flex-wrap: nowrap; overflow-x: auto; padding: var(--space-1) 0 var(--space-2); scrollbar-width: thin; }
+@media (min-width: 768px) { .chips { flex-wrap: wrap; overflow-x: visible; } }
+
+.panel {
+  display: grid; gap: var(--space-6); padding: var(--space-6);
+  border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--bg-alt);
+}
+@media (min-width: 1024px) { .panel { grid-template-columns: 1fr 1fr auto; align-items: start; } }
+fieldset { display: grid; gap: var(--space-3); margin: 0; padding: 0; border: 0; min-width: 0; }
+legend { padding: 0; margin-bottom: var(--space-1); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.pair label, .sort { display: grid; gap: var(--space-1); }
+.sort { min-width: 200px; }
+
+.result-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }

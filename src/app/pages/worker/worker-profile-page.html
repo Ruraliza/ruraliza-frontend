@@ -1,0 +1,119 @@
+<div class="container page">
+  <div class="page-header">
+    <div>
+      <h1>{{ worker.data()?.name ?? 'Perfil' }}</h1>
+    </div>
+  </div>
+
+  @switch (worker.state().status) {
+    @case ('loading') { <app-skeleton [count]="2" [height]="180" /> }
+    @case ('error') { <app-error-state [message]="worker.error()" (retry)="worker.load()" /> }
+    @case ('success') {
+      @if (worker.data(); as w) {
+        <section class="card">
+          <app-avatar-editor [name]="w.name" [photoUrl]="w.photo_url" [busy]="photoBusy()" (picked)="uploadPhoto($event)" (removed)="removePhoto()" />
+        </section>
+
+        @if (missing().length && !editing()) {
+          <section class="nudge" role="note">
+            <app-icon name="sprout" [size]="22" />
+            <div>
+              <p class="t-label">Complete seu perfil</p>
+              <p class="t-body-sm">Falta: {{ missing().join(', ') }}. O produtor escolhe olhando essas informações.</p>
+            </div>
+            <button appButton variant="secondary" type="button" (click)="startEdit(w)">Completar agora</button>
+          </section>
+        }
+
+        @if (editing()) {
+          <form class="form card profile-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+            <fieldset>
+              <legend class="t-h3">Contato</legend>
+              <app-form-field label="Nome completo" fieldId="name" [control]="form.controls.name">
+                <input formControlName="name" autocomplete="name">
+              </app-form-field>
+              <app-form-field label="E-mail" fieldId="email" [control]="form.controls.email">
+                <input type="email" formControlName="email" autocomplete="email">
+              </app-form-field>
+              <app-form-field label="Telefone (WhatsApp)" fieldId="phone" [control]="form.controls.phone" [messages]="phoneMessages">
+                <input appMask="phone" formControlName="phone" inputmode="numeric" autocomplete="tel">
+              </app-form-field>
+            </fieldset>
+
+            <fieldset>
+              <legend class="t-h3">Sobre você</legend>
+              <app-form-field label="Apresentação" fieldId="bio" [optional]="true" [control]="form.controls.bio" [messages]="lengthMessages"
+                [hint]="'Em poucas linhas: o que você faz, onde mora, quando pode trabalhar. ' + form.controls.bio.value.length + ' de ' + maxBio + ' caracteres.'">
+                <textarea formControlName="bio" rows="4" [attr.maxlength]="maxBio" placeholder="Ex.: Trabalho com colheita de café há 5 anos, moro em Três Rios e tenho disponibilidade de segunda a sábado."></textarea>
+              </app-form-field>
+            </fieldset>
+
+            <fieldset>
+              <legend class="t-h3">Qualificação</legend>
+              <app-form-field label="Experiência" fieldId="experience" [optional]="true" hint="Onde e com o que já trabalhou." [control]="form.controls.experience" [messages]="lengthMessages">
+                <textarea formControlName="experience" rows="3" [attr.maxlength]="maxText" placeholder="Ex.: 5 anos em colheita de café; 2 safras de cana."></textarea>
+              </app-form-field>
+              <app-form-field label="Certificados" fieldId="certificates" [optional]="true" hint="Ex.: NR-31, CNH categoria C." [control]="form.controls.certificates" [messages]="lengthMessages">
+                <textarea formControlName="certificates" rows="2" [attr.maxlength]="maxText"></textarea>
+              </app-form-field>
+              <app-form-field label="Cursos realizados" fieldId="courses" [optional]="true" hint="Nome do curso, instituição e ano." [control]="form.controls.courses" [messages]="lengthMessages">
+                <textarea formControlName="courses" rows="2" [attr.maxlength]="maxText" placeholder="Ex.: Operação de trator (SENAR, 2024)."></textarea>
+              </app-form-field>
+            </fieldset>
+
+            <p class="t-body-sm muted">CPF: {{ cpf(w.cpf) }} (não pode ser alterado)</p>
+
+            <div class="form-actions">
+              <button appButton variant="secondary" type="button" [disabled]="saving()" (click)="editing.set(false)">Cancelar</button>
+              <button appButton type="submit" [loading]="saving()">Salvar alterações</button>
+            </div>
+          </form>
+        } @else {
+          <section class="card stack">
+            <h2 class="t-h3">Sobre mim</h2>
+            <p class="pre">{{ w.bio || 'Você ainda não escreveu uma apresentação.' }}</p>
+          </section>
+
+          <section class="card stack">
+            <h2 class="t-h3">Qualificação</h2>
+            <dl class="details">
+              <div><dt>Experiência</dt><dd class="pre">{{ w.experience || 'Não informada' }}</dd></div>
+              <div><dt>Certificados</dt><dd class="pre">{{ w.certificates || 'Nenhum informado' }}</dd></div>
+              <div><dt>Cursos</dt><dd class="pre">{{ w.courses || 'Nenhum informado' }}</dd></div>
+            </dl>
+          </section>
+
+          <section class="card stack">
+            <h2 class="t-h3">Contato e conta</h2>
+            <dl class="details">
+              <div><dt>E-mail</dt><dd>{{ w.email }}</dd></div>
+              <div><dt>Telefone</dt><dd>{{ phone(w.phone) }}</dd></div>
+              <div><dt>CPF</dt><dd>{{ cpf(w.cpf) }}</dd></div>
+              <div><dt>No Ruraliza desde</dt><dd>{{ date(w.insertion_date) }}</dd></div>
+            </dl>
+          </section>
+
+          <div class="form-actions">
+            <button appButton variant="secondary" type="button" (click)="startEdit(w)">Editar perfil</button>
+            <button appButton variant="danger" type="button" (click)="confirmingDelete.set(true)">Excluir conta</button>
+          </div>
+        }
+      }
+    }
+  }
+
+  <div>
+    <button appButton variant="secondary" type="button" (click)="switchProfile()"><app-icon name="logout" [size]="20" />Trocar perfil de teste</button>
+  </div>
+</div>
+
+<app-confirm-dialog
+  [open]="confirmingDelete()"
+  title="Excluir conta?"
+  message="Seu perfil, sua foto e suas candidaturas serão removidos do Ruraliza. Essa ação não pode ser desfeita."
+  confirmLabel="Excluir conta"
+  confirmVariant="danger"
+  [loading]="deleting()"
+  (confirmed)="remove()"
+  (cancelled)="confirmingDelete.set(false)"
+/>

@@ -10,6 +10,8 @@ import { formatBRL, formatDate, formatHours } from '../../shared/utils/format';
 import { Button, ButtonVariant } from '../../shared/ui/button';
 import { CategoryChip } from '../../shared/ui/category-chip';
 import { ConfirmDialog } from '../../shared/ui/confirm-dialog';
+import { PhotoStrip } from '../../shared/ui/photo-strip';
+import { expiryLabel, formatDay, isExpired } from '../../shared/utils/expiry';
 import { EmptyState } from '../../shared/ui/empty-state';
 import { ErrorState } from '../../shared/ui/error-state';
 import { Icon } from '../../shared/ui/icon';
@@ -32,7 +34,7 @@ interface DialogCopy {
 
 @Component({
   selector: 'app-service-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, Icon, Skeleton, StatusBadge, WorkerCard],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, Icon, PhotoStrip, Skeleton, StatusBadge, WorkerCard],
   templateUrl: './service-detail-page.html',
   styleUrl: './service-detail-page.css'
 })
@@ -50,6 +52,16 @@ export class ServiceDetailPage implements OnInit {
   readonly state = computed(() => mergeStates(this.service.state(), this.applications.state()));
 
   readonly isOwner = computed(() => this.service.data()?.farmer_id === this.farmerId);
+  readonly photoUrls = computed(() => this.service.data()?.farm.photos.map((p) => p.url) ?? []);
+  readonly expired = computed(() => {
+    const s = this.service.data();
+    return s ? isExpired(s) : false;
+  });
+  readonly deadline = computed(() => {
+    const s = this.service.data();
+    if (!s || s.expires_at === null) return 'Sem prazo';
+    return s.status === 'Pending' ? (expiryLabel(s) ?? formatDay(s.expires_at)) : formatDay(s.expires_at);
+  });
   readonly acceptedWorker = computed(
     () => this.applications.data()?.find((a) => a.status === 'Accepted')?.worker ?? null
   );

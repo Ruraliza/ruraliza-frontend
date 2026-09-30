@@ -34,6 +34,11 @@ export class RemoteData<T> {
 
   constructor(private readonly source: () => Observable<T>) {}
 
+  // Atualiza com dados que a própria API acabou de devolver (ex.: resposta de um PATCH), sem recarregar.
+  replace(data: T): void {
+    this.current.set({ status: 'success', data });
+  }
+
   load(): void {
     this.current.set({ status: 'loading' });
     this.source().subscribe({

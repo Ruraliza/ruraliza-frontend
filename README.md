@@ -4,7 +4,7 @@ Angular 22 (standalone, signals, SSR) para o RURALIZA: conecta produtores rurais
 
 ## Como rodar
 
-Pré-requisitos: Node.js 20+ e o [backend](https://github.com/Henrique549/ruraliza-backend) rodando em `http://localhost:3000/api`.
+Pré-requisitos: Node.js 20+ e o [backend](https://github.com/Ruraliza/ruraliza-backend) rodando em `http://localhost:3000/api`.
 
 ```bash
 npm install
@@ -17,13 +17,20 @@ Sem autenticação nesta fase: em **Entrar** você escolhe um perfil de teste (f
 
 ## Fluxo de teste
 
-1. `/cadastro/produtor` → cadastre um produtor (ou use o de teste em `/entrar`).
-2. **Fazendas** → cadastre uma fazenda.
-3. **＋ Novo serviço** → publique em 2 passos.
-4. Troque de perfil (Perfil → *Trocar perfil de teste*) e entre como trabalhador.
-5. **Vagas** → abra a vaga → *Candidatar-me*.
-6. Volte ao produtor → **Serviços** → abra o serviço → *Aceitar trabalhador*.
+1. `/cadastro/produtor` → cadastre um produtor (ou use o de teste em `/entrar`). Em **Perfil**, envie uma foto.
+2. **Fazendas** → cadastre uma fazenda e adicione fotos (até 6; a primeira é a capa).
+3. **＋ Novo serviço** → publique em 2 passos, com descrição e prazo para candidaturas (opcional).
+4. Troque de perfil (Perfil → *Trocar perfil de teste*) e entre como trabalhador. Em **Perfil**, preencha foto, apresentação, experiência, certificados e cursos.
+5. **Vagas** → busque e filtre (texto, categoria, carga horária, data de publicação, ordem) → abra a vaga → *Candidatar-me* → confirme.
+6. Volte ao produtor → **Serviços** (abas por situação, busca e filtros) → abra o serviço → veja o candidato → *Aceitar trabalhador*.
 7. Com o serviço em andamento → *Liberar pagamento* (simulação).
+
+## Fotos, filtros e prazos
+
+- **Fotos:** antes do envio, o navegador reduz a foto para no máximo 1000 px e converte para WebP (`shared/utils/images.ts`), o que economiza dados no celular. O backend repete o tratamento e é quem garante a regra. As URLs que a API devolve (`/api/images/...`) passam por `apiAsset()` para apontar ao servidor da API.
+- **Filtros na URL:** os filtros de **Vagas** (`q`, `categoria`, `min`, `max`, `de`, `ate`, `ordem`) e de **Serviços** do produtor (`aba`, `q`, `categoria`, `fazenda`, `ordem`, `so`) ficam na query string. Voltar do detalhe mantém a busca e o link pode ser compartilhado. As vagas são filtradas no backend. Os serviços do produtor são filtrados no navegador, porque a lista é pequena; com o banco, dá para passar os filtros para a API.
+- **Sem foto → emoji do campo:** avatar sem foto mostra um emoji escolhido pelo nome (sempre o mesmo para a mesma pessoa), card de vaga sem foto usa o emoji da categoria (Colheita 🌾, Plantio 🌱, Manejo de gado 🐄…) e fazenda sem foto usa um emoji de paisagem (`shared/utils/farm-emoji.ts`). Os emojis são imagens no estilo do Facebook, em `public/emoji/<codepoints>.webp` (64 px, extraídas do pacote `emoji-datasource-facebook` 16.0.0). **Atenção:** o próprio pacote avisa que as imagens do Facebook não têm licença clara. Para trocar por Twemoji (CC-BY 4.0) ou Noto (Apache 2.0), basta substituir os arquivos mantendo os nomes.
+- **Prazo (`expires_at`):** dia do calendário no horário de Brasília (`shared/utils/expiry.ts`). Vaga vencida some da busca do trabalhador. O produtor a vê marcada como *Prazo encerrado* e pode renová-la editando a data.
 
 ## Estrutura
 
@@ -36,8 +43,9 @@ src/
     core/http/       errorInterceptor + ApiError (mensagens claras, repassa o erro)
     core/session/    CurrentUserService (perfil de teste) + guard requireRole (não é segurança)
     core/toast/      ToastService
-    shared/ui/       Button, FormField, MaskedInput, StatusBadge, ServiceCard, ConfirmDialog...
-    shared/utils/    CPF, máscaras, formatação pt-BR, RemoteData (carregando/erro/sucesso)
+    shared/ui/       Button, FormField, MaskedInput, StatusBadge, ServiceCard, ConfirmDialog,
+                     Avatar, AvatarEditor, PhotoGridEditor, PhotoStrip...
+    shared/utils/    CPF, máscaras, formatação pt-BR, RemoteData, fotos (images.ts), prazos (expiry.ts)
     layouts/         PublicLayout, AppShell (bottom nav < 1024px / sidebar ≥ 1024px)
     pages/public/    landing, cadastro, entrar
     pages/farmer/    área do produtor (lazy em /produtor)

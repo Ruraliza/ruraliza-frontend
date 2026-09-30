@@ -21,13 +21,32 @@
             </div>
           </header>
 
+          @if (expired()) {
+            <section class="expired" role="status">
+              <app-icon name="alert" />
+              <div>
+                <p class="t-label">O prazo para candidaturas terminou</p>
+                <p class="t-body-sm">A vaga não aparece mais para os trabalhadores. Os candidatos que já estão aqui continuam valendo.</p>
+              </div>
+              <a appButton variant="secondary" [routerLink]="['/produtor/servicos', s.id, 'editar']">Renovar prazo</a>
+            </section>
+          }
+
+          @if (photoUrls().length) {
+            <app-photo-strip [urls]="photoUrls()" [label]="'Fotos da fazenda em ' + s.farm.city" />
+          }
+
           <section class="card" aria-labelledby="details-title">
             <h2 id="details-title" class="visually-hidden">Detalhes do serviço</h2>
+            @if (s.description) {
+              <p class="description">{{ s.description }}</p>
+            }
             <dl class="details">
               <div><dt>Fazenda</dt><dd>{{ s.farm.address }}<br>{{ s.farm.city }}, {{ s.farm.state }}@if (s.farm.deleted_at) {<br><span class="muted">(fazenda removida)</span>}</dd></div>
               <div><dt>Duração</dt><dd>{{ hours() }}</dd></div>
               <div><dt>Valor</dt><dd class="price">{{ price() }}</dd></div>
               <div><dt>Publicado em</dt><dd>{{ publishedAt() }}</dd></div>
+              <div><dt>Prazo para candidaturas</dt><dd>{{ deadline() }}</dd></div>
             </dl>
           </section>
 
