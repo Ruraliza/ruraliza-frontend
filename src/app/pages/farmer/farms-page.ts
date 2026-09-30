@@ -49,7 +49,7 @@ import { Skeleton } from '../../shared/ui/skeleton';
                       </p>
                     </div>
                     <div class="cluster">
-                      <a appButton variant="secondary" [routerLink]="['/produtor/fazendas', farm.id, 'editar']">Editar e fotos</a>
+                      <a appButton variant="secondary" [routerLink]="['/produtor/fazendas', farm.id, 'editar']">Editar</a>
                       <button appButton variant="ghost" type="button" (click)="removing.set(farm)">Remover</button>
                     </div>
                   </div>
