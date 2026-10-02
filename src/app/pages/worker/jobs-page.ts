@@ -2,6 +2,7 @@ import { Component, DestroyRef, ElementRef, afterRenderEffect, computed, effect,
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { CategoryService } from '../../core/api/category.service';
 import { WorkerService } from '../../core/api/worker.service';
+import { CurrentUserService } from '../../core/session/current-user.service';
 import { JobFilters, JobSort } from '../../../models/service.model';
 import { todayBr } from '../../shared/utils/expiry';
 import { RemoteData } from '../../shared/utils/remote-data';
@@ -62,6 +63,7 @@ export class JobsPage {
 
   private readonly workerService = inject(WorkerService);
   private readonly categoryService = inject(CategoryService);
+  private readonly currentUser = inject(CurrentUserService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
@@ -79,7 +81,8 @@ export class JobsPage {
       max_hours: positiveOrNull(this.max()) ?? undefined,
       from: this.de() || undefined,
       to: this.ate() || undefined,
-      sort
+      sort,
+      worker_id: this.currentUser.user()?.role === 'worker' ? this.currentUser.user()?.id : undefined
     };
   });
 
