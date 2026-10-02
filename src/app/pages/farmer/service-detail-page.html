@@ -48,6 +48,9 @@
               <div><dt>Publicado em</dt><dd>{{ publishedAt() }}</dd></div>
               <div><dt>Prazo para candidaturas</dt><dd>{{ deadline() }}</dd></div>
             </dl>
+            @if (farmPoint(); as point) {
+              <app-farm-map class="farm-map" [point]="point" [label]="'Fazenda em ' + s.farm.city" />
+            }
           </section>
 
           @if (s.status === 'Pending') {

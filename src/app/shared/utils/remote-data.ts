@@ -41,6 +41,18 @@ export class RemoteData<T> {
 
   load(): void {
     this.current.set({ status: 'loading' });
+    this.fetch();
+  }
+
+  // Recarrega mantendo os dados atuais na tela até a resposta chegar (depois de uma ação).
+  // Sem passar por "carregando", a tela não é desmontada: um mapa aberto não é recriado
+  // (cada mapa novo conta na cota do Google Maps) e nada pisca.
+  refresh(): void {
+    if (this.current().status !== 'success') this.current.set({ status: 'loading' });
+    this.fetch();
+  }
+
+  private fetch(): void {
     this.source().subscribe({
       next: (data) => this.current.set({ status: 'success', data }),
       error: (error: unknown) =>

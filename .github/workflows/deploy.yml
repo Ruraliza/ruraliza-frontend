@@ -24,10 +24,10 @@ jobs:
 
     steps:
       - name: Checkout do código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Instalar Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: 'npm'
@@ -46,7 +46,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Fazer Upload do Artefato
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: 'dist/ruraliza-frontend/browser'
 

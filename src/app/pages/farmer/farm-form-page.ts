@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, computed, effect, inject, input, signal } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Observable, concatMap, from, last } from 'rxjs';
 import { FarmerService } from '../../core/api/farmer.service';
@@ -11,10 +11,13 @@ import { Button } from '../../shared/ui/button';
 import { EmptyState } from '../../shared/ui/empty-state';
 import { ErrorState } from '../../shared/ui/error-state';
 import { FormField } from '../../shared/ui/form-field';
+import { LocationPicker } from '../../shared/ui/location-picker';
 import { GridPhoto, PhotoGridEditor } from '../../shared/ui/photo-grid-editor';
 import { Skeleton } from '../../shared/ui/skeleton';
 import { draftParams } from '../../shared/utils/service-draft';
+import { AddressSuggestion, GeoPoint, pointOf } from '../../shared/utils/geocoding';
 import { apiAsset } from '../../shared/utils/images';
+import { UFS } from '../../shared/utils/ufs';
 
 const MAX_FARM_PHOTOS = 6;
 
@@ -25,15 +28,10 @@ interface QueuedPhoto {
   src: string; // object URL para a prévia
 }
 
-const UFS = [
-  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA',
-  'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
-];
-
 // Cadastro de fazenda. Com :id na rota (/fazendas/:id/editar), o mesmo formulário edita.
 @Component({
   selector: 'app-farm-form-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, EmptyState, ErrorState, FormField, PhotoGridEditor, Skeleton],
+  imports: [ReactiveFormsModule, RouterLink, Button, EmptyState, ErrorState, FormField, LocationPicker, PhotoGridEditor, Skeleton],
   template: `
     <div class="container page">
       <a class="back-link" [routerLink]="returnUrl()" [queryParams]="returnParams()">← Voltar</a>
@@ -54,6 +52,31 @@ const UFS = [
         }
         @case ('ready') {
           <form class="form card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+            <app-form-field
+              label="Localização no mapa"
+              fieldId="location"
+              hint="Toque no mapa ou arraste o alfinete até a entrada da fazenda. O ponto só aparece para o trabalhador aceito no serviço."
+              [control]="form.controls.location"
+              [messages]="{ required: 'Marque a fazenda no mapa.' }"
+            >
+              <app-location-picker
+                [value]="form.controls.location.value"
+                [invalid]="form.controls.location.touched && form.controls.location.invalid"
+                (valueChange)="setLocation($event)"
+                (addressSuggested)="suggest($event)"
+              />
+            </app-form-field>
+
+            @if (suggestion(); as s) {
+              <div class="suggestion" role="status">
+                <p class="t-body-sm"><strong>Endereço sugerido pelo mapa:</strong> {{ suggestionText() }}</p>
+                <div class="cluster">
+                  <button appButton variant="secondary" type="button" (click)="applySuggestion(s)">Usar este endereço</button>
+                  <button appButton variant="ghost" type="button" (click)="suggestion.set(null)">Manter o meu</button>
+                </div>
+              </div>
+            }
+
             <app-form-field label="Endereço" fieldId="address" hint="Estrada, número ou quilômetro." [control]="form.controls.address">
               <input formControlName="address" autocomplete="street-address" placeholder="Estrada de Terra, Km 2">
             </app-form-field>
@@ -86,6 +109,15 @@ const UFS = [
         }
       }
     </div>
+  `,
+  styles: `
+    .suggestion {
+      display: grid;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border-radius: var(--radius-md);
+      background: var(--broto-soft);
+    }
   `
 })
 export class FarmFormPage implements OnInit {
@@ -137,9 +169,17 @@ export class FarmFormPage implements OnInit {
   });
 
   readonly form = this.fb.group({
+    location: new FormControl<GeoPoint | null>(null, Validators.required),
     address: ['', Validators.required],
     city: ['', Validators.required],
     state: ['', Validators.required]
+  });
+
+  // Endereço sugerido pelo ponto do mapa, quando o produtor já tinha preenchido os campos.
+  readonly suggestion = signal<AddressSuggestion | null>(null);
+  readonly suggestionText = computed(() => {
+    const s = this.suggestion();
+    return s ? [s.address, [s.city, s.state].filter(Boolean).join(', ')].filter(Boolean).join(' · ') : '';
   });
 
   constructor() {
@@ -147,11 +187,40 @@ export class FarmFormPage implements OnInit {
     effect(() => {
       const farm = this.existing();
       if (farm) {
-        this.form.setValue({ address: farm.address, city: farm.city, state: farm.state });
+        // Fazenda cadastrada antes do mapa (sem ponto): o produtor precisa marcar antes de salvar.
+        this.form.setValue({ location: pointOf(farm), address: farm.address, city: farm.city, state: farm.state });
         this.savedPhotos.set(farm.photos);
       }
     });
     inject(DestroyRef).onDestroy(() => this.queued().forEach((q) => URL.revokeObjectURL(q.src)));
+  }
+
+  setLocation(point: GeoPoint): void {
+    const control = this.form.controls.location;
+    control.setValue(point);
+    control.markAsTouched();
+    control.markAsDirty();
+  }
+
+  // Campos de endereço vazios: preenche direto. Já preenchidos: oferece a sugestão sem sobrescrever.
+  suggest(suggestion: AddressSuggestion): void {
+    const { address, city, state } = this.form.getRawValue();
+    if (!suggestion.address && !suggestion.city && !suggestion.state) return;
+    if (!address.trim() && !city.trim() && !state) {
+      this.applySuggestion(suggestion);
+      return;
+    }
+    const same = suggestion.address === address.trim() && suggestion.city === city.trim() && suggestion.state === state;
+    this.suggestion.set(same ? null : suggestion);
+  }
+
+  applySuggestion(suggestion: AddressSuggestion): void {
+    const { controls } = this.form;
+    // Só troca o que o mapa encontrou; o resto fica como o produtor deixou.
+    if (suggestion.address) controls.address.setValue(suggestion.address);
+    if (suggestion.city) controls.city.setValue(suggestion.city);
+    if (suggestion.state) controls.state.setValue(suggestion.state);
+    this.suggestion.set(null);
   }
 
   addPhotos(blobs: Blob[]): void {
@@ -170,7 +239,7 @@ export class FarmFormPage implements OnInit {
       },
       error: () => {
         this.photoBusy.set(false);
-        this.farms.load(); // mostra as que chegaram a subir
+        this.farms.refresh(); // mostra as que chegaram a subir, sem desmontar o formulário (e o mapa)
       }
     });
   }
@@ -215,8 +284,9 @@ export class FarmFormPage implements OnInit {
     this.form.markAllAsTouched();
     if (this.form.invalid) return;
 
-    const { address, city, state } = this.form.getRawValue();
-    const fields = { address: address.trim(), city: city.trim(), state };
+    const { location, address, city, state } = this.form.getRawValue();
+    if (!location) return; // o validador required já barrou
+    const fields = { address: address.trim(), city: city.trim(), state, latitude: location.latitude, longitude: location.longitude };
     const farmId = this.farmId();
     const request = farmId !== null
       ? this.farmerService.updateFarm(this.farmerId, farmId, fields)

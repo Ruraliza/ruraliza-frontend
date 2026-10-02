@@ -19,3 +19,5 @@
 }
 .done p { color: var(--ink); font-weight: 600; }
 .sim-note { color: var(--warning); font-weight: 600; }
+
+.farm-map { margin-top: var(--space-4); }

@@ -13,6 +13,8 @@ import { ConfirmDialog } from '../../shared/ui/confirm-dialog';
 import { PhotoStrip } from '../../shared/ui/photo-strip';
 import { expiryLabel, formatDay, isExpired } from '../../shared/utils/expiry';
 import { EmptyState } from '../../shared/ui/empty-state';
+import { FarmMap } from '../../shared/ui/farm-map';
+import { pointOf } from '../../shared/utils/geocoding';
 import { ErrorState } from '../../shared/ui/error-state';
 import { Icon } from '../../shared/ui/icon';
 import { Skeleton } from '../../shared/ui/skeleton';
@@ -34,7 +36,7 @@ interface DialogCopy {
 
 @Component({
   selector: 'app-service-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, Icon, PhotoStrip, Skeleton, StatusBadge, WorkerCard],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, FarmMap, Icon, PhotoStrip, Skeleton, StatusBadge, WorkerCard],
   templateUrl: './service-detail-page.html',
   styleUrl: './service-detail-page.css'
 })
@@ -52,6 +54,10 @@ export class ServiceDetailPage implements OnInit {
   readonly state = computed(() => mergeStates(this.service.state(), this.applications.state()));
 
   readonly isOwner = computed(() => this.service.data()?.farmer_id === this.farmerId);
+  readonly farmPoint = computed(() => {
+    const s = this.service.data();
+    return s ? pointOf(s.farm) : null;
+  });
   readonly photoUrls = computed(() => this.service.data()?.farm.photos.map((p) => p.url) ?? []);
   readonly expired = computed(() => {
     const s = this.service.data();
@@ -120,6 +126,12 @@ export class ServiceDetailPage implements OnInit {
     this.applications.load();
   }
 
+  // Depois de uma ação: atualiza sem desmontar a tela (e o mapa da fazenda).
+  private refresh(): void {
+    this.service.refresh();
+    this.applications.refresh();
+  }
+
   ask(action: PendingAction): void {
     this.pending.set(action);
   }
@@ -138,7 +150,7 @@ export class ServiceDetailPage implements OnInit {
       next: () => {
         this.toast.success(success);
         this.finish();
-        this.load();
+        this.refresh();
       },
       error: () => this.finish() // a mensagem já saiu no toast
     });

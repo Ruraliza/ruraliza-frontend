@@ -97,7 +97,7 @@ describe('FarmerService', () => {
     service.getFarms(2).subscribe();
     http.expectOne(`${base}/2/farms`).flush([]);
 
-    const farm = { address: 'Estrada, Km 2', city: 'Três Rios', state: 'RJ' };
+    const farm = { address: 'Estrada, Km 2', city: 'Três Rios', state: 'RJ', latitude: -22.1165, longitude: -43.2092 };
     service.createFarm(2, farm).subscribe();
     const req = http.expectOne(`${base}/2/farms`);
     expect(req.request.method).toBe('POST');
