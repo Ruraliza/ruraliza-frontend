@@ -63,8 +63,10 @@ export class WorkerService {
     return this.http.get<OpenService[]>(`${this.apiUrl}/services`, { params });
   }
 
-  getOpenService(serviceId: number): Observable<OpenService> {
-    return this.http.get<OpenService>(`${this.apiUrl}/services/${serviceId}`);
+  // Com `workerId` do trabalhador aceito no serviço, `farm` vem com o ponto no mapa.
+  getOpenService(serviceId: number, workerId?: number): Observable<OpenService> {
+    const params = workerId === undefined ? undefined : new HttpParams().set('worker_id', workerId);
+    return this.http.get<OpenService>(`${this.apiUrl}/services/${serviceId}`, { params });
   }
 
   applyForService(serviceId: number, workerId: number): Observable<{ message: string; application: ServiceApplication }> {

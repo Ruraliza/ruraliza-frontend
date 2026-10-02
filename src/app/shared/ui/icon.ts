@@ -3,7 +3,7 @@ import { Component, input } from '@angular/core';
 export type IconName =
   | 'clock' | 'play' | 'check' | 'x' | 'dash'
   | 'plus' | 'home' | 'list' | 'farm' | 'user' | 'search' | 'briefcase' | 'menu'
-  | 'map-pin' | 'arrow-left' | 'arrow-right' | 'alert' | 'logout' | 'money' | 'sprout';
+  | 'map-pin' | 'crosshair' | 'arrow-left' | 'arrow-right' | 'alert' | 'logout' | 'money' | 'sprout';
 
 // Conjunto pequeno de ícones SVG inline: 24px, traço 1.75px, cor do texto (currentColor).
 // Decorativo por padrão; passe `label` quando o ícone for o único conteúdo com significado.
@@ -34,6 +34,7 @@ export type IconName =
         @case ('briefcase') { <rect x="3" y="7" width="18" height="13" rx="2" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18" /> }
         @case ('menu') { <path d="M4 7h16M4 12h16M4 17h16" /> }
         @case ('map-pin') { <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /> }
+        @case ('crosshair') { <circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /> }
         @case ('arrow-left') { <path d="M19 12H5M11 6l-6 6 6 6" /> }
         @case ('arrow-right') { <path d="M5 12h14M13 6l6 6-6 6" /> }
         @case ('alert') { <circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5M12 16.5v.01" /> }

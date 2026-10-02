@@ -11,6 +11,8 @@ import { Button } from '../../shared/ui/button';
 import { CategoryChip } from '../../shared/ui/category-chip';
 import { ConfirmDialog } from '../../shared/ui/confirm-dialog';
 import { ErrorState } from '../../shared/ui/error-state';
+import { FarmMap } from '../../shared/ui/farm-map';
+import { pointOf } from '../../shared/utils/geocoding';
 import { Icon } from '../../shared/ui/icon';
 import { PhotoStrip } from '../../shared/ui/photo-strip';
 import { Skeleton } from '../../shared/ui/skeleton';
@@ -18,7 +20,7 @@ import { StatusBadge } from '../../shared/ui/status-badge';
 
 @Component({
   selector: 'app-job-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, Icon, PhotoStrip, Skeleton, StatusBadge],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, Skeleton, StatusBadge],
   template: `
     <div class="container page">
       <a class="back-link" routerLink="/trabalhador/vagas" (click)="goBack($event)">← Vagas</a>
@@ -58,6 +60,13 @@ import { StatusBadge } from '../../shared/ui/status-badge';
                   <div><dt>Prazo</dt><dd [class.deadline]="!expired()">{{ text }}</dd></div>
                 }
               </dl>
+              <!-- O ponto só vem da API para o trabalhador aceito no serviço. -->
+              @if (farmPoint(); as point) {
+                <div class="route">
+                  <h2 class="t-h3">Como chegar</h2>
+                  <app-farm-map [point]="point" [label]="'Fazenda em ' + j.farm.city" />
+                </div>
+              }
             </section>
 
             <section class="apply card" aria-live="polite">
@@ -124,6 +133,7 @@ import { StatusBadge } from '../../shared/ui/status-badge';
     .description { display: grid; gap: var(--space-2); padding-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
     .description p { white-space: pre-line; max-width: 68ch; }
     .deadline { color: var(--orange-700); font-weight: 600; }
+    .route { display: grid; gap: var(--space-2); padding-top: var(--space-4); border-top: 1px solid var(--line); }
     .apply { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
     .apply > div { display: grid; gap: var(--space-1); }
   `
@@ -139,13 +149,17 @@ export class JobDetailPage implements OnInit {
 
   private readonly serviceId = computed(() => Number(this.id()));
 
-  readonly job = new RemoteData(() => this.workerService.getOpenService(this.serviceId()));
+  readonly job = new RemoteData(() => this.workerService.getOpenService(this.serviceId(), this.workerId));
   readonly applications = new RemoteData(() => this.workerService.getWorkerApplications(this.workerId));
   readonly state = computed(() => mergeStates(this.job.state(), this.applications.state()));
 
   readonly myApplication = computed(
     () => this.applications.data()?.find((a) => a.service_id === this.serviceId()) ?? null
   );
+  readonly farmPoint = computed(() => {
+    const job = this.job.data();
+    return job ? pointOf(job.farm) : null;
+  });
   readonly price = computed(() => formatBRL(this.job.data()?.price ?? 0));
   readonly hours = computed(() => formatHours(this.job.data()?.duration ?? 0));
   readonly publishedAt = computed(() => {
