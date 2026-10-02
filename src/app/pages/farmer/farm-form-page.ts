@@ -239,7 +239,7 @@ export class FarmFormPage implements OnInit {
       },
       error: () => {
         this.photoBusy.set(false);
-        this.farms.load(); // mostra as que chegaram a subir
+        this.farms.refresh(); // mostra as que chegaram a subir, sem desmontar o formulário (e o mapa)
       }
     });
   }

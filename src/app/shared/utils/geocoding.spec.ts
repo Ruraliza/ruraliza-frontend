@@ -1,4 +1,4 @@
-import { formatPoint, mapsLink, parseGeocoderResult, pointOf } from './geocoding';
+import { distanceMeters, embedUrl, formatPoint, geocodeCacheKey, mapsLink, parseGeocoderResult, pointOf } from './geocoding';
 
 const component = (long_name: string, short_name: string, ...types: string[]) => ({ long_name, short_name, types });
 
@@ -42,5 +42,24 @@ describe('geocoding', () => {
     expect(pointOf({ latitude: 1, longitude: 2 })).toEqual({ latitude: 1, longitude: 2 });
     expect(pointOf({ latitude: null, longitude: null })).toBeNull();
     expect(pointOf({})).toBeNull();
+  });
+
+  it('builds the free Maps Embed API URL for a point', () => {
+    const url = new URL(embedUrl('chave', { latitude: -22.1165, longitude: -43.2092 }));
+    expect(url.origin + url.pathname).toBe('https://www.google.com/maps/embed/v1/place');
+    expect(url.searchParams.get('key')).toBe('chave');
+    expect(url.searchParams.get('q')).toBe('-22.1165,-43.2092');
+  });
+
+  it('measures distances in meters', () => {
+    const a = { latitude: -22.1165, longitude: -43.2092 };
+    expect(distanceMeters(a, a)).toBe(0);
+    // 0,001° de latitude ≈ 111 m
+    expect(distanceMeters(a, { latitude: -22.1175, longitude: -43.2092 })).toBeCloseTo(111, 0);
+  });
+
+  it('groups nearby points under the same cache key', () => {
+    expect(geocodeCacheKey({ latitude: -22.11621, longitude: -43.20921 })).toBe(geocodeCacheKey({ latitude: -22.11619, longitude: -43.20919 }));
+    expect(geocodeCacheKey({ latitude: -22.1165, longitude: -43.2092 })).not.toBe(geocodeCacheKey({ latitude: -22.1265, longitude: -43.2092 }));
   });
 });

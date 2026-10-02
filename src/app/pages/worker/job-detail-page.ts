@@ -209,6 +209,12 @@ export class JobDetailPage implements OnInit {
     this.applications.load();
   }
 
+  // Depois de uma ação: atualiza sem desmontar a tela (e o mapa da fazenda).
+  private refresh(): void {
+    this.job.refresh();
+    this.applications.refresh();
+  }
+
   apply(): void {
     this.applying.set(true);
     this.workerService.applyForService(this.serviceId(), this.workerId).subscribe({
@@ -216,13 +222,13 @@ export class JobDetailPage implements OnInit {
         this.applying.set(false);
         this.confirmingApply.set(false);
         this.toast.success('Candidatura enviada! Agora é aguardar a resposta do produtor.');
-        this.applications.load();
+        this.applications.refresh();
       },
       error: () => {
         // A mensagem (ex.: prazo encerrado) já saiu no toast; recarrega para mostrar o estado atual.
         this.applying.set(false);
         this.confirmingApply.set(false);
-        this.load();
+        this.refresh();
       }
     });
   }
@@ -243,7 +249,7 @@ export class JobDetailPage implements OnInit {
         this.withdrawing.set(false);
         this.confirmingWithdraw.set(false);
         this.toast.success(kind === 'service' ? 'Você desistiu do serviço. Ele voltou a ficar aberto.' : 'Candidatura cancelada.');
-        this.load();
+        this.refresh();
       },
       error: () => {
         this.withdrawing.set(false);

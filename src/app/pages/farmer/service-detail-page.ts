@@ -126,6 +126,12 @@ export class ServiceDetailPage implements OnInit {
     this.applications.load();
   }
 
+  // Depois de uma ação: atualiza sem desmontar a tela (e o mapa da fazenda).
+  private refresh(): void {
+    this.service.refresh();
+    this.applications.refresh();
+  }
+
   ask(action: PendingAction): void {
     this.pending.set(action);
   }
@@ -144,7 +150,7 @@ export class ServiceDetailPage implements OnInit {
       next: () => {
         this.toast.success(success);
         this.finish();
-        this.load();
+        this.refresh();
       },
       error: () => this.finish() // a mensagem já saiu no toast
     });

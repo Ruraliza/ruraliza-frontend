@@ -10,11 +10,13 @@ const CALLBACK = '__ruralizaMapsReady'; // nome global do callback que o SDK cha
 
 // Carrega o SDK do Google Maps uma vez, com a chave vinda do backend (GET /config/maps, que lê o .env).
 // Só no navegador: no servidor (SSR) o mapa nunca é renderizado.
+// `fetchConfig()` só busca a chave (para o iframe gratuito da Maps Embed API, sem SDK).
 @Injectable({ providedIn: 'root' })
 export class GoogleMapsLoader {
   private readonly http = inject(HttpClient);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private loading: Promise<MapsConfig> | null = null;
+  private configRequest: Promise<MapsConfig> | null = null;
 
   readonly config = signal<MapsConfig | null>(null);
   readonly failed = signal(false);
@@ -36,8 +38,19 @@ export class GoogleMapsLoader {
     return this.loading;
   }
 
+  // Chave e Map ID, buscados uma vez por sessão (uma falha permite tentar de novo).
+  fetchConfig(): Promise<MapsConfig> {
+    this.configRequest ??= firstValueFrom(this.http.get<MapsConfig>(`${environment.apiUrl}/config/maps`)).catch(
+      (error: unknown) => {
+        this.configRequest = null;
+        throw error;
+      }
+    );
+    return this.configRequest;
+  }
+
   private async fetchAndInject(): Promise<MapsConfig> {
-    const config = await firstValueFrom(this.http.get<MapsConfig>(`${environment.apiUrl}/config/maps`));
+    const config = await this.fetchConfig();
     if (typeof google === 'undefined' || !google.maps) await this.injectScript(config.api_key);
     return config;
   }

@@ -1,21 +1,25 @@
-import { Component, afterNextRender, computed, inject, input } from '@angular/core';
-import { GoogleMap, MapAdvancedMarker } from '@angular/google-maps';
+import { Component, afterNextRender, computed, inject, input, signal } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { GoogleMapsLoader } from '../../core/maps/google-maps-loader.service';
-import { GeoPoint, mapsLink } from '../utils/geocoding';
+import { GeoPoint, embedUrl, mapsLink } from '../utils/geocoding';
 import { Icon } from './icon';
 
 // Mapa só de leitura com o ponto da fazenda e o link para abrir no Google Maps (rotas no celular).
-// Se o mapa não carregar, o link continua lá.
+// Usa o iframe da Maps Embed API, que é gratuito e ilimitado: estas telas não gastam a cota do Maps
+// JavaScript (que fica só para o formulário da fazenda). Se a chave não vier, fica só o link.
 @Component({
   selector: 'app-farm-map',
-  imports: [GoogleMap, MapAdvancedMarker, Icon],
+  imports: [Icon],
   template: `
-    @if (loader.config(); as config) {
-      <div class="map">
-        <google-map height="100%" width="100%" [mapId]="config.map_id" [center]="position()" [zoom]="15" [options]="options">
-          <map-advanced-marker [title]="label()" [position]="position()" />
-        </google-map>
-      </div>
+    @if (src(); as url) {
+      <iframe
+        class="map"
+        [src]="url"
+        [title]="label()"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
     }
     <a class="link" [href]="link()" target="_blank" rel="noopener">
       <app-icon name="map-pin" [size]="18" />
@@ -24,7 +28,7 @@ import { Icon } from './icon';
   `,
   styles: `
     :host { display: grid; gap: var(--space-2); }
-    .map { height: 220px; border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; }
+    .map { width: 100%; height: 220px; border: 1px solid var(--line); border-radius: var(--radius-md); }
     .link { display: inline-flex; align-items: center; gap: var(--space-1); font-weight: 600; }
   `
 })
@@ -32,18 +36,23 @@ export class FarmMap {
   readonly point = input.required<GeoPoint>();
   readonly label = input('Local da fazenda');
 
-  protected readonly loader = inject(GoogleMapsLoader);
+  private readonly loader = inject(GoogleMapsLoader);
+  private readonly sanitizer = inject(DomSanitizer);
+  private readonly apiKey = signal<string | null>(null);
 
-  readonly position = computed<google.maps.LatLngLiteral>(() => ({ lat: this.point().latitude, lng: this.point().longitude }));
   readonly link = computed(() => mapsLink(this.point()));
-  readonly options: google.maps.MapOptions = {
-    mapTypeId: 'hybrid', // satélite com nomes de estradas: ajuda a achar a fazenda
-    clickableIcons: false,
-    streetViewControl: false,
-    gestureHandling: 'cooperative'
-  };
+  // URL montada por nós (chave do backend + coordenadas numéricas), por isso é marcada como confiável.
+  readonly src = computed<SafeResourceUrl | null>(() => {
+    const key = this.apiKey();
+    return key ? this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl(key, this.point())) : null;
+  });
 
   constructor() {
-    afterNextRender(() => this.loader.load().catch(() => undefined)); // sem mapa, fica só o link
+    afterNextRender(() => {
+      this.loader.fetchConfig().then(
+        (config) => this.apiKey.set(config.api_key),
+        () => undefined // sem chave: fica só o link
+      );
+    });
   }
 }

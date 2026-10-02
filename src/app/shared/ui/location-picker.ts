@@ -1,8 +1,8 @@
-import { Component, afterNextRender, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
+import { Component, DestroyRef, afterNextRender, computed, inject, input, linkedSignal, output, signal } from '@angular/core';
 import { GoogleMap, MapAdvancedMarker } from '@angular/google-maps';
 import { GoogleMapsLoader } from '../../core/maps/google-maps-loader.service';
 import { ToastService } from '../../core/toast/toast.service';
-import { AddressSuggestion, GeoPoint, formatPoint, parseGeocoderResult } from '../utils/geocoding';
+import { AddressSuggestion, GeoPoint, distanceMeters, formatPoint, geocodeCacheKey, parseGeocoderResult } from '../utils/geocoding';
 import { Button } from './button';
 import { Icon } from './icon';
 import { Skeleton } from './skeleton';
@@ -12,6 +12,12 @@ const BRAZIL_CENTER: google.maps.LatLngLiteral = { lat: -14.235, lng: -51.925 };
 const BRAZIL_ZOOM = 4;
 const POINT_ZOOM = 16;
 
+// Cada geocoding é cobrado pelo Google (cota grátis de 10 mil/mês), então só consultamos quando o
+// ponto para de mexer por um instante e andou de verdade; pontos já consultados ficam em cache.
+const GEOCODE_DELAY_MS = 1000;
+const GEOCODE_MIN_DISTANCE_M = 100;
+const geocodeCache = new Map<string, AddressSuggestion | null>(); // vale para a sessão toda
+
 const GEOLOCATION_ERRORS: Record<number, string> = {
   1: 'Permita o acesso à localização no navegador para usar este botão.',
   2: 'Não foi possível descobrir sua localização. Marque o ponto no mapa.',
@@ -19,7 +25,7 @@ const GEOLOCATION_ERRORS: Record<number, string> = {
 };
 
 // Escolha do local da fazenda: tocar no mapa, arrastar o alfinete ou usar a localização do aparelho.
-// Cada ponto escolhido gera uma sugestão de endereço (geocoding reverso do Google).
+// O ponto escolhido gera uma sugestão de endereço (geocoding reverso do Google), com economia de chamadas.
 // Uso dentro de <app-form-field>: o campo de coordenadas (só leitura) é o controle ligado ao rótulo.
 @Component({
   selector: 'app-location-picker',
@@ -104,8 +110,13 @@ export class LocationPicker {
     gestureHandling: 'cooperative'
   };
 
+  // Último ponto que serviu de base para a sugestão (o salvo, na edição, ou o último consultado).
+  private suggestedFor: GeoPoint | null = null;
+  private geocodeTimer: ReturnType<typeof setTimeout> | undefined;
+
   constructor() {
     afterNextRender(() => this.loadMap());
+    inject(DestroyRef).onDestroy(() => clearTimeout(this.geocodeTimer));
   }
 
   loadMap(): void {
@@ -139,19 +150,33 @@ export class LocationPicker {
   }
 
   private select(point: GeoPoint): void {
+    this.suggestedFor ??= this.value(); // na edição, o ponto salvo já tem endereço
     this.valueChange.emit(point);
-    void this.suggestAddress(point);
+    clearTimeout(this.geocodeTimer);
+    this.geocodeTimer = setTimeout(() => void this.suggestAddress(point), GEOCODE_DELAY_MS);
   }
 
   // Sem sugestão (Geocoding API desligada, ponto no meio do mato): o produtor digita o endereço.
   private async suggestAddress(point: GeoPoint): Promise<void> {
-    if (typeof google === 'undefined' || !google.maps.Geocoder) return;
-    try {
-      const { results } = await new google.maps.Geocoder().geocode({ location: { lat: point.latitude, lng: point.longitude } });
-      if (results[0]) this.addressSuggested.emit(parseGeocoderResult(results[0]));
-    } catch {
-      // Sem resultado: segue sem sugestão.
-    }
+    if (typeof google === 'undefined' || !google.maps.Geocoder) return; // mapa não carregou
+    const base = this.suggestedFor;
+    if (base && distanceMeters(base, point) < GEOCODE_MIN_DISTANCE_M) return; // ajuste fino: mesmo endereço
+    this.suggestedFor = point;
+
+    const key = geocodeCacheKey(point);
+    if (!geocodeCache.has(key)) geocodeCache.set(key, await geocode(point));
+    const suggestion = geocodeCache.get(key);
+    if (suggestion) this.addressSuggested.emit(suggestion);
+  }
+}
+
+// Falha também vai para o cache: tentar de novo o mesmo ponto só gastaria mais cota.
+async function geocode(point: GeoPoint): Promise<AddressSuggestion | null> {
+  try {
+    const { results } = await new google.maps.Geocoder().geocode({ location: { lat: point.latitude, lng: point.longitude } });
+    return results[0] ? parseGeocoderResult(results[0]) : null;
+  } catch {
+    return null; // sem resultado: segue sem sugestão
   }
 }
 
