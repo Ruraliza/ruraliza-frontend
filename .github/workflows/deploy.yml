@@ -1,0 +1,55 @@
+name: Deploy Angular to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+# Permissões necessárias para o GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build de Produção do Angular
+        run: npx ng build --configuration production --base-href /ruraliza-frontend/
+
+      # Copia o index.html para 404.html para evitar erro 404 no F5 (SPA Fallback)
+      - name: Configurar SPA Fallback (404.html)
+        run: cp dist/ruraliza-frontend/browser/index.html dist/ruraliza-frontend/browser/404.html
+
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+
+      - name: Fazer Upload do Artefato
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist/ruraliza-frontend/browser'
+
+      - name: Deploy no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
