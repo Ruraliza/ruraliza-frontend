@@ -127,6 +127,11 @@
   }
 
   <div class="cluster">
+    <app-push-toggle />
+    <app-install-app-button />
+  </div>
+
+  <div class="cluster">
     <app-role-switch-button area="worker" />
     <button appButton variant="secondary" type="button" (click)="switcher.signOut()"><app-icon name="logout" [size]="20" />Sair</button>
   </div>

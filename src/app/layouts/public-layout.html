@@ -35,6 +35,7 @@
       <div class="menu-actions">
         <a appButton [block]="true" routerLink="/cadastro" (click)="closeMenu()">Criar conta</a>
         <a appButton variant="secondary" [block]="true" routerLink="/entrar" (click)="closeMenu()">Entrar</a>
+        <app-install-app-button variant="ghost" [block]="true" />
       </div>
     </nav>
   }
@@ -47,6 +48,7 @@
     <div class="footer-brand">
       <app-logo [size]="32" tone="reverse" />
       <p>Mão de obra no campo, na hora certa.</p>
+      <div class="footer-install"><app-install-app-button variant="inverse" /></div>
     </div>
     <nav class="footer-links" aria-label="Rodapé">
       <a routerLink="/" fragment="como-funciona">Como funciona</a>

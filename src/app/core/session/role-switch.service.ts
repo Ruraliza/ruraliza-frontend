@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService } from '../api/account.service';
+import { PushService } from '../pwa/push.service';
 import { CurrentUserService, UserRole } from './current-user.service';
 import { ROLE_HOME, ROLE_LABEL, newProfileUrl, otherRole } from './roles';
 
@@ -10,6 +11,7 @@ export class RoleSwitchService {
   private readonly accounts = inject(AccountService);
   private readonly currentUser = inject(CurrentUserService);
   private readonly router = inject(Router);
+  private readonly push = inject(PushService);
 
   readonly switching = signal(false);
 
@@ -59,7 +61,9 @@ export class RoleSwitchService {
     this.router.navigateByUrl(ROLE_HOME[other]);
   }
 
+  // Quem sai também para de receber as notificações da conta neste aparelho.
   signOut(): void {
+    void this.push.disable();
     this.currentUser.clear();
     this.router.navigateByUrl('/entrar');
   }
