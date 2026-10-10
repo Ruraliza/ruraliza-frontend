@@ -14,6 +14,8 @@ export const routes: Routes = [
       { path: 'cadastro/produtor', loadComponent: () => import('./pages/public/signup-page').then((m) => m.SignupPage), data: { role: 'farmer' }, title: 'Cadastro de produtor · Ruraliza' },
       { path: 'cadastro/trabalhador', loadComponent: () => import('./pages/public/signup-page').then((m) => m.SignupPage), data: { role: 'worker' }, title: 'Cadastro de trabalhador · Ruraliza' },
       { path: 'entrar', loadComponent: () => import('./pages/public/sign-in-page').then((m) => m.SignInPage), title: 'Entrar · Ruraliza' },
+      { path: 'entrar/esqueci-senha', loadComponent: () => import('./pages/public/forgot-password-page').then((m) => m.ForgotPasswordPage), title: 'Esqueci minha senha · Ruraliza' },
+      { path: 'entrar/nova-senha', loadComponent: () => import('./pages/public/reset-password-page').then((m) => m.ResetPasswordPage), title: 'Nova senha · Ruraliza' },
       { path: 'creditos', loadComponent: () => import('./pages/public/credits-page').then((m) => m.CreditsPage), title: 'Créditos das fotos · Ruraliza' }
     ]
   },

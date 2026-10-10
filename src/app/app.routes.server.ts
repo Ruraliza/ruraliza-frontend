@@ -1,8 +1,8 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 
 // Prerender só na landing (pública e estática).
-// Áreas do produtor/trabalhador, cadastro e seleção de perfil dependem do usuário
-// atual (sessionStorage) e de rotas dinâmicas (:id), então renderizam no browser.
+// Áreas do produtor/trabalhador, cadastro e acesso (entrar, senha) dependem do usuário
+// atual (sessionStorage), do state da navegação e de rotas dinâmicas (:id), então renderizam no browser.
 export const serverRoutes: ServerRoute[] = [
   { path: '', renderMode: RenderMode.Prerender },
   { path: 'creditos', renderMode: RenderMode.Prerender },

@@ -13,14 +13,20 @@ npm test         # ng test (Vitest)
 npm run build    # ng build
 ```
 
-Sem autenticação nesta fase: em **Entrar** você escolhe um perfil de teste (fica em `sessionStorage`). Os dados vivem em memória no backend e somem quando ele reinicia.
+Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe produtor ou trabalhador e informa e-mail e senha; os perfis de teste do backend são `produtor@exemplo.com` e `trabalhador@exemplo.com`, senha `ruraliza123`. Quem entrou fica em `sessionStorage`. A API ainda não emite token de sessão, então o guard das áreas não é segurança. Os dados vivem em memória no backend e somem quando ele reinicia.
+
+## Senha
+
+- **Cadastro:** senha (8 a 128 caracteres) e confirmação, com botão *Mostrar* (`shared/ui/password-reveal.ts`, regras em `shared/utils/password.ts`).
+- **Esqueci minha senha** (`/entrar/esqueci-senha` → `/entrar/nova-senha`): a pessoa informa o e-mail e cria a nova senha. O envio do código por e-mail **ainda não existe**: a API devolve o token na resposta e a tela segue direto para a nova senha. O token vai pelo `state` da navegação (`pages/public/auth-prefill.ts`), não pela URL. Quando o e-mail existir, a segunda tela passa a pedir o código (ver `TODO(email)`).
+- **Alterar senha com a conta aberta:** cartão *Senha* no Perfil (produtor e trabalhador), pedindo a senha atual, sem código por e-mail (`shared/ui/password-change.ts`).
 
 ## Fluxo de teste
 
-1. `/cadastro/produtor` → cadastre um produtor (ou use o de teste em `/entrar`). Em **Perfil**, envie uma foto.
+1. `/cadastro/produtor` → cadastre um produtor com senha (ou entre com o de teste em `/entrar`). Em **Perfil**, envie uma foto.
 2. **Fazendas** → cadastre uma fazenda e adicione fotos (até 6; a primeira é a capa).
 3. **＋ Novo serviço** → publique em 2 passos, com descrição e prazo para candidaturas (opcional).
-4. Troque de perfil (Perfil → *Trocar perfil de teste*) e entre como trabalhador. Em **Perfil**, preencha foto, apresentação, experiência, certificados e cursos.
+4. Saia (Perfil → *Sair*) e entre como trabalhador. Em **Perfil**, preencha foto, apresentação, experiência, certificados e cursos.
 5. **Vagas** → busque e filtre (texto, categoria, carga horária, data de publicação, ordem) → abra a vaga → *Candidatar-me* → confirme.
 6. Volte ao produtor → **Serviços** (abas por situação, busca e filtros) → abra o serviço → veja o candidato → *Aceitar trabalhador*.
 7. Com o serviço em andamento → *Liberar pagamento* (simulação).
@@ -39,19 +45,19 @@ src/
   styles/            tokens.css (brand system), base.css, layout.css
   models/            tipos da API + status.ts (tradução, cor e ícone de cada status)
   app/
-    core/api/        FarmerService, WorkerService, CategoryService (único lugar com HttpClient)
+    core/api/        AuthService, FarmerService, WorkerService, CategoryService (único lugar com HttpClient)
     core/http/       errorInterceptor + ApiError (mensagens claras, repassa o erro)
-    core/session/    CurrentUserService (perfil de teste) + guard requireRole (não é segurança)
+    core/session/    CurrentUserService (quem entrou) + guard requireRole (não é segurança)
     core/toast/      ToastService
     shared/ui/       Button, FormField, MaskedInput, StatusBadge, ServiceCard, ConfirmDialog,
                      Avatar, AvatarEditor, PhotoGridEditor, PhotoStrip...
     shared/utils/    CPF, máscaras, formatação pt-BR, RemoteData, fotos (images.ts), prazos (expiry.ts)
     layouts/         PublicLayout, AppShell (bottom nav < 1024px / sidebar ≥ 1024px)
-    pages/public/    landing, cadastro, entrar
+    pages/public/    landing, cadastro, entrar, esqueci a senha, nova senha
     pages/farmer/    área do produtor (lazy em /produtor)
     pages/worker/    área do trabalhador (lazy em /trabalhador)
 ```
 
 ## Renderização
 
-Só a landing (`/`) é pré-renderizada no build. `/produtor/**`, `/trabalhador/**`, `/cadastro/**` e `/entrar` renderizam no browser, porque dependem do perfil atual e de rotas com `:id`.
+Só a landing (`/`) é pré-renderizada no build. `/produtor/**`, `/trabalhador/**`, `/cadastro/**` e `/entrar/**` renderizam no browser, porque dependem do perfil atual, do `state` da navegação e de rotas com `:id`.

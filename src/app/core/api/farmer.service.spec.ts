@@ -35,13 +35,24 @@ describe('FarmerService', () => {
   });
 
   it('creates a farmer', () => {
-    const input = { name: 'Ana', email: 'ana@exemplo.com', phone: '24999990000', cpf: '52998224725' };
+    const input = { name: 'Ana', email: 'ana@exemplo.com', phone: '24999990000', cpf: '52998224725', password: 'senha-forte-1' };
     service.createFarmer(input).subscribe((res) => expect(res.farmer.id).toBe(1));
 
     const req = http.expectOne(base);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(input);
-    req.flush({ message: 'ok', farmer: { ...input, id: 1, farms: [], insertion_date: '2026-01-01' } });
+    const { password: _password, ...profile } = input;
+    req.flush({ message: 'ok', farmer: { ...profile, id: 1, farms: [], insertion_date: '2026-01-01' } });
+  });
+
+  it('changes the password with the current one', () => {
+    const input = { current_password: 'senha-antiga', new_password: 'senha-nova-1' };
+    service.changePassword(4, input).subscribe();
+
+    const req = http.expectOne(`${base}/4/password`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual(input);
+    req.flush({ message: 'ok' });
   });
 
   it('updates and deletes a farmer', () => {
