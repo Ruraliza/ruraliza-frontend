@@ -55,5 +55,7 @@ main:focus { outline: none; }
   .side-nav a.active:not(.primary) { background: var(--broto-soft); color: var(--ink); }
   .side-nav a.primary { background: var(--mata); color: var(--on-mata); margin-bottom: var(--space-3); }
   .side-nav a.primary:hover { background: var(--mata-deep); color: var(--on-mata); }
-  .switch { margin-top: auto; width: 100%; }
+  .account-actions { display: grid; gap: var(--space-1); margin-top: auto; }
+  .switch { width: 100%; }
+  .switch:disabled { opacity: 0.6; cursor: progress; }
 }

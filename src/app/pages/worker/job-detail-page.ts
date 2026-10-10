@@ -3,6 +3,7 @@ import { Location } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { WorkerService } from '../../core/api/worker.service';
 import { CurrentUserService } from '../../core/session/current-user.service';
+import { RoleSwitchService } from '../../core/session/role-switch.service';
 import { ToastService } from '../../core/toast/toast.service';
 import { RemoteData, mergeStates } from '../../shared/utils/remote-data';
 import { expiryLabel, isExpired } from '../../shared/utils/expiry';
@@ -84,6 +85,15 @@ import { StatusBadge } from '../../shared/ui/status-badge';
                     <button appButton variant="danger" type="button" (click)="confirmingWithdraw.set(true)">Desistir do serviço</button>
                   }
                 }
+              } @else if (ownService()) {
+                <div>
+                  <h2 class="t-h3">Esta vaga é sua</h2>
+                  <p class="muted">Você publicou este serviço com o seu perfil de produtor, então não pode se candidatar a ele.</p>
+                </div>
+                <div class="cluster">
+                  <button appButton type="button" [disabled]="true">Candidatar-me</button>
+                  <button appButton variant="secondary" type="button" [loading]="switcher.switching()" (click)="switcher.switchTo('farmer')">Ver na área do produtor</button>
+                </div>
               } @else if (j.status !== 'Pending' || expired()) {
                 <div>
                   <h2 class="t-h3">Vaga encerrada</h2>
@@ -142,7 +152,9 @@ export class JobDetailPage implements OnInit {
   readonly id = input.required<string>(); // parâmetro :id da rota
 
   private readonly workerService = inject(WorkerService);
-  private readonly workerId = inject(CurrentUserService).requireId('worker');
+  private readonly currentUser = inject(CurrentUserService);
+  private readonly workerId = this.currentUser.requireId('worker');
+  protected readonly switcher = inject(RoleSwitchService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
@@ -152,6 +164,12 @@ export class JobDetailPage implements OnInit {
   readonly job = new RemoteData(() => this.workerService.getOpenService(this.serviceId(), this.workerId));
   readonly applications = new RemoteData(() => this.workerService.getWorkerApplications(this.workerId));
   readonly state = computed(() => mergeStates(this.job.state(), this.applications.state()));
+
+  // Conta com os dois perfis: o serviço foi publicado pelo próprio perfil de produtor.
+  readonly ownService = computed(() => {
+    const farmerId = this.currentUser.user()?.profiles.farmer ?? null;
+    return farmerId !== null && this.job.data()?.farmer_id === farmerId;
+  });
 
   readonly myApplication = computed(
     () => this.applications.data()?.find((a) => a.service_id === this.serviceId()) ?? null

@@ -1,8 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { WorkerService } from '../../core/api/worker.service';
 import { CurrentUserService } from '../../core/session/current-user.service';
+import { RoleSwitchService } from '../../core/session/role-switch.service';
 import { ToastService } from '../../core/toast/toast.service';
 import { PasswordChangeInput } from '../../../models/auth.model';
 import { Worker } from '../../../models/worker.model';
@@ -17,6 +17,7 @@ import { FormField } from '../../shared/ui/form-field';
 import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
 import { PasswordChange } from '../../shared/ui/password-change';
+import { RoleSwitchButton } from '../../shared/ui/role-switch-button';
 import { ResumeDialog } from '../../shared/ui/resume-dialog';
 import { Skeleton } from '../../shared/ui/skeleton';
 
@@ -27,7 +28,7 @@ const MAX_TEXT = 1000;
 // Perfil do trabalhador: foto, currículo, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
 @Component({
   selector: 'app-worker-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, PasswordChange, ResumeDialog, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, PasswordChange, ResumeDialog, RoleSwitchButton, Skeleton],
   templateUrl: './worker-profile-page.html',
   styleUrl: './worker-profile-page.css'
 })
@@ -36,8 +37,9 @@ export class WorkerProfilePage {
   private readonly workerService = inject(WorkerService);
   private readonly currentUser = inject(CurrentUserService);
   private readonly toast = inject(ToastService);
-  private readonly router = inject(Router);
+  protected readonly switcher = inject(RoleSwitchService);
   private readonly workerId = this.currentUser.requireId('worker');
+  readonly hasFarmerProfile = this.currentUser.hasProfile('farmer');
 
   readonly worker = new RemoteData(() => this.workerService.getWorker(this.workerId));
 
@@ -190,15 +192,10 @@ export class WorkerProfilePage {
     this.deleting.set(true);
     this.workerService.deleteWorker(this.workerId).subscribe({
       next: () => {
-        this.toast.success('Conta excluída.');
-        this.signOut();
+        this.toast.success(this.hasFarmerProfile ? 'Perfil de trabalhador excluído.' : 'Conta excluída.');
+        this.switcher.profileRemoved('worker');
       },
       error: () => this.deleting.set(false)
     });
-  }
-
-  signOut(): void {
-    this.currentUser.clear();
-    this.router.navigateByUrl('/entrar');
   }
 }

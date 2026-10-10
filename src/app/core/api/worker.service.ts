@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PasswordChangeInput } from '../../../models/auth.model';
+import { PasswordChangeInput, SessionUser } from '../../../models/auth.model';
 import { Worker, WorkerInput, WorkerUpdate } from '../../../models/worker.model';
 import { JobFilters, OpenService, Service } from '../../../models/service.model';
 import { ApplicationWithService, ServiceApplication } from '../../../models/service-application.model';
@@ -22,8 +22,9 @@ export class WorkerService {
     return this.http.get<Worker>(`${this.apiUrl}/${workerId}`);
   }
 
-  createWorker(worker: WorkerInput): Observable<{ message: string; worker: Worker }> {
-    return this.http.post<{ message: string; worker: Worker }>(this.apiUrl, worker);
+  // Cadastro: cria a conta com este perfil e já devolve a sessão (`user`).
+  createWorker(worker: WorkerInput): Observable<{ message: string; worker: Worker; user: SessionUser }> {
+    return this.http.post<{ message: string; worker: Worker; user: SessionUser }>(this.apiUrl, worker);
   }
 
   updateWorker(workerId: number, changes: WorkerUpdate): Observable<{ message: string; worker: Worker }> {

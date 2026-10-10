@@ -9,5 +9,6 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'produtor/**', renderMode: RenderMode.Client },
   { path: 'trabalhador/**', renderMode: RenderMode.Client },
   { path: 'cadastro/**', renderMode: RenderMode.Client },
+  { path: 'conta/**', renderMode: RenderMode.Client },
   { path: '**', renderMode: RenderMode.Client }
 ];

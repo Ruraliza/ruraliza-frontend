@@ -1,6 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { CurrentUserService } from '../core/session/current-user.service';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { UserRole } from '../core/session/current-user.service';
+import { RoleSwitchService } from '../core/session/role-switch.service';
 import { Icon, IconName } from '../shared/ui/icon';
 import { Logo } from '../shared/ui/logo';
 import { TestEnvBanner } from '../shared/ui/test-env-banner';
@@ -15,7 +16,8 @@ export interface NavItem {
 }
 
 // Casca das áreas logadas: banner de teste no topo, bottom nav (< 1024px)
-// ou sidebar (>= 1024px) com os mesmos itens.
+// ou sidebar (>= 1024px) com os mesmos itens. No fim da sidebar: trocar de painel e sair
+// (no mobile, os dois ficam na página de perfil).
 @Component({
   selector: 'app-shell',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, TestEnvBanner],
@@ -41,7 +43,12 @@ export interface NavItem {
             </a>
           }
         </nav>
-        <button type="button" class="switch" (click)="signOut()"><app-icon name="logout" />Sair</button>
+        <div class="account-actions">
+          <button type="button" class="switch" [disabled]="switcher.switching()" (click)="switcher.switchFrom(area())">
+            <app-icon name="swap" />{{ switcher.labelFor(area()) }}
+          </button>
+          <button type="button" class="switch" (click)="switcher.signOut()"><app-icon name="logout" />Sair</button>
+        </div>
       </aside>
 
       <main id="conteudo" tabindex="-1"><router-outlet /></main>
@@ -68,18 +75,13 @@ export interface NavItem {
 export class AppShell {
   readonly items = input.required<NavItem[]>();
   readonly areaLabel = input.required<string>();
+  readonly area = input.required<UserRole>();
 
-  private readonly currentUser = inject(CurrentUserService);
-  private readonly router = inject(Router);
+  protected readonly switcher = inject(RoleSwitchService);
 
   // Na sidebar a ação principal vem primeiro.
   readonly sidebarItems = computed(() => [
     ...this.items().filter((item) => item.primary),
     ...this.items().filter((item) => !item.primary)
   ]);
-
-  signOut(): void {
-    this.currentUser.clear();
-    this.router.navigateByUrl('/entrar');
-  }
 }

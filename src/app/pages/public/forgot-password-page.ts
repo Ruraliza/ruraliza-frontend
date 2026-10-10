@@ -3,10 +3,8 @@ import { Location } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/api/auth.service';
-import { UserRole } from '../../core/session/current-user.service';
 import { Button } from '../../shared/ui/button';
 import { FormField } from '../../shared/ui/form-field';
-import { SegmentOption, SegmentedControl } from '../../shared/ui/segmented-control';
 import { ResetState, readAuthPrefill } from './auth-prefill';
 
 // Esqueci a senha, passo 1: a pessoa informa o e-mail.
@@ -14,10 +12,10 @@ import { ResetState, readAuthPrefill } from './auth-prefill';
 // e a tela segue direto para a criação da nova senha.
 @Component({
   selector: 'app-forgot-password-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, FormField, SegmentedControl],
+  imports: [ReactiveFormsModule, RouterLink, Button, FormField],
   template: `
     <div class="container page">
-      <a class="back-link" routerLink="/entrar" [state]="{ role: role(), email: form.controls.email.value.trim() }">← Voltar para o login</a>
+      <a class="back-link" routerLink="/entrar" [state]="{ email: form.controls.email.value.trim() }">← Voltar para o login</a>
 
       <div class="page-header">
         <div>
@@ -27,8 +25,6 @@ import { ResetState, readAuthPrefill } from './auth-prefill';
       </div>
 
       <form class="form card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <app-segmented-control label="Tipo de conta" [options]="roleOptions" [(value)]="role" />
-
         <app-form-field label="E-mail" fieldId="email" [control]="form.controls.email">
           <input type="email" formControlName="email" autocomplete="email" placeholder="nome@exemplo.com">
         </app-form-field>
@@ -53,11 +49,6 @@ export class ForgotPasswordPage {
   private readonly router = inject(Router);
   private readonly initial = readAuthPrefill(inject(Location));
 
-  readonly roleOptions: SegmentOption<UserRole>[] = [
-    { value: 'farmer', label: 'Produtor' },
-    { value: 'worker', label: 'Trabalhador' }
-  ];
-  readonly role = signal<UserRole>(this.initial?.role ?? 'farmer');
   readonly saving = signal(false);
 
   readonly form = this.fb.group({
@@ -68,13 +59,12 @@ export class ForgotPasswordPage {
     this.form.markAllAsTouched();
     if (this.form.invalid) return;
 
-    const role = this.role();
     const email = this.form.controls.email.value.trim();
     this.saving.set(true);
-    this.auth.requestPasswordReset({ role, email }).subscribe({
+    this.auth.requestPasswordReset({ email }).subscribe({
       next: ({ reset_token }) => {
         // TODO(email): quando o código for por e-mail, esta tela passa a pedir o código digitado.
-        const state: ResetState = { role, email, token: reset_token };
+        const state: ResetState = { email, token: reset_token };
         this.router.navigateByUrl('/entrar/nova-senha', { state });
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
