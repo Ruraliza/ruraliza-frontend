@@ -7,7 +7,6 @@ import { ToastService } from '../../core/toast/toast.service';
 import { Worker } from '../../../models/worker.model';
 import { RemoteData } from '../../shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '../../shared/utils/format';
-import { apiAsset } from '../../shared/utils/images';
 import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeErrors } from '../../shared/utils/resume';
 import { AvatarEditor } from '../../shared/ui/avatar-editor';
 import { Button } from '../../shared/ui/button';
@@ -16,6 +15,7 @@ import { ErrorState } from '../../shared/ui/error-state';
 import { FormField } from '../../shared/ui/form-field';
 import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
+import { ResumeDialog } from '../../shared/ui/resume-dialog';
 import { Skeleton } from '../../shared/ui/skeleton';
 
 // Limites iguais aos da API.
@@ -25,7 +25,7 @@ const MAX_TEXT = 1000;
 // Perfil do trabalhador: foto, currículo, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
 @Component({
   selector: 'app-worker-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, ResumeDialog, Skeleton],
   templateUrl: './worker-profile-page.html',
   styleUrl: './worker-profile-page.css'
 })
@@ -43,6 +43,7 @@ export class WorkerProfilePage {
   readonly saving = signal(false);
   readonly photoBusy = signal(false);
   readonly resumeBusy = signal(false);
+  readonly viewingResume = signal(false);
   readonly confirmingDelete = signal(false);
   readonly deleting = signal(false);
 
@@ -78,7 +79,6 @@ export class WorkerProfilePage {
   readonly phone = formatPhone;
   readonly cpf = formatCpf;
   readonly date = formatDate;
-  readonly asset = apiAsset;
   readonly acceptedResume = ACCEPTED_RESUME;
 
   constructor() {
