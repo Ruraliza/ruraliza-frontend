@@ -3,20 +3,18 @@ import { Location } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/api/auth.service';
-import { CurrentUserService, UserRole } from '../../core/session/current-user.service';
+import { CurrentUserService } from '../../core/session/current-user.service';
+import { ROLE_HOME } from '../../core/session/roles';
 import { Button } from '../../shared/ui/button';
 import { FormField } from '../../shared/ui/form-field';
 import { PasswordReveal } from '../../shared/ui/password-reveal';
-import { SegmentOption, SegmentedControl } from '../../shared/ui/segmented-control';
 import { AuthPrefill, readAuthPrefill } from './auth-prefill';
 
-const HOME: Record<UserRole, string> = { farmer: '/produtor', worker: '/trabalhador' };
-
-// Login com e-mail e senha. O mesmo e-mail pode ter perfil de produtor e de trabalhador,
-// então a pessoa escolhe com qual entrar.
+// Login com e-mail e senha. Uma conta por pessoa: entra no último painel usado
+// (produtor ou trabalhador) e troca pelo menu, acima de "Sair".
 @Component({
   selector: 'app-sign-in-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, FormField, PasswordReveal, SegmentedControl],
+  imports: [ReactiveFormsModule, RouterLink, Button, FormField, PasswordReveal],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -27,8 +25,6 @@ const HOME: Record<UserRole, string> = { farmer: '/produtor', worker: '/trabalha
       </div>
 
       <form class="form card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-        <app-segmented-control label="Entrar como" [options]="roleOptions" [(value)]="role" />
-
         <app-form-field label="E-mail" fieldId="email" [control]="form.controls.email">
           <input type="email" formControlName="email" autocomplete="username" placeholder="nome@exemplo.com">
         </app-form-field>
@@ -46,7 +42,8 @@ const HOME: Record<UserRole, string> = { farmer: '/produtor', worker: '/trabalha
       </form>
 
       <p class="t-body-sm muted test-note">
-        Ambiente de teste: entre com <b>produtor&#64;exemplo.com</b> ou <b>trabalhador&#64;exemplo.com</b>, senha <b>ruraliza123</b>.
+        Ambiente de teste: entre com <b>produtor&#64;exemplo.com</b>, <b>trabalhador&#64;exemplo.com</b>
+        ou <b>ambos&#64;exemplo.com</b> (tem os dois perfis), senha <b>ruraliza123</b>.
       </p>
 
       <p class="muted">Ainda não tem conta? <a routerLink="/cadastro">Criar conta</a></p>
@@ -61,14 +58,9 @@ export class SignInPage {
   private readonly auth = inject(AuthService);
   private readonly currentUser = inject(CurrentUserService);
   private readonly router = inject(Router);
-  // Vindo da redefinição de senha (ou de volta do "esqueci a senha"): já preenche tipo e e-mail.
+  // Vindo da redefinição de senha (ou de volta do "esqueci a senha"): já preenche o e-mail.
   private readonly initial = readAuthPrefill(inject(Location));
 
-  readonly roleOptions: SegmentOption<UserRole>[] = [
-    { value: 'farmer', label: 'Produtor' },
-    { value: 'worker', label: 'Trabalhador' }
-  ];
-  readonly role = signal<UserRole>(this.initial?.role ?? 'farmer');
   readonly saving = signal(false);
 
   readonly form = this.fb.group({
@@ -76,9 +68,9 @@ export class SignInPage {
     password: ['', Validators.required]
   });
 
-  // Leva o tipo e o e-mail digitados para a tela de "esqueci a senha".
+  // Leva o e-mail digitado para a tela de "esqueci a senha".
   prefill(): AuthPrefill {
-    return { role: this.role(), email: this.form.controls.email.value.trim() };
+    return { email: this.form.controls.email.value.trim() };
   }
 
   submit(): void {
@@ -87,10 +79,10 @@ export class SignInPage {
 
     const { email, password } = this.form.getRawValue();
     this.saving.set(true);
-    this.auth.login({ role: this.role(), email: email.trim(), password }).subscribe({
+    this.auth.login({ email: email.trim(), password }).subscribe({
       next: ({ user }) => {
         this.currentUser.set(user);
-        this.router.navigateByUrl(HOME[user.role]);
+        this.router.navigateByUrl(ROLE_HOME[user.role]);
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
     });

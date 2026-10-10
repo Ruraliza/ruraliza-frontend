@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { FarmerService } from '../../core/api/farmer.service';
 import { CurrentUserService } from '../../core/session/current-user.service';
+import { RoleSwitchService } from '../../core/session/role-switch.service';
 import { ToastService } from '../../core/toast/toast.service';
 import { PasswordChangeInput } from '../../../models/auth.model';
 import { Farmer } from '../../../models/farmer.model';
@@ -16,12 +16,13 @@ import { FormField } from '../../shared/ui/form-field';
 import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
 import { PasswordChange } from '../../shared/ui/password-change';
+import { RoleSwitchButton } from '../../shared/ui/role-switch-button';
 import { Skeleton } from '../../shared/ui/skeleton';
 
 // Perfil do produtor: leitura, edição (id e cpf fixos) e remoção da conta.
 @Component({
   selector: 'app-farmer-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, PasswordChange, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, PasswordChange, RoleSwitchButton, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -75,23 +76,24 @@ import { Skeleton } from '../../shared/ui/skeleton';
 
               <div class="form-actions">
                 <button appButton variant="secondary" type="button" (click)="startEdit(f)">Editar perfil</button>
-                <button appButton variant="danger" type="button" (click)="confirmingDelete.set(true)">Excluir conta</button>
+                <button appButton variant="danger" type="button" (click)="confirmingDelete.set(true)">{{ hasWorkerProfile ? 'Excluir perfil de produtor' : 'Excluir conta' }}</button>
               </div>
             }
           }
         }
       }
 
-      <div>
-        <button appButton variant="secondary" type="button" (click)="signOut()"><app-icon name="logout" [size]="20" />Sair</button>
+      <div class="cluster">
+        <app-role-switch-button area="farmer" />
+        <button appButton variant="secondary" type="button" (click)="switcher.signOut()"><app-icon name="logout" [size]="20" />Sair</button>
       </div>
     </div>
 
     <app-confirm-dialog
       [open]="confirmingDelete()"
-      title="Excluir conta?"
-      message="Seu perfil, sua foto, suas fazendas (com as fotos) e seus serviços serão removidos do Ruraliza. Essa ação não pode ser desfeita."
-      confirmLabel="Excluir conta"
+      [title]="hasWorkerProfile ? 'Excluir perfil de produtor?' : 'Excluir conta?'"
+      [message]="'Seu perfil, sua foto, suas fazendas (com as fotos) e seus serviços serão removidos do Ruraliza. Essa ação não pode ser desfeita.' + (hasWorkerProfile ? ' Sua conta continua com o perfil de trabalhador.' : '')"
+      [confirmLabel]="hasWorkerProfile ? 'Excluir perfil' : 'Excluir conta'"
       confirmVariant="danger"
       [loading]="deleting()"
       (confirmed)="remove()"
@@ -104,8 +106,9 @@ export class FarmerProfilePage {
   private readonly farmerService = inject(FarmerService);
   private readonly currentUser = inject(CurrentUserService);
   private readonly toast = inject(ToastService);
-  private readonly router = inject(Router);
+  protected readonly switcher = inject(RoleSwitchService);
   private readonly farmerId = this.currentUser.requireId('farmer');
+  readonly hasWorkerProfile = this.currentUser.hasProfile('worker');
 
   readonly farmer = new RemoteData(() => this.farmerService.getFarmer(this.farmerId));
 
@@ -183,15 +186,10 @@ export class FarmerProfilePage {
     this.deleting.set(true);
     this.farmerService.deleteFarmer(this.farmerId).subscribe({
       next: () => {
-        this.toast.success('Conta excluída.');
-        this.signOut();
+        this.toast.success(this.hasWorkerProfile ? 'Perfil de produtor excluído.' : 'Conta excluída.');
+        this.switcher.profileRemoved('farmer');
       },
       error: () => this.deleting.set(false)
     });
-  }
-
-  signOut(): void {
-    this.currentUser.clear();
-    this.router.navigateByUrl('/entrar');
   }
 }

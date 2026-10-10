@@ -66,6 +66,9 @@ export class JobsPage {
   private readonly currentUser = inject(CurrentUserService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+
+  // Perfil de produtor da mesma conta: as vagas dele aparecem marcadas como "Sua vaga".
+  readonly ownFarmerId = computed(() => this.currentUser.user()?.profiles.farmer ?? null);
   private readonly searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
 
   readonly sortOptions = SORT_OPTIONS;

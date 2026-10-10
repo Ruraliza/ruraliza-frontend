@@ -104,7 +104,7 @@
       @if (list.length) {
         <div class="grid-cards">
           @for (job of list; track job.id) {
-            <app-service-card [service]="job" [link]="['/trabalhador/vagas', job.id]" [showStatus]="false" />
+            <app-service-card [service]="job" [link]="['/trabalhador/vagas', job.id]" [showStatus]="false" [own]="job.farmer_id === ownFarmerId()" />
           }
         </div>
       } @else if (anyFilter()) {

@@ -29,7 +29,9 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
       <div class="body">
         <div class="top">
           <span appCategoryChip>{{ service().category }}</span>
-          @if (expired()) {
+          @if (own()) {
+            <span class="own">Sua vaga</span>
+          } @else if (expired()) {
             <span class="expired">Prazo encerrado</span>
           } @else if (showStatus()) {
             <app-status-badge [status]="service().status" />
@@ -69,6 +71,7 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
     .meta { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); }
     .deadline { color: var(--orange-700); font-weight: 600; }
     .expired { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--ink-muted); font-size: 14px; font-weight: 600; }
+    .own { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-size: 14px; font-weight: 600; }
     .price { font: 700 24px/30px var(--font-display); font-variant-numeric: tabular-nums; margin-top: var(--space-1); }
     .pending { justify-self: start; padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-weight: 600; }
   `
@@ -78,6 +81,8 @@ export class ServiceCard {
   readonly link = input.required<string | unknown[]>();
   readonly showStatus = input(true);
   readonly showCover = input(true);
+  // Vaga publicada pelo perfil de produtor da mesma conta (o trabalhador não pode se candidatar).
+  readonly own = input(false);
 
   readonly price = computed(() => formatBRL(this.service().price));
   readonly hours = computed(() => formatHours(this.service().duration));

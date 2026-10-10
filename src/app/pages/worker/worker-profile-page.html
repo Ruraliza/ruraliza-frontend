@@ -119,23 +119,24 @@
 
           <div class="form-actions">
             <button appButton variant="secondary" type="button" (click)="startEdit(w)">Editar perfil</button>
-            <button appButton variant="danger" type="button" (click)="confirmingDelete.set(true)">Excluir conta</button>
+            <button appButton variant="danger" type="button" (click)="confirmingDelete.set(true)">{{ hasFarmerProfile ? 'Excluir perfil de trabalhador' : 'Excluir conta' }}</button>
           </div>
         }
       }
     }
   }
 
-  <div>
-    <button appButton variant="secondary" type="button" (click)="signOut()"><app-icon name="logout" [size]="20" />Sair</button>
+  <div class="cluster">
+    <app-role-switch-button area="worker" />
+    <button appButton variant="secondary" type="button" (click)="switcher.signOut()"><app-icon name="logout" [size]="20" />Sair</button>
   </div>
 </div>
 
 <app-confirm-dialog
   [open]="confirmingDelete()"
-  title="Excluir conta?"
-  message="Seu perfil, sua foto, seu currículo e suas candidaturas serão removidos do Ruraliza. Essa ação não pode ser desfeita."
-  confirmLabel="Excluir conta"
+  [title]="hasFarmerProfile ? 'Excluir perfil de trabalhador?' : 'Excluir conta?'"
+  [message]="'Seu perfil, sua foto, seu currículo e suas candidaturas serão removidos do Ruraliza. Essa ação não pode ser desfeita.' + (hasFarmerProfile ? ' Sua conta continua com o perfil de produtor.' : '')"
+  [confirmLabel]="hasFarmerProfile ? 'Excluir perfil' : 'Excluir conta'"
   confirmVariant="danger"
   [loading]="deleting()"
   (confirmed)="remove()"

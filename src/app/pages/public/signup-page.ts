@@ -1,10 +1,13 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Observable, map } from 'rxjs';
+import { SessionUser } from '../../../models/auth.model';
 import { FarmerService } from '../../core/api/farmer.service';
 import { WorkerService } from '../../core/api/worker.service';
 import { CurrentUserService, UserRole } from '../../core/session/current-user.service';
+import { ROLE_HOME, roleFromSlug } from '../../core/session/roles';
 import { ToastService } from '../../core/toast/toast.service';
 import { cpfValidator } from '../../shared/utils/cpf';
 import { Button } from '../../shared/ui/button';
@@ -16,21 +19,21 @@ import { CONFIRMATION_MESSAGES, PASSWORD_HINT, PASSWORD_MESSAGES, matchesField, 
 import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeValidator } from '../../shared/utils/resume';
 import { draftParams, hasDraft } from '../../shared/utils/service-draft';
 
-const COPY: Record<UserRole, { title: string; intro: string; home: string }> = {
-  farmer: {
-    title: 'Cadastro de produtor',
-    intro: 'Com seu perfil você publica serviços e escolhe quem vai executar.',
-    home: '/produtor'
-  },
-  worker: {
-    title: 'Cadastro de trabalhador',
-    intro: 'Com seu perfil você encontra vagas no campo e se candidata.',
-    home: '/trabalhador'
-  }
-};
+export interface RoleChoice {
+  value: UserRole;
+  title: string;
+  description: string;
+  icon: 'farm' | 'briefcase';
+}
 
-// Cadastro de produtor ou trabalhador (o papel vem do `data` da rota).
-// Sucesso já define o usuário atual e leva ao painel.
+export const ROLE_CHOICES: RoleChoice[] = [
+  { value: 'farmer', title: 'Sou produtor', description: 'Publico serviços na minha fazenda e escolho quem vai executar.', icon: 'farm' },
+  { value: 'worker', title: 'Sou trabalhador', description: 'Procuro vagas no campo e me candidato aos serviços.', icon: 'briefcase' }
+];
+
+// Cadastro único: a conta começa com o perfil escolhido nas alternativas (produtor ou trabalhador).
+// O outro perfil pode ser criado depois, pelo menu, na mesma conta.
+// `?papel=produtor|trabalhador` já deixa uma alternativa marcada. Sucesso já define o usuário atual e leva ao painel.
 @Component({
   selector: 'app-signup-page',
   imports: [ReactiveFormsModule, RouterLink, Button, FormField, Icon, MaskedInput, PasswordReveal],
@@ -46,10 +49,23 @@ const COPY: Record<UserRole, { title: string; intro: string; home: string }> = {
     .pick:hover { background: var(--surface-sunken); }
     .pick:focus-within { box-shadow: var(--focus-ring); }
     .file-name { overflow-wrap: anywhere; }
+
+    /* Alternativas do tipo de conta: cartões com rádio. */
+    .choices { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); margin: 0; padding: 0; border: 0; }
+    .choices legend { margin-bottom: var(--space-2); font-weight: 600; }
+    .choice {
+      display: grid; grid-template-columns: auto 1fr; gap: var(--space-1) var(--space-3); align-items: start; padding: var(--space-4);
+      border-radius: var(--radius-md); border: 2px solid var(--line); background: var(--surface-raised); cursor: pointer;
+    }
+    .choice:hover { border-color: var(--mata); }
+    .choice:has(input:checked) { border-color: var(--mata); background: var(--broto-soft); }
+    .choice:has(input:focus-visible) { box-shadow: var(--focus-ring); }
+    .choice .icon { grid-row: span 2; display: grid; place-items: center; width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--broto-soft); }
+    .choice-error { color: var(--danger); font-weight: 600; }
   `
 })
-export class SignupPage {
-  readonly role = input.required<UserRole>();
+export class SignupPage implements OnInit {
+  readonly papel = input<string>();
   // Rascunho de vaga vindo da landing ("Monte uma vaga"), via query params.
   readonly servico = input<string>();
   readonly categoria = input<string>();
@@ -63,12 +79,12 @@ export class SignupPage {
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
 
-  readonly copy = computed(() => COPY[this.role()]);
+  readonly choices = ROLE_CHOICES;
   readonly saving = signal(false);
   readonly draft = computed(() => ({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor() }));
-  readonly hasDraft = computed(() => this.role() === 'farmer' && hasDraft(this.draft()));
 
   readonly form = this.fb.group({
+    role: this.fb.control<UserRole | null>(null, Validators.required),
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required, Validators.minLength(10)]],
@@ -80,6 +96,9 @@ export class SignupPage {
     resume: this.fb.control<File | null>(null, resumeValidator) // só trabalhador; enviado depois do cadastro
   });
 
+  readonly role = toSignal(this.form.controls.role.valueChanges, { initialValue: null });
+  readonly hasDraft = computed(() => this.role() === 'farmer' && hasDraft(this.draft()));
+
   readonly phoneMessages = { minlength: 'Digite o telefone com DDD, só números.' };
   readonly passwordHint = PASSWORD_HINT;
   readonly passwordMessages = PASSWORD_MESSAGES;
@@ -89,6 +108,12 @@ export class SignupPage {
 
   constructor() {
     revalidateWith(this.form.controls.password, this.form.controls.confirmation);
+  }
+
+  ngOnInit(): void {
+    // Alternativa já marcada pelo link de origem (landing: "Quero trabalhar", "Monte uma vaga"...).
+    const preset = roleFromSlug(this.papel());
+    if (preset) this.form.controls.role.setValue(preset);
   }
 
   pickResume(input: HTMLInputElement): void {
@@ -106,20 +131,23 @@ export class SignupPage {
     this.form.markAllAsTouched();
     if (this.form.invalid) return;
 
+    const role = this.form.controls.role.value;
+    if (!role) return;
+
     this.saving.set(true);
-    this.create().subscribe({
-      next: (id) => {
-        this.currentUser.set({ role: this.role(), id });
-        const resume = this.role() === 'worker' ? this.form.controls.resume.value : null;
+    this.create(role).subscribe({
+      next: (user) => {
+        this.currentUser.set(user);
+        const resume = role === 'worker' ? this.form.controls.resume.value : null;
         if (resume) {
-          this.sendResume(id, resume);
+          this.sendResume(user.id, resume);
           return;
         }
         this.toast.success('Cadastro concluído. Boas-vindas ao Ruraliza!');
         if (this.hasDraft()) {
           this.router.navigate(['/produtor/servicos/novo'], { queryParams: draftParams(this.draft()) });
         } else {
-          this.router.navigateByUrl(this.copy().home);
+          this.router.navigateByUrl(ROLE_HOME[role]);
         }
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
@@ -131,7 +159,7 @@ export class SignupPage {
     this.workerService.uploadResume(workerId, resume).subscribe({
       next: () => {
         this.toast.success('Cadastro concluído com o currículo. Boas-vindas ao Ruraliza!');
-        this.router.navigateByUrl(this.copy().home);
+        this.router.navigateByUrl(ROLE_HOME.worker);
       },
       error: () => {
         // A conta já existe: leva ao perfil, onde dá para reenviar o currículo.
@@ -141,15 +169,16 @@ export class SignupPage {
     });
   }
 
-  private create(): Observable<number> {
+  // A resposta do cadastro já traz a sessão da conta nova.
+  private create(role: UserRole): Observable<SessionUser> {
     const { name, email, phone, cpf, password, experience, certificates } = this.form.getRawValue();
     const base = { name: name.trim(), email: email.trim(), phone, cpf, password };
 
-    if (this.role() === 'farmer') {
-      return this.farmerService.createFarmer(base).pipe(map((res) => res.farmer.id));
+    if (role === 'farmer') {
+      return this.farmerService.createFarmer(base).pipe(map((res) => res.user));
     }
     return this.workerService
       .createWorker({ ...base, experience: experience.trim() || null, certificates: certificates.trim() || null })
-      .pipe(map((res) => res.worker.id));
+      .pipe(map((res) => res.user));
   }
 }

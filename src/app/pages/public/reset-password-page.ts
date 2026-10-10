@@ -23,7 +23,7 @@ import { AuthPrefill, readResetState } from './auth-prefill';
         <div class="page-header">
           <div>
             <h1>Crie uma nova senha</h1>
-            <p class="muted">Para a conta de {{ r.role === 'farmer' ? 'produtor' : 'trabalhador' }} <b>{{ r.email }}</b>.</p>
+            <p class="muted">Para a conta <b>{{ r.email }}</b>. A nova senha vale para os perfis de produtor e de trabalhador.</p>
           </div>
         </div>
 
@@ -87,9 +87,9 @@ export class ResetPasswordPage {
 
     this.saving.set(true);
     this.auth.resetPassword({ token, password: this.form.controls.password.value }).subscribe({
-      next: ({ user }) => {
+      next: () => {
         this.toast.success('Senha redefinida. Entre com a nova senha.');
-        const state: AuthPrefill = { role: user.role, email: this.reset?.email ?? '' };
+        const state: AuthPrefill = { email: this.reset?.email ?? '' };
         // replaceUrl: voltar no navegador não reabre esta tela com o token já usado.
         this.router.navigateByUrl('/entrar', { state, replaceUrl: true });
       },

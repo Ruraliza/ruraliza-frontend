@@ -1,10 +1,8 @@
 <div class="container page">
-  <a class="back-link" routerLink="/cadastro">← Voltar</a>
-
   <div class="page-header">
     <div>
-      <h1>{{ copy().title }}</h1>
-      <p class="muted">{{ copy().intro }}</p>
+      <h1>Criar conta</h1>
+      <p class="muted">Uma conta só, com um e-mail e uma senha. Depois, se quiser, você ativa o outro perfil pelo menu.</p>
     </div>
   </div>
 
@@ -13,6 +11,20 @@
   }
 
   <form class="form card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <fieldset class="choices" [attr.aria-describedby]="form.controls.role.touched && form.controls.role.invalid ? 'role-error' : null">
+      <legend>Como você vai usar o Ruraliza?</legend>
+      @for (choice of choices; track choice.value) {
+        <label class="choice">
+          <span class="icon"><app-icon [name]="choice.icon" [size]="28" /></span>
+          <span class="cluster"><input type="radio" formControlName="role" [value]="choice.value"><b>{{ choice.title }}</b></span>
+          <span class="t-body-sm muted">{{ choice.description }}</span>
+        </label>
+      }
+      @if (form.controls.role.touched && form.controls.role.invalid) {
+        <p id="role-error" class="t-body-sm choice-error" role="alert">Escolha se você é produtor ou trabalhador.</p>
+      }
+    </fieldset>
+
     <app-form-field label="Nome completo" fieldId="name" [control]="form.controls.name">
       <input formControlName="name" autocomplete="name" placeholder="Ex.: Carlos Aguiar">
     </app-form-field>
@@ -69,4 +81,6 @@
       <button appButton type="submit" [loading]="saving()">Criar conta</button>
     </div>
   </form>
+
+  <p class="muted">Já tem conta? <a routerLink="/entrar">Entrar</a></p>
 </div>

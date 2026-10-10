@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { PasswordChangeInput } from '../../../models/auth.model';
+import { PasswordChangeInput, SessionUser } from '../../../models/auth.model';
 import { Farmer, FarmerInput, FarmerUpdate } from '../../../models/farmer.model';
 import { Farm, FarmInput, FarmUpdate } from '../../../models/farm.model';
 import { FarmerServiceItem, Service, ServiceInput, ServiceUpdate, ServiceWithFarm } from '../../../models/service.model';
@@ -25,8 +25,9 @@ export class FarmerService {
     return this.http.get<Farmer>(`${this.apiUrl}/${farmerId}`);
   }
 
-  createFarmer(farmer: FarmerInput): Observable<{ message: string; farmer: Farmer }> {
-    return this.http.post<{ message: string; farmer: Farmer }>(this.apiUrl, farmer);
+  // Cadastro: cria a conta com este perfil e já devolve a sessão (`user`).
+  createFarmer(farmer: FarmerInput): Observable<{ message: string; farmer: Farmer; user: SessionUser }> {
+    return this.http.post<{ message: string; farmer: Farmer; user: SessionUser }>(this.apiUrl, farmer);
   }
 
   updateFarmer(farmerId: number, changes: FarmerUpdate): Observable<{ message: string; farmer: Farmer }> {

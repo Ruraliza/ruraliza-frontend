@@ -5,10 +5,15 @@ import { SessionUser, UserRole } from '../../../models/auth.model';
 export type { UserRole };
 
 // Quem entrou com e-mail e senha, guardado na aba atual.
-// A API ainda não emite token de sessão: isto só lembra o perfil depois do login.
+// A API ainda não emite token de sessão: isto só lembra a conta depois do login.
+// `role`/`id` são o painel aberto; `profiles` diz quais perfis a conta tem.
 export type CurrentUser = SessionUser;
 
 export const CURRENT_USER_STORAGE_KEY = 'ruraliza.currentUser';
+
+function isProfileId(value: unknown): value is number | null {
+  return value === null || Number.isInteger(value);
+}
 
 @Injectable({ providedIn: 'root' })
 export class CurrentUserService {
@@ -32,6 +37,20 @@ export class CurrentUserService {
     }
   }
 
+  hasProfile(role: UserRole): boolean {
+    return (this.state()?.profiles[role] ?? null) !== null;
+  }
+
+  // Abre o painel de outro perfil que a conta já tem, só nesta aba (sem avisar a API).
+  activate(role: UserRole): void {
+    const user = this.state();
+    const id = user?.profiles[role] ?? null;
+    if (!user || id === null) {
+      throw new Error(`A conta não tem perfil do tipo "${role}".`);
+    }
+    this.set({ ...user, role, id });
+  }
+
   // Id do usuário atual para o papel esperado. Falha rápido se a tela
   // foi aberta sem o perfil certo (o guard deveria ter impedido).
   requireId(role: UserRole): number {
@@ -50,8 +69,17 @@ export class CurrentUserService {
 
     try {
       const parsed = JSON.parse(raw) as Partial<CurrentUser>;
-      if ((parsed.role === 'farmer' || parsed.role === 'worker') && Number.isInteger(parsed.id)) {
-        return { role: parsed.role, id: parsed.id as number };
+      const { account_id, role, id, profiles } = parsed;
+      if (
+        Number.isInteger(account_id) &&
+        (role === 'farmer' || role === 'worker') &&
+        Number.isInteger(id) &&
+        profiles &&
+        isProfileId(profiles.farmer) &&
+        isProfileId(profiles.worker) &&
+        profiles[role] === id
+      ) {
+        return { account_id: account_id as number, role, id: id as number, profiles: { farmer: profiles.farmer, worker: profiles.worker } };
       }
     } catch {
       // cai no aviso abaixo

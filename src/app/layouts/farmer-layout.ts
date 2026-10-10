@@ -4,7 +4,7 @@ import { AppShell, NavItem } from './app-shell';
 @Component({
   selector: 'app-farmer-layout',
   imports: [AppShell],
-  template: `<app-shell [items]="items" areaLabel="Área do produtor" />`
+  template: `<app-shell [items]="items" area="farmer" areaLabel="Área do produtor" />`
 })
 export class FarmerLayout {
   readonly items: NavItem[] = [

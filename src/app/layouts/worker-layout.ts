@@ -4,7 +4,7 @@ import { AppShell, NavItem } from './app-shell';
 @Component({
   selector: 'app-worker-layout',
   imports: [AppShell],
-  template: `<app-shell [items]="items" areaLabel="Área do trabalhador" />`
+  template: `<app-shell [items]="items" area="worker" areaLabel="Área do trabalhador" />`
 })
 export class WorkerLayout {
   readonly items: NavItem[] = [
