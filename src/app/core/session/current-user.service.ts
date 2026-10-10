@@ -1,13 +1,12 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { SessionUser, UserRole } from '../../../models/auth.model';
 
-// Sem autenticação: é só a seleção de um perfil de teste, guardada na aba atual.
-export type UserRole = 'farmer' | 'worker';
+export type { UserRole };
 
-export interface CurrentUser {
-  role: UserRole;
-  id: number;
-}
+// Quem entrou com e-mail e senha, guardado na aba atual.
+// A API ainda não emite token de sessão: isto só lembra o perfil depois do login.
+export type CurrentUser = SessionUser;
 
 export const CURRENT_USER_STORAGE_KEY = 'ruraliza.currentUser';
 
@@ -38,7 +37,7 @@ export class CurrentUserService {
   requireId(role: UserRole): number {
     const user = this.state();
     if (!user || user.role !== role) {
-      throw new Error(`Nenhum perfil de teste do tipo "${role}" selecionado.`);
+      throw new Error(`Nenhum perfil do tipo "${role}" entrou.`);
     }
     return user.id;
   }

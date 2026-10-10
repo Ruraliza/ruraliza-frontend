@@ -115,6 +115,8 @@
             </dl>
           </section>
 
+          <app-password-change [submit]="changePassword" />
+
           <div class="form-actions">
             <button appButton variant="secondary" type="button" (click)="startEdit(w)">Editar perfil</button>
             <button appButton variant="danger" type="button" (click)="confirmingDelete.set(true)">Excluir conta</button>
@@ -125,7 +127,7 @@
   }
 
   <div>
-    <button appButton variant="secondary" type="button" (click)="switchProfile()"><app-icon name="logout" [size]="20" />Trocar perfil de teste</button>
+    <button appButton variant="secondary" type="button" (click)="signOut()"><app-icon name="logout" [size]="20" />Sair</button>
   </div>
 </div>
 

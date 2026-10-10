@@ -41,7 +41,7 @@ export interface NavItem {
             </a>
           }
         </nav>
-        <button type="button" class="switch" (click)="switchProfile()"><app-icon name="logout" />Trocar perfil de teste</button>
+        <button type="button" class="switch" (click)="signOut()"><app-icon name="logout" />Sair</button>
       </aside>
 
       <main id="conteudo" tabindex="-1"><router-outlet /></main>
@@ -78,7 +78,7 @@ export class AppShell {
     ...this.items().filter((item) => !item.primary)
   ]);
 
-  switchProfile(): void {
+  signOut(): void {
     this.currentUser.clear();
     this.router.navigateByUrl('/entrar');
   }

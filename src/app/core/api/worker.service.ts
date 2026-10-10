@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { PasswordChangeInput } from '../../../models/auth.model';
 import { Worker, WorkerInput, WorkerUpdate } from '../../../models/worker.model';
 import { JobFilters, OpenService, Service } from '../../../models/service.model';
 import { ApplicationWithService, ServiceApplication } from '../../../models/service-application.model';
@@ -31,6 +32,11 @@ export class WorkerService {
 
   deleteWorker(workerId: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${workerId}`);
+  }
+
+  // Troca com a conta aberta: confirma a senha atual (sem código por e-mail).
+  changePassword(workerId: number, input: PasswordChangeInput): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`${this.apiUrl}/${workerId}/password`, input);
   }
 
   // Foto de perfil: o corpo é o próprio arquivo (o servidor reduz para ≤ 1000px e converte para WebP).

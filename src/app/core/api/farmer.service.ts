@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { PasswordChangeInput } from '../../../models/auth.model';
 import { Farmer, FarmerInput, FarmerUpdate } from '../../../models/farmer.model';
 import { Farm, FarmInput, FarmUpdate } from '../../../models/farm.model';
 import { FarmerServiceItem, Service, ServiceInput, ServiceUpdate, ServiceWithFarm } from '../../../models/service.model';
@@ -34,6 +35,11 @@ export class FarmerService {
 
   deleteFarmer(farmerId: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${farmerId}`);
+  }
+
+  // Troca com a conta aberta: confirma a senha atual (sem código por e-mail).
+  changePassword(farmerId: number, input: PasswordChangeInput): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`${this.apiUrl}/${farmerId}/password`, input);
   }
 
   // Foto de perfil: o corpo é o próprio arquivo (o servidor reduz para ≤ 1000px e converte para WebP).

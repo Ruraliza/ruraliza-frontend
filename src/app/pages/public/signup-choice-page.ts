@@ -28,7 +28,7 @@ import { Icon } from '../../shared/ui/icon';
         </a>
       </div>
 
-      <p class="muted">Já criou um perfil de teste? <a routerLink="/entrar">Entrar com perfil de teste</a></p>
+      <p class="muted">Já tem conta? <a routerLink="/entrar">Entrar</a></p>
     </div>
   `,
   styles: `

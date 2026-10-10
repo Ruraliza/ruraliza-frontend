@@ -11,6 +11,8 @@ import { Button } from '../../shared/ui/button';
 import { FormField } from '../../shared/ui/form-field';
 import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
+import { PasswordReveal } from '../../shared/ui/password-reveal';
+import { CONFIRMATION_MESSAGES, PASSWORD_HINT, PASSWORD_MESSAGES, matchesField, passwordValidators, revalidateWith } from '../../shared/utils/password';
 import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeValidator } from '../../shared/utils/resume';
 import { draftParams, hasDraft } from '../../shared/utils/service-draft';
 
@@ -31,7 +33,7 @@ const COPY: Record<UserRole, { title: string; intro: string; home: string }> = {
 // Sucesso já define o usuário atual e leva ao painel.
 @Component({
   selector: 'app-signup-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, FormField, Icon, MaskedInput],
+  imports: [ReactiveFormsModule, RouterLink, Button, FormField, Icon, MaskedInput, PasswordReveal],
   templateUrl: './signup-page.html',
   styles: `
     .draft-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--lime-100); }
@@ -71,14 +73,23 @@ export class SignupPage {
     email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required, Validators.minLength(10)]],
     cpf: ['', [Validators.required, cpfValidator]],
+    password: ['', passwordValidators],
+    confirmation: ['', [Validators.required, matchesField('password')]],
     experience: [''],
     certificates: [''],
     resume: this.fb.control<File | null>(null, resumeValidator) // só trabalhador; enviado depois do cadastro
   });
 
   readonly phoneMessages = { minlength: 'Digite o telefone com DDD, só números.' };
+  readonly passwordHint = PASSWORD_HINT;
+  readonly passwordMessages = PASSWORD_MESSAGES;
+  readonly confirmationMessages = CONFIRMATION_MESSAGES;
   readonly resumeMessages = RESUME_MESSAGES;
   readonly acceptedResume = ACCEPTED_RESUME;
+
+  constructor() {
+    revalidateWith(this.form.controls.password, this.form.controls.confirmation);
+  }
 
   pickResume(input: HTMLInputElement): void {
     const control = this.form.controls.resume;
@@ -131,8 +142,8 @@ export class SignupPage {
   }
 
   private create(): Observable<number> {
-    const { name, email, phone, cpf, experience, certificates } = this.form.getRawValue();
-    const base = { name: name.trim(), email: email.trim(), phone, cpf };
+    const { name, email, phone, cpf, password, experience, certificates } = this.form.getRawValue();
+    const base = { name: name.trim(), email: email.trim(), phone, cpf, password };
 
     if (this.role() === 'farmer') {
       return this.farmerService.createFarmer(base).pipe(map((res) => res.farmer.id));

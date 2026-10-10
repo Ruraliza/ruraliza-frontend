@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { WorkerService } from '../../core/api/worker.service';
 import { CurrentUserService } from '../../core/session/current-user.service';
 import { ToastService } from '../../core/toast/toast.service';
+import { PasswordChangeInput } from '../../../models/auth.model';
 import { Worker } from '../../../models/worker.model';
 import { RemoteData } from '../../shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '../../shared/utils/format';
@@ -15,6 +16,7 @@ import { ErrorState } from '../../shared/ui/error-state';
 import { FormField } from '../../shared/ui/form-field';
 import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
+import { PasswordChange } from '../../shared/ui/password-change';
 import { ResumeDialog } from '../../shared/ui/resume-dialog';
 import { Skeleton } from '../../shared/ui/skeleton';
 
@@ -25,7 +27,7 @@ const MAX_TEXT = 1000;
 // Perfil do trabalhador: foto, currículo, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
 @Component({
   selector: 'app-worker-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, ResumeDialog, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, PasswordChange, ResumeDialog, Skeleton],
   templateUrl: './worker-profile-page.html',
   styleUrl: './worker-profile-page.css'
 })
@@ -75,6 +77,8 @@ export class WorkerProfilePage {
       !w.resume_url && 'currículo'
     ].filter((item): item is string => !!item);
   });
+
+  readonly changePassword = (input: PasswordChangeInput) => this.workerService.changePassword(this.workerId, input);
 
   readonly phone = formatPhone;
   readonly cpf = formatCpf;
@@ -187,13 +191,13 @@ export class WorkerProfilePage {
     this.workerService.deleteWorker(this.workerId).subscribe({
       next: () => {
         this.toast.success('Conta excluída.');
-        this.switchProfile();
+        this.signOut();
       },
       error: () => this.deleting.set(false)
     });
   }
 
-  switchProfile(): void {
+  signOut(): void {
     this.currentUser.clear();
     this.router.navigateByUrl('/entrar');
   }

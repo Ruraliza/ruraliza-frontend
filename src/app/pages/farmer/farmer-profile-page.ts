@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FarmerService } from '../../core/api/farmer.service';
 import { CurrentUserService } from '../../core/session/current-user.service';
 import { ToastService } from '../../core/toast/toast.service';
+import { PasswordChangeInput } from '../../../models/auth.model';
 import { Farmer } from '../../../models/farmer.model';
 import { RemoteData } from '../../shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '../../shared/utils/format';
@@ -14,12 +15,13 @@ import { ErrorState } from '../../shared/ui/error-state';
 import { FormField } from '../../shared/ui/form-field';
 import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
+import { PasswordChange } from '../../shared/ui/password-change';
 import { Skeleton } from '../../shared/ui/skeleton';
 
 // Perfil do produtor: leitura, edição (id e cpf fixos) e remoção da conta.
 @Component({
   selector: 'app-farmer-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, PasswordChange, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -69,6 +71,8 @@ import { Skeleton } from '../../shared/ui/skeleton';
                 </dl>
               </section>
 
+              <app-password-change [submit]="changePassword" />
+
               <div class="form-actions">
                 <button appButton variant="secondary" type="button" (click)="startEdit(f)">Editar perfil</button>
                 <button appButton variant="danger" type="button" (click)="confirmingDelete.set(true)">Excluir conta</button>
@@ -79,7 +83,7 @@ import { Skeleton } from '../../shared/ui/skeleton';
       }
 
       <div>
-        <button appButton variant="secondary" type="button" (click)="switchProfile()"><app-icon name="logout" [size]="20" />Trocar perfil de teste</button>
+        <button appButton variant="secondary" type="button" (click)="signOut()"><app-icon name="logout" [size]="20" />Sair</button>
       </div>
     </div>
 
@@ -118,6 +122,8 @@ export class FarmerProfilePage {
   });
 
   readonly phoneMessages = { minlength: 'Digite o telefone com DDD, só números.' };
+
+  readonly changePassword = (input: PasswordChangeInput) => this.farmerService.changePassword(this.farmerId, input);
 
   readonly phone = formatPhone;
   readonly cpf = formatCpf;
@@ -178,13 +184,13 @@ export class FarmerProfilePage {
     this.farmerService.deleteFarmer(this.farmerId).subscribe({
       next: () => {
         this.toast.success('Conta excluída.');
-        this.switchProfile();
+        this.signOut();
       },
       error: () => this.deleting.set(false)
     });
   }
 
-  switchProfile(): void {
+  signOut(): void {
     this.currentUser.clear();
     this.router.navigateByUrl('/entrar');
   }

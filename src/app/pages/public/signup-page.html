@@ -29,6 +29,18 @@
       <input appMask="cpf" formControlName="cpf" inputmode="numeric" placeholder="000.000.000-00">
     </app-form-field>
 
+    <app-form-field label="Senha" fieldId="password" [hint]="passwordHint" [control]="form.controls.password" [messages]="passwordMessages">
+      <app-password-reveal>
+        <input type="password" formControlName="password" autocomplete="new-password">
+      </app-password-reveal>
+    </app-form-field>
+
+    <app-form-field label="Repita a senha" fieldId="confirmation" [control]="form.controls.confirmation" [messages]="confirmationMessages">
+      <app-password-reveal>
+        <input type="password" formControlName="confirmation" autocomplete="new-password">
+      </app-password-reveal>
+    </app-form-field>
+
     @if (role() === 'worker') {
       <app-form-field label="Experiência" fieldId="experience" [optional]="true" hint="Ex.: 5 anos em colheita de café." [control]="form.controls.experience">
         <input formControlName="experience">
