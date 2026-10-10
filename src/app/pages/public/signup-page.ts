@@ -9,6 +9,7 @@ import { ToastService } from '../../core/toast/toast.service';
 import { cpfValidator } from '../../shared/utils/cpf';
 import { Button } from '../../shared/ui/button';
 import { FormField } from '../../shared/ui/form-field';
+import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
 import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeValidator } from '../../shared/utils/resume';
 import { draftParams, hasDraft } from '../../shared/utils/service-draft';
@@ -30,9 +31,20 @@ const COPY: Record<UserRole, { title: string; intro: string; home: string }> = {
 // Sucesso já define o usuário atual e leva ao painel.
 @Component({
   selector: 'app-signup-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, FormField, MaskedInput],
+  imports: [ReactiveFormsModule, RouterLink, Button, FormField, Icon, MaskedInput],
   templateUrl: './signup-page.html',
-  styles: `.draft-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--lime-100); }`
+  styles: `
+    .draft-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--lime-100); }
+    /* Seletor de arquivo com cara de botão secundário (mesmo padrão do envio de foto de perfil). */
+    .pick {
+      display: inline-flex; align-items: center; gap: var(--space-2); min-height: 48px; padding: 0 var(--space-6);
+      border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface-raised);
+      color: var(--ink); font-weight: 600; cursor: pointer;
+    }
+    .pick:hover { background: var(--surface-sunken); }
+    .pick:focus-within { box-shadow: var(--focus-ring); }
+    .file-name { overflow-wrap: anywhere; }
+  `
 })
 export class SignupPage {
   readonly role = input.required<UserRole>();
