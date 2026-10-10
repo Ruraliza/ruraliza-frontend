@@ -1,13 +1,14 @@
-import { Component, input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { Worker } from '../../../models/worker.model';
 import { ApplicationStatus } from '../../../models/status';
 import { Avatar } from './avatar';
+import { ResumeDialog } from './resume-dialog';
 import { StatusBadge } from './status-badge';
 
 // Card de trabalhador (candidato). Ações entram por projeção de conteúdo.
 @Component({
   selector: 'app-worker-card',
-  imports: [Avatar, StatusBadge],
+  imports: [Avatar, ResumeDialog, StatusBadge],
   template: `
     <div class="head">
       <app-avatar [name]="worker().name" [photoUrl]="worker().photo_url" [size]="56" />
@@ -22,8 +23,17 @@ import { StatusBadge } from './status-badge';
       <div><dt>Experiência</dt><dd>{{ worker().experience || 'Não informada' }}</dd></div>
       <div><dt>Certificados</dt><dd>{{ worker().certificates || 'Nenhum informado' }}</dd></div>
       <div><dt>Cursos</dt><dd>{{ worker().courses || 'Nenhum informado' }}</dd></div>
+      <div>
+        <dt>Currículo</dt>
+        <dd>
+          @if (worker().resume_url) {
+            <button type="button" class="link" (click)="viewingResume.set(true)">Ver currículo (PDF)</button>
+          } @else { Não enviado }
+        </dd>
+      </div>
     </dl>
     <div class="actions"><ng-content /></div>
+    <app-resume-dialog [url]="viewingResume() ? worker().resume_url : null" [name]="worker().name" (closed)="viewingResume.set(false)" />
   `,
   styles: `
     :host {
@@ -37,9 +47,15 @@ import { StatusBadge } from './status-badge';
     dd { white-space: pre-line; }
     .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
     .actions:empty { display: none; }
+    .link {
+      padding: 0; border: 0; background: none; color: var(--mata);
+      text-decoration: underline; text-underline-offset: 3px; font-weight: 600;
+    }
   `
 })
 export class WorkerCard {
   readonly worker = input.required<Worker>();
   readonly status = input<ApplicationStatus | null>(null);
+
+  readonly viewingResume = signal(false);
 }

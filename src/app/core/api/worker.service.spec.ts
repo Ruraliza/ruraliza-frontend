@@ -62,6 +62,20 @@ describe('WorkerService', () => {
     expect(http.expectOne(`${base}/9/photo`).request.method).toBe('DELETE');
   });
 
+  it('uploads the resume as the raw PDF body and deletes it', () => {
+    const pdf = new Blob(['%PDF-1.4'], { type: 'application/pdf' });
+    service.uploadResume(9, pdf).subscribe();
+
+    const req = http.expectOne(`${base}/9/resume`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toBe(pdf);
+    expect(req.request.headers.get('Content-Type')).toBe('application/pdf');
+    req.flush({ message: 'ok', worker: {} });
+
+    service.deleteResume(9).subscribe();
+    expect(http.expectOne(`${base}/9/resume`).request.method).toBe('DELETE');
+  });
+
   it('applies for a service with the worker id', () => {
     service.applyForService(5, 9).subscribe((res) => expect(res.application.status).toBe('Pending'));
 

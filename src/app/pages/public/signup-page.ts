@@ -9,7 +9,9 @@ import { ToastService } from '../../core/toast/toast.service';
 import { cpfValidator } from '../../shared/utils/cpf';
 import { Button } from '../../shared/ui/button';
 import { FormField } from '../../shared/ui/form-field';
+import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
+import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeValidator } from '../../shared/utils/resume';
 import { draftParams, hasDraft } from '../../shared/utils/service-draft';
 
 const COPY: Record<UserRole, { title: string; intro: string; home: string }> = {
@@ -29,9 +31,20 @@ const COPY: Record<UserRole, { title: string; intro: string; home: string }> = {
 // Sucesso já define o usuário atual e leva ao painel.
 @Component({
   selector: 'app-signup-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, FormField, MaskedInput],
+  imports: [ReactiveFormsModule, RouterLink, Button, FormField, Icon, MaskedInput],
   templateUrl: './signup-page.html',
-  styles: `.draft-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--lime-100); }`
+  styles: `
+    .draft-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--lime-100); }
+    /* Seletor de arquivo com cara de botão secundário (mesmo padrão do envio de foto de perfil). */
+    .pick {
+      display: inline-flex; align-items: center; gap: var(--space-2); min-height: 48px; padding: 0 var(--space-6);
+      border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: var(--surface-raised);
+      color: var(--ink); font-weight: 600; cursor: pointer;
+    }
+    .pick:hover { background: var(--surface-sunken); }
+    .pick:focus-within { box-shadow: var(--focus-ring); }
+    .file-name { overflow-wrap: anywhere; }
+  `
 })
 export class SignupPage {
   readonly role = input.required<UserRole>();
@@ -59,10 +72,24 @@ export class SignupPage {
     phone: ['', [Validators.required, Validators.minLength(10)]],
     cpf: ['', [Validators.required, cpfValidator]],
     experience: [''],
-    certificates: ['']
+    certificates: [''],
+    resume: this.fb.control<File | null>(null, resumeValidator) // só trabalhador; enviado depois do cadastro
   });
 
   readonly phoneMessages = { minlength: 'Digite o telefone com DDD, só números.' };
+  readonly resumeMessages = RESUME_MESSAGES;
+  readonly acceptedResume = ACCEPTED_RESUME;
+
+  pickResume(input: HTMLInputElement): void {
+    const control = this.form.controls.resume;
+    control.setValue(input.files?.[0] ?? null);
+    control.markAsTouched();
+  }
+
+  clearResume(input: HTMLInputElement): void {
+    input.value = '';
+    this.form.controls.resume.setValue(null);
+  }
 
   submit(): void {
     this.form.markAllAsTouched();
@@ -72,6 +99,11 @@ export class SignupPage {
     this.create().subscribe({
       next: (id) => {
         this.currentUser.set({ role: this.role(), id });
+        const resume = this.role() === 'worker' ? this.form.controls.resume.value : null;
+        if (resume) {
+          this.sendResume(id, resume);
+          return;
+        }
         this.toast.success('Cadastro concluído. Boas-vindas ao Ruraliza!');
         if (this.hasDraft()) {
           this.router.navigate(['/produtor/servicos/novo'], { queryParams: draftParams(this.draft()) });
@@ -80,6 +112,21 @@ export class SignupPage {
         }
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
+    });
+  }
+
+  // Currículo escolhido no cadastro: sobe agora que o trabalhador existe.
+  private sendResume(workerId: number, resume: File): void {
+    this.workerService.uploadResume(workerId, resume).subscribe({
+      next: () => {
+        this.toast.success('Cadastro concluído com o currículo. Boas-vindas ao Ruraliza!');
+        this.router.navigateByUrl(this.copy().home);
+      },
+      error: () => {
+        // A conta já existe: leva ao perfil, onde dá para reenviar o currículo.
+        this.toast.info('Conta criada, mas o currículo não foi enviado. Tente de novo aqui no seu perfil.');
+        this.router.navigateByUrl('/trabalhador/perfil');
+      }
     });
   }
 

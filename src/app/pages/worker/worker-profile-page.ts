@@ -7,6 +7,7 @@ import { ToastService } from '../../core/toast/toast.service';
 import { Worker } from '../../../models/worker.model';
 import { RemoteData } from '../../shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '../../shared/utils/format';
+import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeErrors } from '../../shared/utils/resume';
 import { AvatarEditor } from '../../shared/ui/avatar-editor';
 import { Button } from '../../shared/ui/button';
 import { ConfirmDialog } from '../../shared/ui/confirm-dialog';
@@ -14,16 +15,17 @@ import { ErrorState } from '../../shared/ui/error-state';
 import { FormField } from '../../shared/ui/form-field';
 import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
+import { ResumeDialog } from '../../shared/ui/resume-dialog';
 import { Skeleton } from '../../shared/ui/skeleton';
 
 // Limites iguais aos da API.
 const MAX_BIO = 500;
 const MAX_TEXT = 1000;
 
-// Perfil do trabalhador: foto, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
+// Perfil do trabalhador: foto, currículo, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
 @Component({
   selector: 'app-worker-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, ResumeDialog, Skeleton],
   templateUrl: './worker-profile-page.html',
   styleUrl: './worker-profile-page.css'
 })
@@ -40,6 +42,8 @@ export class WorkerProfilePage {
   readonly editing = signal(false);
   readonly saving = signal(false);
   readonly photoBusy = signal(false);
+  readonly resumeBusy = signal(false);
+  readonly viewingResume = signal(false);
   readonly confirmingDelete = signal(false);
   readonly deleting = signal(false);
 
@@ -67,13 +71,15 @@ export class WorkerProfilePage {
       !w.photo_url && 'foto',
       !w.bio && 'apresentação',
       !w.experience && 'experiência',
-      !w.certificates && !w.courses && 'certificados ou cursos'
+      !w.certificates && !w.courses && 'certificados ou cursos',
+      !w.resume_url && 'currículo'
     ].filter((item): item is string => !!item);
   });
 
   readonly phone = formatPhone;
   readonly cpf = formatCpf;
   readonly date = formatDate;
+  readonly acceptedResume = ACCEPTED_RESUME;
 
   constructor() {
     this.worker.load();
@@ -141,6 +147,38 @@ export class WorkerProfilePage {
         this.worker.replace(worker);
       },
       error: () => this.photoBusy.set(false)
+    });
+  }
+
+  uploadResume(input: HTMLInputElement): void {
+    const file = input.files?.[0];
+    input.value = ''; // permite escolher o mesmo arquivo de novo
+    if (!file) return;
+    const errors = resumeErrors(file);
+    if (errors) {
+      this.toast.error(errors['pdf'] ? RESUME_MESSAGES.pdf : RESUME_MESSAGES.maxSize);
+      return;
+    }
+    this.resumeBusy.set(true);
+    this.workerService.uploadResume(this.workerId, file).subscribe({
+      next: ({ worker }) => {
+        this.resumeBusy.set(false);
+        this.toast.success('Currículo atualizado.');
+        this.worker.replace(worker);
+      },
+      error: () => this.resumeBusy.set(false)
+    });
+  }
+
+  removeResume(): void {
+    this.resumeBusy.set(true);
+    this.workerService.deleteResume(this.workerId).subscribe({
+      next: ({ worker }) => {
+        this.resumeBusy.set(false);
+        this.toast.success('Currículo removido.');
+        this.worker.replace(worker);
+      },
+      error: () => this.resumeBusy.set(false)
     });
   }
 

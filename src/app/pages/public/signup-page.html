@@ -37,6 +37,20 @@
       <app-form-field label="Certificados" fieldId="certificates" [optional]="true" hint="Ex.: NR-31, curso de tratorista." [control]="form.controls.certificates">
         <input formControlName="certificates">
       </app-form-field>
+
+      <app-form-field label="Currículo" fieldId="resume" [optional]="true" hint="Arquivo PDF de até 5 MB. Dá para enviar ou trocar depois, no seu perfil."
+        [control]="form.controls.resume" [messages]="resumeMessages">
+        <div class="cluster">
+          <label class="pick">
+            <input #resumeInput type="file" class="visually-hidden" [accept]="acceptedResume" (change)="pickResume(resumeInput)">
+            <app-icon name="plus" [size]="18" />{{ form.controls.resume.value ? 'Trocar currículo' : 'Escolher currículo' }}
+          </label>
+          @if (form.controls.resume.value; as file) {
+            <span class="file-name t-body-sm">{{ file.name }}</span>
+            <button appButton variant="ghost" type="button" (click)="clearResume(resumeInput)">Remover</button>
+          }
+        </div>
+      </app-form-field>
     }
 
     <div class="form-actions">
