@@ -44,6 +44,17 @@ export class WorkerService {
     return this.http.delete<{ message: string; worker: Worker }>(`${this.apiUrl}/${workerId}/photo`);
   }
 
+  // Currículo: o corpo é o próprio PDF (o servidor guarda como chegou, até 5 MB).
+  uploadResume(workerId: number, pdf: Blob): Observable<{ message: string; worker: Worker }> {
+    return this.http.post<{ message: string; worker: Worker }>(`${this.apiUrl}/${workerId}/resume`, pdf, {
+      headers: { 'Content-Type': 'application/pdf' }
+    });
+  }
+
+  deleteResume(workerId: number): Observable<{ message: string; worker: Worker }> {
+    return this.http.delete<{ message: string; worker: Worker }>(`${this.apiUrl}/${workerId}/resume`);
+  }
+
   getWorkerApplications(workerId: number): Observable<ApplicationWithService[]> {
     return this.http.get<ApplicationWithService[]>(`${this.apiUrl}/${workerId}/applications`);
   }

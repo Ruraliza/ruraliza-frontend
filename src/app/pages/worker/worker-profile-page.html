@@ -84,6 +84,24 @@
           </section>
 
           <section class="card stack">
+            <h2 class="t-h3">Currículo</h2>
+            @if (w.resume_url) {
+              <p><a [href]="asset(w.resume_url)" target="_blank" rel="noopener">Ver currículo (PDF)</a></p>
+            } @else {
+              <p class="muted">Nenhum currículo enviado. PDF de até 5 MB.</p>
+            }
+            <input #resumeInput type="file" class="visually-hidden" [accept]="acceptedResume" (change)="uploadResume(resumeInput)">
+            <div class="form-actions">
+              <button appButton variant="secondary" type="button" [loading]="resumeBusy()" (click)="resumeInput.click()">
+                {{ w.resume_url ? 'Trocar currículo' : 'Enviar currículo' }}
+              </button>
+              @if (w.resume_url) {
+                <button appButton variant="ghost" type="button" [disabled]="resumeBusy()" (click)="removeResume()">Remover</button>
+              }
+            </div>
+          </section>
+
+          <section class="card stack">
             <h2 class="t-h3">Contato e conta</h2>
             <dl class="details">
               <div><dt>E-mail</dt><dd>{{ w.email }}</dd></div>
@@ -110,7 +128,7 @@
 <app-confirm-dialog
   [open]="confirmingDelete()"
   title="Excluir conta?"
-  message="Seu perfil, sua foto e suas candidaturas serão removidos do Ruraliza. Essa ação não pode ser desfeita."
+  message="Seu perfil, sua foto, seu currículo e suas candidaturas serão removidos do Ruraliza. Essa ação não pode ser desfeita."
   confirmLabel="Excluir conta"
   confirmVariant="danger"
   [loading]="deleting()"

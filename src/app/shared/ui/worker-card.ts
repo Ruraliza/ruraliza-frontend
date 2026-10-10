@@ -1,6 +1,7 @@
 import { Component, input } from '@angular/core';
 import { Worker } from '../../../models/worker.model';
 import { ApplicationStatus } from '../../../models/status';
+import { apiAsset } from '../utils/images';
 import { Avatar } from './avatar';
 import { StatusBadge } from './status-badge';
 
@@ -22,6 +23,14 @@ import { StatusBadge } from './status-badge';
       <div><dt>Experiência</dt><dd>{{ worker().experience || 'Não informada' }}</dd></div>
       <div><dt>Certificados</dt><dd>{{ worker().certificates || 'Nenhum informado' }}</dd></div>
       <div><dt>Cursos</dt><dd>{{ worker().courses || 'Nenhum informado' }}</dd></div>
+      <div>
+        <dt>Currículo</dt>
+        <dd>
+          @if (worker().resume_url; as url) {
+            <a [href]="asset(url)" target="_blank" rel="noopener">Ver currículo (PDF)</a>
+          } @else { Não enviado }
+        </dd>
+      </div>
     </dl>
     <div class="actions"><ng-content /></div>
   `,
@@ -42,4 +51,6 @@ import { StatusBadge } from './status-badge';
 export class WorkerCard {
   readonly worker = input.required<Worker>();
   readonly status = input<ApplicationStatus | null>(null);
+
+  readonly asset = apiAsset;
 }
