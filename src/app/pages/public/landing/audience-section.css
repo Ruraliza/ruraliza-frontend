@@ -1,7 +1,7 @@
 :host { display: block; --block-bg: var(--lime-100); --pattern-color: var(--lime-500); --icon-bg: var(--lime-500); }
 :host(.mirror) { --block-bg: var(--orange-100); --pattern-color: var(--orange-500); --icon-bg: var(--orange-500); }
 
-.audience { position: relative; padding-bottom: var(--space-24); scroll-margin-top: var(--header-height); }
+.audience { position: relative; padding-bottom: var(--space-24); scroll-margin-top: var(--header-offset); }
 .bleed { aspect-ratio: 4 / 3; margin-bottom: var(--space-12); }
 
 .content { display: grid; gap: var(--space-6); justify-items: start; }

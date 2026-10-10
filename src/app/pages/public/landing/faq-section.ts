@@ -24,7 +24,7 @@ import { Icon } from '../../../shared/ui/icon';
     </section>
   `,
   styles: `
-    .faq { padding-block: var(--space-24); background: var(--bg); scroll-margin-top: var(--header-height); }
+    .faq { padding-block: var(--space-24); background: var(--bg); scroll-margin-top: var(--header-offset); }
     .grid { display: grid; gap: var(--space-8); }
     @media (min-width: 1024px) { .grid { grid-template-columns: 1fr 1.6fr; gap: var(--space-16); } }
     h2 { font: 800 clamp(34px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: -0.03em; }

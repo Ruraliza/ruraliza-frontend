@@ -3,7 +3,7 @@
   min-height: min(92svh, 860px);
   display: flex; align-items: flex-end;
   color: var(--on-dark);
-  padding: calc(var(--header-height) + var(--space-12)) 0 var(--space-16);
+  padding: calc(var(--header-offset) + var(--space-12)) 0 var(--space-16);
 }
 .hero-photo { position: absolute; inset: 0; z-index: -2; --photo-position: 62% 40%; }
 .overlay {

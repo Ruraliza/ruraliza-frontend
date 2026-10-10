@@ -27,7 +27,7 @@ import { Icon } from './icon';
   styles: `
     :host {
       position: fixed; z-index: 60; top: 0; left: 0; right: 0;
-      padding-top: env(safe-area-inset-top); pointer-events: none;
+      padding-top: var(--safe-top); pointer-events: none;
     }
     .banner {
       pointer-events: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-2);

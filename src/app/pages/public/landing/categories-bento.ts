@@ -28,7 +28,7 @@ import { RevealDirective } from './reveal.directive';
     </section>
   `,
   styles: `
-    .cats { padding-block: var(--space-24); background: var(--bg-alt); scroll-margin-top: var(--header-height); }
+    .cats { padding-block: var(--space-24); background: var(--bg-alt); scroll-margin-top: var(--header-offset); }
     h2 { font: 800 clamp(34px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: -0.03em; }
     .support { margin: var(--space-4) 0 var(--space-12); font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 48ch; text-wrap: pretty; }
 
