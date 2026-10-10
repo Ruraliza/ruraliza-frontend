@@ -16,13 +16,15 @@ import { FormField } from '../../shared/ui/form-field';
 import { Icon } from '../../shared/ui/icon';
 import { MaskedInput } from '../../shared/ui/masked-input';
 import { PasswordChange } from '../../shared/ui/password-change';
+import { InstallAppButton } from '../../shared/ui/install-app-button';
+import { PushToggle } from '../../shared/ui/push-toggle';
 import { RoleSwitchButton } from '../../shared/ui/role-switch-button';
 import { Skeleton } from '../../shared/ui/skeleton';
 
 // Perfil do produtor: leitura, edição (id e cpf fixos) e remoção da conta.
 @Component({
   selector: 'app-farmer-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, MaskedInput, PasswordChange, RoleSwitchButton, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, RoleSwitchButton, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -82,6 +84,11 @@ import { Skeleton } from '../../shared/ui/skeleton';
           }
         }
       }
+
+      <div class="cluster">
+        <app-push-toggle />
+        <app-install-app-button />
+      </div>
 
       <div class="cluster">
         <app-role-switch-button area="farmer" />

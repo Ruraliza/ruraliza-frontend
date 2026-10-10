@@ -4,11 +4,12 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { filter, map } from 'rxjs';
 import { Button } from '../shared/ui/button';
 import { Icon } from '../shared/ui/icon';
+import { InstallAppButton } from '../shared/ui/install-app-button';
 import { Logo } from '../shared/ui/logo';
 
 @Component({
   selector: 'app-public-layout',
-  imports: [RouterOutlet, RouterLink, Button, Icon, Logo],
+  imports: [RouterOutlet, RouterLink, Button, Icon, InstallAppButton, Logo],
   templateUrl: './public-layout.html',
   styleUrl: './public-layout.css'
 })

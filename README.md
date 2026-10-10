@@ -49,6 +49,7 @@ src/
     core/http/       errorInterceptor + ApiError (mensagens claras, repassa o erro)
     core/session/    CurrentUserService (quem entrou) + guard requireRole (não é segurança)
     core/toast/      ToastService
+    core/pwa/        AppUpdateService, ConnectivityService, InstallPromptService, PushService
     shared/ui/       Button, FormField, MaskedInput, StatusBadge, ServiceCard, ConfirmDialog,
                      Avatar, AvatarEditor, PhotoGridEditor, PhotoStrip...
     shared/utils/    CPF, máscaras, formatação pt-BR, RemoteData, fotos (images.ts), prazos (expiry.ts)
@@ -61,3 +62,13 @@ src/
 ## Renderização
 
 Só a landing (`/`) é pré-renderizada no build. `/produtor/**`, `/trabalhador/**`, `/cadastro/**` e `/entrar/**` renderizam no browser, porque dependem do perfil atual, do `state` da navegação e de rotas com `:id`.
+
+## App instalável (PWA)
+
+O build de produção registra o service worker do Angular (`ngsw-config.json`), que guarda o app em cache. Em desenvolvimento (`ng serve`) ele não é registrado; para testar, faça o build e sirva `dist/ruraliza-frontend/browser`.
+
+- **Cache:** o app (JS, CSS e `index.csr.html`, que serve para qualquer rota), as imagens e as fontes. A API não entra no cache: sem conexão o app abre, mostra a faixa de offline, e as chamadas falham.
+- **Versão nova:** quando um deploy novo é baixado, aparece a faixa "Nova versão disponível" com o botão Atualizar.
+- **Instalar:** o botão "Instalar app" aparece na landing e nas páginas de perfil quando o navegador permite. No iPhone ele explica o caminho pelo Compartilhar.
+- **Notificações push:** são ativadas no perfil e valem para os dois perfis da conta. Precisam das chaves VAPID no `.env` do backend. A inscrição é reenviada ao backend sempre que alguém entra, e "Sair" a desativa neste aparelho. Como a sessão fica no `sessionStorage`, clicar numa notificação com o app fechado abre a tela de entrada.
+- **Ícones:** `public/icons/` é gerado de `public/favicon.svg` com `node scripts/generate-pwa-icons.mjs`. Rode de novo se o logo mudar.

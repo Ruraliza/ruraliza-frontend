@@ -1,8 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ProfileCreateInput, SessionResponse, SessionUser, UserRole } from '../../../models/auth.model';
+import { PushSubscriptionInput, PushUnsubscribeInput } from '../../../models/push.model';
+import { SILENT_ERRORS } from '../http/error.interceptor';
 
 // Conta única: um e-mail e uma senha, com perfil de produtor e/ou de trabalhador.
 @Injectable({ providedIn: 'root' })
@@ -23,4 +25,17 @@ export class AccountService {
   setActiveRole(accountId: number, role: UserRole): Observable<SessionResponse> {
     return this.http.patch<SessionResponse>(`${this.apiUrl}/${accountId}/active-role`, { role });
   }
+
+  // Notificações push neste navegador (para os dois perfis da conta). Chamadas em segundo plano: sem toast.
+  subscribePush(accountId: number, input: PushSubscriptionInput): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/${accountId}/push-subscriptions`, input, { context: silent() });
+  }
+
+  unsubscribePush(accountId: number, input: PushUnsubscribeInput): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${accountId}/push-subscriptions`, { body: input, context: silent() });
+  }
+}
+
+function silent(): HttpContext {
+  return new HttpContext().set(SILENT_ERRORS, true);
 }
