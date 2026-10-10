@@ -1,7 +1,9 @@
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FarmerService } from '../../core/api/farmer.service';
+import { LiveUpdatesService } from '../../core/api/live-updates.service';
 import { CurrentUserService } from '../../core/session/current-user.service';
 import { ToastService } from '../../core/toast/toast.service';
 import { ApplicationWithWorker } from '../../../models/service-application.model';
@@ -46,6 +48,8 @@ export class ServiceDetailPage implements OnInit {
   private readonly farmerService = inject(FarmerService);
   private readonly farmerId = inject(CurrentUserService).requireId('farmer');
   private readonly toast = inject(ToastService);
+  private readonly live = inject(LiveUpdatesService);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly serviceId = computed(() => Number(this.id()));
 
@@ -119,6 +123,11 @@ export class ServiceDetailPage implements OnInit {
 
   ngOnInit(): void {
     this.load();
+    // Candidatura ou desistência de um trabalhador: atualiza a lista sem recarregar a página.
+    this.live
+      .serviceApplications(this.serviceId())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.refresh());
   }
 
   load(): void {

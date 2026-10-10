@@ -1,5 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { LiveUpdatesService } from '../../core/api/live-updates.service';
 import { WorkerService } from '../../core/api/worker.service';
 import { CurrentUserService } from '../../core/session/current-user.service';
 import { RemoteData } from '../../shared/utils/remote-data';
@@ -77,5 +79,10 @@ export class WorkerApplicationsPage {
 
   constructor() {
     this.applications.load();
+    // Aceite, recusa ou cancelamento pelo produtor: o status muda sem recarregar a página.
+    inject(LiveUpdatesService)
+      .workerApplications(this.workerId)
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.applications.refresh());
   }
 }
