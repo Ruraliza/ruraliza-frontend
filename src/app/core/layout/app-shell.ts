@@ -14,6 +14,9 @@ export interface NavItem {
   queryParams?: Record<string, string>;
   exact?: boolean;
   primary?: boolean; // ação central: botão flutuante no mobile, primeiro item destacado na sidebar
+  badge?: number; // contador (ex.: mensagens não lidas); 0 ou ausente não aparece
+  shortLabel?: string; // rótulo no menu de baixo do celular, onde cada item tem ~60px
+  sidebarOnly?: boolean; // só na sidebar (no celular outro item já leva à mesma tela)
 }
 
 // Casca das áreas logadas: banner de teste no topo, bottom nav (< 1024px)
@@ -41,6 +44,7 @@ export interface NavItem {
               [ariaCurrentWhenActive]="item.primary ? undefined : 'page'"
             >
               <app-icon [name]="item.icon" />{{ item.label }}
+              @if (item.badge) { <span class="badge" aria-hidden="true">{{ count(item.badge) }}</span><span class="visually-hidden">, {{ unreadLabel(item.badge) }}</span> }
             </a>
           }
         </nav>
@@ -58,7 +62,7 @@ export interface NavItem {
     </div>
 
     <nav class="bottom-nav" [attr.aria-label]="areaLabel()">
-      @for (item of items(); track item.label) {
+      @for (item of bottomItems(); track item.label) {
         <a
           [routerLink]="item.link"
           [queryParams]="item.queryParams"
@@ -67,8 +71,8 @@ export interface NavItem {
           [routerLinkActiveOptions]="{ exact: !!item.exact }"
           [ariaCurrentWhenActive]="item.primary ? undefined : 'page'"
         >
-          <span class="bubble"><app-icon [name]="item.icon" /></span>
-          <span class="label">{{ item.label }}</span>
+          <span class="bubble"><app-icon [name]="item.icon" />@if (item.badge) { <span class="badge" aria-hidden="true">{{ count(item.badge) }}</span> }</span>
+          <span class="label">{{ item.shortLabel ?? item.label }}@if (item.badge) { <span class="visually-hidden">, {{ unreadLabel(item.badge) }}</span> }</span>
         </a>
       }
     </nav>
@@ -98,6 +102,16 @@ export class AppShell {
     this.systemSession.clear();
     void this.router.navigateByUrl('/sistema/entrar');
   }
+
+  count(value: number): string {
+    return value > 99 ? '99+' : String(value);
+  }
+
+  unreadLabel(value: number): string {
+    return value === 1 ? '1 não lida' : `${value} não lidas`;
+  }
+
+  readonly bottomItems = computed(() => this.items().filter((item) => !item.sidebarOnly));
 
   // Na sidebar a ação principal vem primeiro.
   readonly sidebarItems = computed(() => [

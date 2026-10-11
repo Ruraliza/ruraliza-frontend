@@ -1,6 +1,8 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { Worker } from '@core/models/worker.model';
 import { ApplicationStatus } from '@core/models/status';
+import { WorkerReputation } from '@core/models/review.model';
+import { RatingBadge } from '@shared/domain/ui/rating-badge';
 import { Avatar } from '@shared/domain/ui/avatar';
 import { ResumeDialog } from '@shared/domain/ui/resume-dialog';
 import { StatusBadge } from '@shared/domain/ui/status-badge';
@@ -8,13 +10,18 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
 // Card de trabalhador (candidato). Ações entram por projeção de conteúdo.
 @Component({
   selector: 'app-worker-card',
-  imports: [Avatar, ResumeDialog, StatusBadge],
+  imports: [Avatar, RatingBadge, ResumeDialog, StatusBadge],
   template: `
     <div class="head">
       <app-avatar [name]="worker().name" [photoUrl]="worker().photo_url" [size]="56" />
       <div class="who">
         <h3>{{ worker().name }}</h3>
-        <p class="t-body-sm muted">CPF {{ worker().cpf }}</p>
+        @if (reputation(); as rep) {
+          <p class="rating">
+            <app-rating-badge [reputation]="rep" />
+            @if (rep.count > 0) { <button type="button" class="link" (click)="viewReviews.emit()">Ver avaliações</button> }
+          </p>
+        }
       </div>
       @if (status(); as s) { <app-status-badge [status]="s" /> }
     </div>
@@ -42,7 +49,8 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
       border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
     }
     .head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
-    .who { flex: 1; min-width: 160px; display: grid; }
+    .who { flex: 1; min-width: 160px; display: grid; gap: 2px; }
+    .rating { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); margin: 0; }
     .bio { color: var(--ink); white-space: pre-line; }
     dd { white-space: pre-line; }
     .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
@@ -56,6 +64,8 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
 export class WorkerCard {
   readonly worker = input.required<Worker>();
   readonly status = input<ApplicationStatus | null>(null);
+  readonly reputation = input<WorkerReputation | null>(null);
+  readonly viewReviews = output<void>();
 
   readonly viewingResume = signal(false);
 }

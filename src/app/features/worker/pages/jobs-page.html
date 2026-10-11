@@ -80,6 +80,15 @@
           </div>
         </fieldset>
 
+        <fieldset>
+          <legend class="t-label">Avaliação da fazenda</legend>
+          <div class="cluster">
+            @for (p of ratingPresets; track p.label) {
+              <button appCategoryChip [interactive]="true" [selected]="(filters().min_rating ?? null) === p.value" (click)="setRating(p.value)">{{ p.label }}</button>
+            }
+          </div>
+        </fieldset>
+
         <label class="sort">
           <span class="t-label">Ordenar por</span>
           <select [value]="filters().sort ?? 'recent'" (change)="setSort($event)">

@@ -73,23 +73,41 @@
                 <p class="muted">Libere o pagamento de {{ price() }} para {{ acceptedWorker()?.name }} e conclua o serviço.</p>
                 <p class="t-body-sm sim-note">Simulação: nenhum dinheiro é movimentado.</p>
               </div>
-              <button appButton type="button" (click)="ask({ kind: 'pay' })"><app-icon name="money" [size]="20" />Liberar pagamento</button>
+              <div class="actions">
+                @if (chat(); as c) {
+                  <a appButton variant="secondary" [routerLink]="['/produtor/conversas', c.id]">
+                    <app-icon name="chat" [size]="20" />{{ chatLabel() }}@if (c.unread) { <span class="unread">{{ c.unread }}</span> }
+                  </a>
+                }
+                <button appButton type="button" (click)="ask({ kind: 'pay' })"><app-icon name="money" [size]="20" />Liberar pagamento</button>
+              </div>
             </section>
           }
 
           @if (s.status === 'Completed') {
             <section class="done" role="status">
               <app-icon name="check" />
-              <p>Pagamento de {{ price() }} liberado para {{ acceptedWorker()?.name }} (simulação). Serviço concluído.</p>
+              <p>Pagamento de {{ price() }} liberado para {{ acceptedWorker()?.name ?? 'o trabalhador' }} (simulação). Serviço concluído.</p>
+              @if (chat(); as c) {
+                <a appButton variant="secondary" [routerLink]="['/produtor/conversas', c.id]">
+                  <app-icon name="chat" [size]="20" />{{ chatLabel() }}@if (c.unread) { <span class="unread">{{ c.unread }}</span> }
+                </a>
+              }
             </section>
+            <app-service-reviews role="farmer" [serviceId]="s.id" [subject]="acceptedWorker()?.name?.split(' ')?.[0] ?? 'o trabalhador'" [refresh]="tick()" />
           }
 
           <section class="stack" aria-labelledby="candidates-title">
-            <h2 id="candidates-title">Candidatos ({{ applications.data()?.length ?? 0 }})</h2>
+            <div class="candidates-head">
+              <h2 id="candidates-title">Candidatos ({{ applications.data()?.length ?? 0 }})</h2>
+              @if ((applications.data()?.length ?? 0) > 1) {
+                <app-segmented-control label="Ordenar candidatos" [options]="orderOptions" [value]="order()" (valueChange)="setOrder($event)" />
+              }
+            </div>
             @if (applications.data()?.length) {
               <div class="grid-cards">
-                @for (application of applications.data(); track application.id) {
-                  <app-worker-card [worker]="application.worker" [status]="application.status">
+                @for (application of sortedApplications(); track application.id) {
+                  <app-worker-card [worker]="application.worker" [status]="application.status" [reputation]="application.reputation" (viewReviews)="showReviews(application)">
                     @if (s.status === 'Pending' && application.status === 'Pending') {
                       <button appButton type="button" (click)="ask({ kind: 'accept', application: application })">Aceitar trabalhador</button>
                       <button appButton variant="secondary" type="button" (click)="ask({ kind: 'reject', application: application })">Recusar</button>
@@ -106,6 +124,8 @@
     }
   }
 </div>
+
+<app-reputation-dialog [target]="reviewing()" (closed)="reviewing.set(null)" />
 
 <app-confirm-dialog
   [open]="pending() !== null"

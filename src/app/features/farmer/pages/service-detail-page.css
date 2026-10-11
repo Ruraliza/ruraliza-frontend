@@ -3,6 +3,7 @@
 
 .payment { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; justify-content: space-between; border-color: var(--mata); }
 .payment > div { display: grid; gap: var(--space-1); max-width: 56ch; }
+.payment > .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); max-width: none; }
 
 .description { white-space: pre-line; max-width: 68ch; padding-bottom: var(--space-4); margin-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
 .expired {
@@ -17,7 +18,10 @@
   padding: var(--space-4) var(--space-6); border-radius: var(--radius-lg);
   background: var(--success-soft); color: var(--success);
 }
-.done p { color: var(--ink); font-weight: 600; }
+.done { flex-wrap: wrap; align-items: center; }
+.done p { flex: 1; min-width: 220px; color: var(--ink); font-weight: 600; }
+.unread { min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-size: 13px; font-weight: 800; line-height: 22px; }
+.candidates-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); }
 .sim-note { color: var(--warning); font-weight: 600; }
 
 .farm-map { margin-top: var(--space-4); }

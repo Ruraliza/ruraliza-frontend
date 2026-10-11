@@ -14,6 +14,12 @@
           <app-avatar-editor [name]="w.name" [photoUrl]="w.photo_url" [busy]="photoBusy()" (picked)="uploadPhoto($event)" (removed)="removePhoto()" />
         </section>
 
+        <section class="card reputation" aria-labelledby="reputation-title">
+          <h2 id="reputation-title" class="t-h3">Sua reputação</h2>
+          <app-reputation-summary kind="worker" [id]="w.id" [name]="w.name" size="large" />
+          <p class="t-body-sm muted">Os produtores avaliam pontualidade, empenho e qualidade depois de cada serviço concluído. A nota aparece para quem você se candidatar.</p>
+        </section>
+
         @if (missing().length && !editing()) {
           <section class="nudge" role="note">
             <app-icon name="sprout" [size]="22" />

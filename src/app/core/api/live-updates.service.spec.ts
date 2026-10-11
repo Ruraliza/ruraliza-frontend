@@ -29,6 +29,8 @@ describe('LiveUpdatesService', () => {
   let service: LiveUpdatesService;
 
   beforeEach(() => {
+    // Os arquivos de teste dividem o sessionStorage: um token deixado por outro spec iria para a query.
+    sessionStorage.clear();
     vi.stubGlobal('EventSource', FakeEventSource);
     FakeEventSource.last = null;
     service = TestBed.inject(LiveUpdatesService);
@@ -59,5 +61,25 @@ describe('LiveUpdatesService', () => {
     expect(changes).toBe(0);
     source.emit('open'); // reconectou: pode ter perdido avisos
     expect(changes).toBe(1);
+  });
+
+  it('listens to a chat and to the chat list of each panel, each with its own event', () => {
+    let chat = 0;
+    service.chat(5).subscribe(() => chat++);
+    const chatSource = FakeEventSource.last!;
+    expect(chatSource.url).toBe(`${environment.apiUrl}/chats/5/events`);
+    chatSource.emit('applications');
+    chatSource.emit('chat');
+    expect(chat).toBe(1);
+
+    let list = 0;
+    service.chats('farmer', 2).subscribe(() => list++);
+    const listSource = FakeEventSource.last!;
+    expect(listSource.url).toBe(`${environment.apiUrl}/farmers/2/chats/events`);
+    listSource.emit('chats');
+    expect(list).toBe(1);
+
+    service.chats('worker', 3).subscribe();
+    expect(FakeEventSource.last!.url).toBe(`${environment.apiUrl}/workers/3/chats/events`);
   });
 });

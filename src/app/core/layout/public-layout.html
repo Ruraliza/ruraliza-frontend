@@ -2,7 +2,9 @@
 
 <header class="header" [class.is-transparent]="transparent()" [class.is-scrolled]="scrolled() || !isLanding()">
   <div class="container bar">
-    <a routerLink="/" class="brand" aria-label="RURALIZA, página inicial" (click)="closeMenu()"><app-logo /></a>
+    <a routerLink="/" class="brand" aria-label="RURALIZA, página inicial" (click)="closeMenu()">
+      <app-logo [tone]="transparent() ? 'reverse' : 'color'" />
+    </a>
 
     <nav class="nav" aria-label="Principal">
       @for (link of links; track link.fragment) {

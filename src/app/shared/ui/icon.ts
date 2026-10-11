@@ -4,6 +4,8 @@ export type IconName =
   | 'clock' | 'play' | 'check' | 'x' | 'dash'
   | 'plus' | 'home' | 'list' | 'farm' | 'user' | 'search' | 'briefcase' | 'menu'
   | 'map-pin' | 'crosshair' | 'arrow-left' | 'arrow-right' | 'alert' | 'logout' | 'money' | 'sprout' | 'swap'
+  | 'download' | 'bell' | 'wifi-off' | 'refresh' | 'share'
+  | 'chat' | 'send' | 'lock' | 'phone' | 'star';
   | 'download' | 'bell' | 'wifi-off' | 'refresh' | 'share' | 'book' | 'award' | 'printer' | 'circle';
 
 // Conjunto pequeno de ícones SVG inline: 24px, traço 1.75px, cor do texto (currentColor).
@@ -47,6 +49,11 @@ export type IconName =
         @case ('share') { <path d="M12 3v12M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1" /> }
         @case ('logout') { <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4" /> }
         @case ('money') { <rect x="2.5" y="6" width="19" height="12" rx="2" /><circle cx="12" cy="12" r="2.5" /><path d="M6 9.5v.01M18 14.5v.01" /> }
+        @case ('chat') { <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z" /> }
+        @case ('send') { <path d="M4 12l16-8-6 16-2.5-6.5zM11.5 13.5L20 4" /> }
+        @case ('lock') { <rect x="5" y="10.5" width="14" height="10" rx="2" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5M12 14.5v2.5" /> }
+        @case ('phone') { <path d="M5 4h3.5l1.8 4.5-2.3 1.4a11 11 0 0 0 6.1 6.1l1.4-2.3L20 15.5V19a1 1 0 0 1-1 1A15 15 0 0 1 4 5a1 1 0 0 1 1-1z" /> }
+        @case ('star') { <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z" /> }
         @case ('book') { <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z" /> }
         @case ('award') { <circle cx="12" cy="9" r="6" /><path d="M8.5 13.9 7 21l5-2.5 5 2.5-1.5-7.1" /> }
         @case ('printer') { <path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z" /> }

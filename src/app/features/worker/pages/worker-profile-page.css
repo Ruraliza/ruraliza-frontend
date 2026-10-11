@@ -1,3 +1,5 @@
+.reputation { display: grid; gap: var(--space-2); }
+.reputation h2, .reputation p { margin: 0; }
 .pre { white-space: pre-line; overflow-wrap: anywhere; }
 
 .nudge {

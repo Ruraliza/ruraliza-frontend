@@ -33,7 +33,8 @@ Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe pro
 4. Saia (Perfil → *Sair*) e entre como trabalhador. Em **Perfil**, preencha foto, apresentação, experiência, certificados e cursos.
 5. **Vagas** → busque e filtre (texto, categoria, carga horária, data de publicação, ordem) → abra a vaga → *Candidatar-me* → confirme.
 6. Volte ao produtor → **Serviços** (abas por situação, busca e filtros) → abra o serviço → veja o candidato → *Aceitar trabalhador*.
-7. Com o serviço em andamento → *Liberar pagamento* (simulação).
+7. Com o serviço em andamento → *Conversar com …* (a conversa abre no aceite) → *Liberar pagamento* (simulação).
+8. Depois do pagamento, os dois avaliam na tela do serviço. Para ver a avaliação cega e a conversa já prontas, entre como `produtor@exemplo.com` (serviço *Ordenha da manhã*: a Maria já avaliou) ou `trabalhador@exemplo.com` (conversa *Reforma do curral* com mensagem não lida). `pedro@exemplo.com` é candidato à vaga 1, para testar o caminho inteiro.
 
 ## Fotos, filtros e prazos
 
@@ -41,6 +42,21 @@ Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe pro
 - **Filtros na URL:** os filtros de **Vagas** (`q`, `categoria`, `min`, `max`, `de`, `ate`, `ordem`) e de **Serviços** do produtor (`aba`, `q`, `categoria`, `fazenda`, `ordem`, `so`) ficam na query string. Voltar do detalhe mantém a busca e o link pode ser compartilhado. As vagas são filtradas no backend. Os serviços do produtor são filtrados no navegador, porque a lista é pequena; com o banco, dá para passar os filtros para a API.
 - **Sem foto → emoji do campo:** avatar sem foto mostra um emoji escolhido pelo nome (sempre o mesmo para a mesma pessoa), card de vaga sem foto usa o emoji da categoria (Colheita 🌾, Plantio 🌱, Manejo de gado 🐄…) e fazenda sem foto usa um emoji de paisagem (`shared/domain/utils/farm-emoji.ts`). Os emojis são imagens no estilo do Facebook, em `public/emoji/<codepoints>.webp` (64 px, extraídas do pacote `emoji-datasource-facebook` 16.0.0). **Atenção:** o próprio pacote avisa que as imagens do Facebook não têm licença clara. Para trocar por Twemoji (CC-BY 4.0) ou Noto (Apache 2.0), basta substituir os arquivos mantendo os nomes.
 - **Prazo (`expires_at`):** dia do calendário no horário de Brasília (`shared/domain/utils/expiry.ts`). Vaga vencida some da busca do trabalhador. O produtor a vê marcada como *Prazo encerrado* e pode renová-la editando a data.
+
+## Avaliações e conversas
+
+**Avaliação dupla** (`shared/domain/ui/service-reviews.ts`): depois do pagamento, o produtor avalia o trabalhador (pontualidade, empenho, qualidade) e o trabalhador avalia a fazenda (infraestrutura, condições de trabalho, fiel ao anúncio), com estrelas de 1 a 5 (`star-input.ts`, rádios nativos: funciona com teclado e leitor de tela) e comentário opcional. A nota recebida fica escondida até a pessoa avaliar também (ou o prazo de 14 dias acabar); a tela avisa quando o outro lado já avaliou.
+
+- **Onde a nota aparece:** no card de cada candidato (com "Ver avaliações" e a ordem *Mais bem avaliados*), nas vagas e no detalhe da vaga (nota da fazenda, filtro *Avaliação da fazenda* e ordem *Fazendas mais bem avaliadas*, `?nota=` e `?ordem=rating` na URL), no perfil do trabalhador (*Sua reputação*) e na lista de fazendas do produtor.
+- **Pendências:** o início de cada painel lista *Avalie seus últimos serviços* (`pending-reviews.ts`).
+- O diálogo de avaliações (`reputation-dialog.ts`) mostra a média, uma barra por critério e os comentários, sem identificar quem escreveu.
+
+**Conversas** (`/produtor/conversas` e `/trabalhador/conversas`): abrem quando o produtor aceita a candidatura, para combinar horário, ponto de encontro e o que levar sem expor o WhatsApp.
+
+- **WhatsApp protegido** (`chat-phone-panel.ts`): cada um libera o próprio número; os dois só aparecem (com *Abrir no WhatsApp* e *Ligar*) quando os dois liberaram. Antes disso, número ou e-mail digitado sai oculto, e a tela avisa antes de enviar. A lista de candidatos também não mostra mais telefone nem e-mail.
+- **Tempo real:** mensagens, pedidos de WhatsApp e o contador de não lidas do menu chegam por SSE (`LiveUpdatesService.chat()`/`chats()`; o `ChatInboxService` mantém a lista do painel aberto).
+- **Feita para o campo:** respostas rápidas ("Estou a caminho.", "Cheguei na fazenda."), campo de 16 px (o iPhone não dá zoom), Enter envia, e sem sinal a mensagem fica *Não enviada* com um toque para reenviar.
+- **Menu:** *Conversas* entrou no menu com o contador. No celular o trabalhador não tem mais *Vagas* e *Buscar* lado a lado (os dois abriam a mesma tela): fica *Buscar*, e *Vagas* continua na sidebar. O botão central do produtor aparece como *Novo* no menu de baixo.
 
 ## Estrutura
 
@@ -52,7 +68,7 @@ src/
     core/              singletons globais
       models/          tipos da API (o contrato que o check:contracts do backend confere) + status.ts
       api/             serviços HTTP usados por mais de uma feature: ProfileService, AccountService,
-                       CategoryService, LiveUpdatesService
+                       CategoryService, LiveUpdatesService, ReviewService, ChatService, ChatInboxService
       http/            authInterceptor, errorInterceptor + ApiError
       session/         CurrentUserService, SystemSessionService, guards (não são segurança)
       layout/          PublicLayout, AppShell (bottom nav < 1024px / sidebar ≥ 1024px) e a UI que
@@ -62,8 +78,11 @@ src/
       ui/              Button, FormField, MaskedInput, ConfirmDialog, Skeleton, PhotoStrip... (sem domínio)
       utils/           CPF, máscaras, formatação pt-BR, RemoteData, fotos (images.ts), senha
       domain/ui/       UI de domínio usada por 2+ features: ServiceCard, StatusBadge, Avatar(Editor),
-                       FarmMap, CategoryChip, PasswordChange, ResumeDialog
-      domain/utils/    rascunho de vaga, prazos (expiry.ts), currículo, emoji do campo
+                       FarmMap, CategoryChip, PasswordChange, ResumeDialog, avaliações (RatingBadge,
+                       StarInput, ReviewForm, ServiceReviews, ReputationDialog, PendingReviews) e
+                       conversa (ChatList, ChatThread, ChatPhonePanel)
+      domain/utils/    rascunho de vaga, prazos (expiry.ts), currículo, emoji do campo, critérios das
+                       avaliações (review-criteria.ts), regras da conversa (chat.ts)
     features/          um domínio por pasta; uma feature nunca importa outra
       public/          landing (ui/ com as seções) e créditos das fotos
       auth/            cadastro, entrar, esqueci a senha, nova senha (data-access/AuthService)
@@ -91,4 +110,16 @@ O build de produção registra o service worker do Angular (`ngsw-config.json`),
 - **Versão nova:** quando um deploy novo é baixado, aparece a faixa "Nova versão disponível" com o botão Atualizar.
 - **Instalar:** o botão "Instalar app" aparece na landing e nas páginas de perfil quando o navegador permite. No iPhone ele explica o caminho pelo Compartilhar.
 - **Notificações push:** são ativadas no perfil e valem para os dois perfis da conta. Precisam das chaves VAPID no `.env` do backend. A inscrição é reenviada ao backend sempre que alguém entra, e "Sair" a desativa neste aparelho. Como a sessão fica no `sessionStorage`, clicar numa notificação com o app fechado abre a tela de entrada.
-- **Ícones:** `public/icons/` é gerado de `public/favicon.svg` com `node scripts/generate-pwa-icons.mjs`. Rode de novo se o logo mudar.
+- **Ícones:** `public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`, `public/icons/` (ícones do app, versão maskable e o badge monocromático das notificações) e `public/brand/` são gerados com `node scripts/generate-brand-assets.mjs`, a partir do desenho do símbolo que está no próprio script. Rode de novo se o logo mudar.
+
+## Marca
+
+O símbolo é o "R" em grade de 3×4 módulos, desenhado em SVG (menos de 400 bytes cada versão, nítido em qualquer tela). O componente `Logo` (`shared/ui/logo.ts`) desenha o símbolo inline com o wordmark:
+
+| Versão | Arquivo | Onde aparece |
+|---|---|---|
+| Ícone do app (fundo verde, R branco, lima e laranja) | `favicon.svg`, `icone-app.svg` | aba do navegador, ícone do app instalado, tela inicial do iPhone, notificações |
+| Verde (verde-escuro, verde e laranja) | `simbolo-verde.svg`, `tone="color"` | header com fundo branco, sidebar do painel |
+| Colorido (quatro cores) | `simbolo-colorido.svg`, `tone="vivid"` | tela de carregamento do app (`index.html`) |
+| Branco | `simbolo-branco.svg`, `tone="reverse"` | header transparente sobre a foto da landing, rodapé verde |
+| Preto | `simbolo-preto.svg` | badge das notificações no Android (`icons/badge-96.png`, só o formato conta) |
