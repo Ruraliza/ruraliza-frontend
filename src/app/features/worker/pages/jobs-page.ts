@@ -21,7 +21,15 @@ export const SORT_OPTIONS: { value: JobSort; label: string }[] = [
   { value: 'price_desc', label: 'Maior valor' },
   { value: 'price_asc', label: 'Menor valor' },
   { value: 'duration_asc', label: 'Menos horas' },
-  { value: 'duration_desc', label: 'Mais horas' }
+  { value: 'duration_desc', label: 'Mais horas' },
+  { value: 'rating', label: 'Fazendas mais bem avaliadas' }
+];
+
+// Nota mínima da fazenda (?nota=): só fazendas com avaliações publicadas a partir dela.
+export const RATING_PRESETS: { label: string; value: number | null }[] = [
+  { label: 'Qualquer nota', value: null },
+  { label: '4 ou mais', value: 4 },
+  { label: '4,5 ou mais', value: 4.5 }
 ];
 
 export const HOUR_PRESETS: { label: string; min: number | null; max: number | null }[] = [
@@ -42,7 +50,7 @@ function positiveOrNull(value: string | undefined): number | null {
   return Number.isFinite(n) && n >= 0 ? n : null;
 }
 
-// Vagas abertas com filtros. A URL é a fonte da verdade (?q=&categoria=&min=&max=&de=&ate=&ordem=):
+// Vagas abertas com filtros. A URL é a fonte da verdade (?q=&categoria=&min=&max=&de=&ate=&nota=&ordem=):
 // voltar do detalhe mantém a busca, e o link da busca pode ser compartilhado.
 @Component({
   selector: 'app-jobs-page',
@@ -59,6 +67,7 @@ export class JobsPage {
   readonly max = input<string>();
   readonly de = input<string>();
   readonly ate = input<string>();
+  readonly nota = input<string>();
   readonly ordem = input<string>();
 
   private readonly workerService = inject(WorkerService);
@@ -73,6 +82,7 @@ export class JobsPage {
 
   readonly sortOptions = SORT_OPTIONS;
   readonly hourPresets = HOUR_PRESETS;
+  readonly ratingPresets = RATING_PRESETS;
   readonly today = todayBr();
 
   readonly filters = computed<JobFilters>(() => {
@@ -84,6 +94,7 @@ export class JobsPage {
       max_hours: positiveOrNull(this.max()) ?? undefined,
       from: this.de() || undefined,
       to: this.ate() || undefined,
+      min_rating: RATING_PRESETS.find((p) => p.value !== null && String(p.value) === this.nota())?.value ?? undefined,
       sort,
       worker_id: this.currentUser.user()?.role === 'worker' ? this.currentUser.user()?.id : undefined
     };
@@ -92,7 +103,7 @@ export class JobsPage {
   // Filtros além da busca e da categoria (mostrados no painel "Mais filtros").
   readonly extraCount = computed(() => {
     const f = this.filters();
-    return [f.min_hours !== undefined || f.max_hours !== undefined, f.from || f.to, f.sort && f.sort !== 'recent'].filter(Boolean).length;
+    return [f.min_hours !== undefined || f.max_hours !== undefined, f.from || f.to, f.min_rating !== undefined, f.sort && f.sort !== 'recent'].filter(Boolean).length;
   });
   readonly anyFilter = computed(() => !!(this.filters().q || this.filters().category) || this.extraCount() > 0);
   readonly panelOpen = linkedSignal(() => this.extraCount() > 0);
@@ -162,6 +173,10 @@ export class JobsPage {
     this.setParams(next);
   }
 
+  setRating(value: number | null): void {
+    this.setParams({ nota: value });
+  }
+
   setSort(event: Event): void {
     const value = (event.target as HTMLSelectElement).value;
     this.setParams({ ordem: value === 'recent' ? null : value });
@@ -170,7 +185,7 @@ export class JobsPage {
   clearFilters(): void {
     clearTimeout(this.searchTimer);
     this.draftQuery.set('');
-    this.setParams({ q: null, categoria: null, min: null, max: null, de: null, ate: null, ordem: null });
+    this.setParams({ q: null, categoria: null, min: null, max: null, de: null, ate: null, nota: null, ordem: null });
   }
 
   private setParams(params: Params): void {

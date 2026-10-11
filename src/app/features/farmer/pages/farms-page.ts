@@ -14,10 +14,11 @@ import { FarmEmoji } from '@shared/domain/ui/farm-emoji';
 import { ErrorState } from '@shared/ui/error-state';
 import { Icon } from '@shared/ui/icon';
 import { Skeleton } from '@shared/ui/skeleton';
+import { ReputationSummary } from '@shared/domain/ui/reputation-summary';
 
 @Component({
   selector: 'app-farms-page',
-  imports: [RouterLink, Button, ConfirmDialog, EmptyState, ErrorState, FarmEmoji, Icon, Skeleton],
+  imports: [RouterLink, Button, ConfirmDialog, EmptyState, ErrorState, FarmEmoji, Icon, ReputationSummary, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -44,6 +45,7 @@ import { Skeleton } from '@shared/ui/skeleton';
                     <div>
                       <h2 class="t-h3">{{ farm.city }}, {{ farm.state }}</h2>
                       <p class="muted">{{ farm.address }}</p>
+                      <app-reputation-summary class="farm-rating" kind="farm" [id]="farm.id" [name]="'Fazenda em ' + farm.city + ', ' + farm.state" />
                       <p class="t-body-sm muted">
                         {{ farm.photos.length ? farm.photos.length + (farm.photos.length === 1 ? ' foto' : ' fotos') : 'Sem fotos: adicione na edição para atrair trabalhadores.' }}
                       </p>

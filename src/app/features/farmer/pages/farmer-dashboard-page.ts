@@ -11,10 +11,11 @@ import { Icon } from '@shared/ui/icon';
 import { MetricCard } from '@shared/ui/metric-card';
 import { ServiceCard } from '@shared/domain/ui/service-card';
 import { Skeleton } from '@shared/ui/skeleton';
+import { PendingReviews } from '@shared/domain/ui/pending-reviews';
 
 @Component({
   selector: 'app-farmer-dashboard-page',
-  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, ServiceCard, Skeleton],
+  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, PendingReviews, ServiceCard, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -36,6 +37,8 @@ import { Skeleton } from '@shared/ui/skeleton';
               <app-metric-card label="Concluídos" [value]="m.completed" />
             </section>
           }
+
+          <app-pending-reviews role="farmer" [profileId]="farmerId" />
 
           <section class="stack">
             <div class="page-header">
@@ -62,7 +65,7 @@ import { Skeleton } from '@shared/ui/skeleton';
 export class FarmerDashboardPage {
   private readonly farmerService = inject(FarmerService);
   private readonly profiles = inject(ProfileService);
-  private readonly farmerId = inject(CurrentUserService).requireId('farmer');
+  readonly farmerId = inject(CurrentUserService).requireId('farmer');
 
   readonly farmer = new RemoteData(() => this.profiles.getFarmer(this.farmerId));
   readonly services = new RemoteData(() => this.farmerService.getFarmerServices(this.farmerId));

@@ -1,3 +1,4 @@
+import type { WorkerReputation } from './review.model';
 import { OpenService } from './service.model';
 import { ApplicationStatus } from './status';
 import { Worker } from './worker.model';
@@ -11,9 +12,11 @@ export interface ServiceApplication {
   insertion_date: string;
 }
 
-// GET /farmers/services/:id/applications (CPF do trabalhador mascarado)
+// GET /farmers/services/:id/applications: CPF, telefone e e-mail do trabalhador mascarados
+// (o contato só é trocado pela conversa, quando os dois liberam o WhatsApp).
 export interface ApplicationWithWorker extends ServiceApplication {
   worker: Worker;
+  reputation: WorkerReputation; // avaliações publicadas do trabalhador
 }
 
 // GET /workers/:id/applications

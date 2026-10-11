@@ -11,10 +11,11 @@ import { Icon } from '@shared/ui/icon';
 import { MetricCard } from '@shared/ui/metric-card';
 import { ServiceCard } from '@shared/domain/ui/service-card';
 import { Skeleton } from '@shared/ui/skeleton';
+import { PendingReviews } from '@shared/domain/ui/pending-reviews';
 
 @Component({
   selector: 'app-worker-dashboard-page',
-  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, ServiceCard, Skeleton],
+  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, PendingReviews, ServiceCard, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -36,6 +37,8 @@ import { Skeleton } from '@shared/ui/skeleton';
               <app-metric-card label="Candidaturas recusadas" [value]="m.rejected" />
             </section>
           }
+
+          <app-pending-reviews role="worker" [profileId]="workerId" />
 
           <section class="stack">
             <h2>Em andamento</h2>
@@ -63,7 +66,7 @@ import { Skeleton } from '@shared/ui/skeleton';
 export class WorkerDashboardPage {
   private readonly workerService = inject(WorkerService);
   private readonly profiles = inject(ProfileService);
-  private readonly workerId = inject(CurrentUserService).requireId('worker');
+  readonly workerId = inject(CurrentUserService).requireId('worker');
 
   readonly worker = new RemoteData(() => this.profiles.getWorker(this.workerId));
   readonly applications = new RemoteData(() => this.workerService.getWorkerApplications(this.workerId));

@@ -10,15 +10,16 @@ import { CategoryChip } from './category-chip';
 import { FarmEmoji } from './farm-emoji';
 import { Icon } from '../../ui/icon';
 import { StatusBadge } from './status-badge';
+import { RatingBadge } from './rating-badge';
 
 // A fazenda chega completa no produtor (fotos com id e url) e resumida no trabalhador (só URLs).
-type CardFarm = { city: string; state: string; photos: (string | FarmPhoto)[] };
+type CardFarm = { city: string; state: string; photos: (string | FarmPhoto)[]; reputation?: { average: number | null; count: number } };
 type CardService = Service & { farm?: CardFarm; applications_pending?: number };
 
 // Card de serviço/vaga. O card inteiro é um link para o detalhe.
 @Component({
   selector: 'app-service-card',
-  imports: [RouterLink, CategoryChip, FarmEmoji, Icon, StatusBadge],
+  imports: [RouterLink, CategoryChip, FarmEmoji, Icon, RatingBadge, StatusBadge],
   template: `
     <a class="card-link" [routerLink]="link()">
       @if (cover(); as src) {
@@ -40,6 +41,9 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
         <h3>{{ service().name }}</h3>
         @if (service().farm; as farm) {
           <p class="meta t-body-sm"><app-icon name="map-pin" [size]="18" />{{ farm.city }}, {{ farm.state }}</p>
+          @if (farm.reputation; as rep) {
+            <p class="meta t-body-sm"><app-rating-badge [reputation]="rep" /></p>
+          }
         }
         <p class="meta t-body-sm"><app-icon name="clock" [size]="18" />{{ hours() }}</p>
         @if (deadline(); as text) {

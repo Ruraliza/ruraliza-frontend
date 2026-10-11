@@ -11,7 +11,7 @@ main:focus { outline: none; }
 /* --- Bottom nav (mobile/tablet) --- */
 .bottom-nav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: stretch;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); align-items: stretch;
   height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--surface-raised); border-top: 1px solid var(--line);
@@ -21,7 +21,18 @@ main:focus { outline: none; }
   color: var(--ink-muted); text-decoration: none;
 }
 .bottom-nav .label { font-size: 12px; line-height: 16px; font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-inline: 2px; }
-.bottom-nav .bubble { display: grid; place-items: center; width: 48px; height: 32px; border-radius: var(--radius-pill); }
+.bottom-nav .bubble { position: relative; display: grid; place-items: center; width: 48px; height: 32px; border-radius: var(--radius-pill); }
+/* Contador (mensagens não lidas): laranja com texto escuro, sobre o canto do ícone. */
+.badge {
+  min-width: 20px; height: 20px; padding: 0 5px; border-radius: var(--radius-pill);
+  background: var(--orange-500); color: var(--ink); font-size: 12px; font-weight: 800; line-height: 20px; text-align: center;
+}
+.bottom-nav .badge { position: absolute; top: -4px; right: 2px; box-shadow: 0 0 0 2px var(--surface-raised); }
+/* Celular estreito com 6 itens (produtor): rótulo menor para "Conversas" caber inteiro. */
+@media (max-width: 379px) {
+  .bottom-nav .bubble { width: 40px; }
+  .bottom-nav .label { font-size: 11px; letter-spacing: -0.01em; padding-inline: 0; }
+}
 .bottom-nav a.active:not(.primary) { color: var(--ink); }
 .bottom-nav a.active:not(.primary) .bubble { background: var(--broto-soft); }
 .bottom-nav a.primary .bubble {
@@ -57,5 +68,6 @@ main:focus { outline: none; }
   .side-nav a.primary:hover { background: var(--mata-deep); color: var(--on-mata); }
   .account-actions { display: grid; gap: var(--space-1); margin-top: auto; }
   .switch { width: 100%; }
+  .side-nav .badge { margin-left: auto; }
   .switch:disabled { opacity: 0.6; cursor: progress; }
 }

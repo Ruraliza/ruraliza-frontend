@@ -1,4 +1,5 @@
 import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChatInboxService } from '@core/api/chat-inbox.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -22,6 +23,10 @@ import { Icon } from '@shared/ui/icon';
 import { Skeleton } from '@shared/ui/skeleton';
 import { StatusBadge } from '@shared/domain/ui/status-badge';
 import { WorkerCard } from '../ui/worker-card';
+import { ReputationDialog, ReputationTarget } from '@shared/domain/ui/reputation-dialog';
+import { ServiceReviews } from '@shared/domain/ui/service-reviews';
+import { SegmentedControl } from '@shared/ui/segmented-control';
+import { byReputation } from '@shared/domain/utils/review-criteria';
 
 type PendingAction =
   | { kind: 'accept'; application: ApplicationWithWorker }
@@ -38,7 +43,7 @@ interface DialogCopy {
 
 @Component({
   selector: 'app-service-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, FarmMap, Icon, PhotoStrip, Skeleton, StatusBadge, WorkerCard],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, FarmMap, Icon, PhotoStrip, ReputationDialog, SegmentedControl, ServiceReviews, Skeleton, StatusBadge, WorkerCard],
   templateUrl: './service-detail-page.html',
   styleUrl: './service-detail-page.css'
 })
@@ -50,6 +55,7 @@ export class ServiceDetailPage implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly live = inject(LiveUpdatesService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly inbox = inject(ChatInboxService);
 
   private readonly serviceId = computed(() => Number(this.id()));
 
@@ -75,6 +81,27 @@ export class ServiceDetailPage implements OnInit {
   readonly acceptedWorker = computed(
     () => this.applications.data()?.find((a) => a.status === 'Accepted')?.worker ?? null
   );
+
+  // Conversa com quem foi aceito (abre no aceite) e o contador de não lidas dela.
+  readonly chat = computed(() => this.inbox.forService(this.serviceId()));
+  readonly chatLabel = computed(() => {
+    const chat = this.chat();
+    const name = chat?.worker.name.split(' ')[0] ?? '';
+    return chat?.open ? `Conversar com ${name}` : `Ver conversa com ${name}`;
+  });
+
+  // Ordem dos candidatos: por chegada ou mais bem avaliados primeiro.
+  readonly order = signal<'recent' | 'rating'>('recent');
+  readonly orderOptions = [{ value: 'recent', label: 'Chegada' }, { value: 'rating', label: 'Mais bem avaliados' }];
+  readonly sortedApplications = computed(() => {
+    const list = [...(this.applications.data() ?? [])];
+    return this.order() === 'rating' ? list.sort(byReputation) : list;
+  });
+
+  // Avaliações do candidato abertas no diálogo.
+  readonly reviewing = signal<ReputationTarget | null>(null);
+  // Muda a cada aviso em tempo real: o painel de avaliações recarrega junto.
+  readonly tick = signal(0);
   readonly price = computed(() => formatBRL(this.service.data()?.price ?? 0));
   readonly hours = computed(() => formatHours(this.service.data()?.duration ?? 0));
   readonly publishedAt = computed(() => {
@@ -139,6 +166,15 @@ export class ServiceDetailPage implements OnInit {
   private refresh(): void {
     this.service.refresh();
     this.applications.refresh();
+    this.tick.update((n) => n + 1);
+  }
+
+  setOrder(value: string): void {
+    this.order.set(value === 'rating' ? 'rating' : 'recent');
+  }
+
+  showReviews(application: ApplicationWithWorker): void {
+    this.reviewing.set({ kind: 'worker', id: application.worker_id, name: application.worker.name });
   }
 
   ask(action: PendingAction): void {

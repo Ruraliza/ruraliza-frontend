@@ -1,7 +1,10 @@
-import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { WorkerService } from '../data-access/worker.service';
+import { ChatInboxService } from '@core/api/chat-inbox.service';
+import { LiveUpdatesService } from '@core/api/live-updates.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { RoleSwitchService } from '@core/session/role-switch.service';
 import { ToastService } from '@core/toast/toast.service';
@@ -18,10 +21,13 @@ import { Icon } from '@shared/ui/icon';
 import { PhotoStrip } from '@shared/ui/photo-strip';
 import { Skeleton } from '@shared/ui/skeleton';
 import { StatusBadge } from '@shared/domain/ui/status-badge';
+import { RatingBadge } from '@shared/domain/ui/rating-badge';
+import { ReputationDialog, ReputationTarget } from '@shared/domain/ui/reputation-dialog';
+import { ServiceReviews } from '@shared/domain/ui/service-reviews';
 
 @Component({
   selector: 'app-job-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, Skeleton, StatusBadge],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, RatingBadge, ReputationDialog, ServiceReviews, Skeleton, StatusBadge],
   template: `
     <div class="container page">
       <a class="back-link" routerLink="/trabalhador/vagas" (click)="goBack($event)">← Vagas</a>
@@ -54,6 +60,15 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
               }
               <dl class="details">
                 <div><dt>Local</dt><dd class="with-icon"><app-icon name="map-pin" [size]="20" />{{ j.farm.city }}, {{ j.farm.state }}</dd></div>
+                @if (j.farm.reputation; as rep) {
+                  <div>
+                    <dt>Avaliação da fazenda</dt>
+                    <dd class="with-icon rating">
+                      <app-rating-badge [reputation]="rep" />
+                      @if (rep.count > 0) { <button type="button" class="link" (click)="showFarmReviews()">Ver avaliações</button> }
+                    </dd>
+                  </div>
+                }
                 <div><dt>Duração</dt><dd>{{ hours() }}</dd></div>
                 <div><dt>Pagamento</dt><dd class="price">{{ price() }}</dd></div>
                 <div><dt>Publicada em</dt><dd>{{ publishedAt() }}</dd></div>
@@ -73,10 +88,15 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
             <section class="apply card" aria-live="polite">
               @if (myApplication(); as application) {
                 <div>
-                  <h2 class="t-h3">{{ withdrawKind() === 'service' ? 'O serviço é seu' : 'Você já se candidatou' }}</h2>
+                  <h2 class="t-h3">{{ applicationTitle() }}</h2>
                   <p class="muted">Situação da sua candidatura:</p>
                   <app-status-badge [status]="application.status" />
                 </div>
+                @if (application.status === 'Accepted' && chat(); as c) {
+                  <a appButton [variant]="c.unread ? 'primary' : 'secondary'" [routerLink]="['/trabalhador/conversas', c.id]">
+                    <app-icon name="chat" [size]="20" />{{ c.open ? 'Conversar com o produtor' : 'Ver conversa' }}@if (c.unread) { <span class="unread">{{ c.unread }}</span> }
+                  </a>
+                }
                 @switch (withdrawKind()) {
                   @case ('application') {
                     <button appButton variant="secondary" type="button" (click)="confirmingWithdraw.set(true)">Cancelar candidatura</button>
@@ -108,10 +128,16 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
                 <button appButton type="button" (click)="confirmingApply.set(true)">Candidatar-me</button>
               }
             </section>
+
+            @if (j.status === 'Completed' && j.worker_id === workerId) {
+              <app-service-reviews role="worker" [serviceId]="j.id" [workerId]="workerId" [refresh]="tick()" />
+            }
           }
         }
       }
     </div>
+
+    <app-reputation-dialog [target]="farmReviews()" (closed)="farmReviews.set(null)" />
 
     <app-confirm-dialog
       [open]="confirmingApply()"
@@ -145,7 +171,10 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
     .deadline { color: var(--orange-700); font-weight: 600; }
     .route { display: grid; gap: var(--space-2); padding-top: var(--space-4); border-top: 1px solid var(--line); }
     .apply { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
-    .apply > div { display: grid; gap: var(--space-1); }
+    .apply > div { display: grid; gap: var(--space-1); flex: 1; min-width: 220px; }
+    .rating { flex-wrap: wrap; }
+    .link { padding: 0; border: 0; background: none; color: var(--mata); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; cursor: pointer; }
+    .unread { min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-size: 13px; font-weight: 800; line-height: 22px; }
   `
 })
 export class JobDetailPage implements OnInit {
@@ -153,11 +182,14 @@ export class JobDetailPage implements OnInit {
 
   private readonly workerService = inject(WorkerService);
   private readonly currentUser = inject(CurrentUserService);
-  private readonly workerId = this.currentUser.requireId('worker');
+  readonly workerId = this.currentUser.requireId('worker');
   protected readonly switcher = inject(RoleSwitchService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
+  private readonly inbox = inject(ChatInboxService);
+  private readonly live = inject(LiveUpdatesService);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly serviceId = computed(() => Number(this.id()));
 
@@ -218,8 +250,32 @@ export class JobDetailPage implements OnInit {
     return null;
   });
 
+  // Conversa com o produtor (abre quando ele aceita a candidatura).
+  readonly chat = computed(() => this.inbox.forService(this.serviceId()));
+  readonly applicationTitle = computed(() => {
+    const job = this.job.data();
+    if (this.withdrawKind() === 'service') return 'O serviço é seu';
+    if (job?.status === 'Completed' && job.worker_id === this.workerId) return 'Serviço concluído';
+    return 'Você já se candidatou';
+  });
+
+  // Avaliações da fazenda abertas no diálogo.
+  readonly farmReviews = signal<ReputationTarget | null>(null);
+  // Muda a cada aviso em tempo real: o painel de avaliações recarrega junto.
+  readonly tick = signal(0);
+
   ngOnInit(): void {
     this.load();
+    // Aceite, pagamento ou avaliação do produtor: atualiza sem recarregar a página.
+    this.live
+      .workerApplications(this.workerId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.refresh());
+  }
+
+  showFarmReviews(): void {
+    const job = this.job.data();
+    if (job) this.farmReviews.set({ kind: 'farm', id: job.farm_id, name: `Fazenda em ${job.farm.city}, ${job.farm.state}` });
   }
 
   load(): void {
@@ -231,6 +287,7 @@ export class JobDetailPage implements OnInit {
   private refresh(): void {
     this.job.refresh();
     this.applications.refresh();
+    this.tick.update((n) => n + 1);
   }
 
   apply(): void {
