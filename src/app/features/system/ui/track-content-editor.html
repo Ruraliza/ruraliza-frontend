@@ -1,0 +1,84 @@
+<div class="editor">
+  <div class="summary">
+    <p class="t-body-sm muted">{{ form.length }} {{ form.length === 1 ? 'módulo' : 'módulos' }} · carga horária {{ workload() }}</p>
+    @if (dirty() && !readonly()) { <p class="t-body-sm unsaved">Alterações não salvas</p> }
+  </div>
+
+  @for (module of form.controls; track module; let mi = $index) {
+    <section class="module" [attr.aria-label]="'Módulo ' + (mi + 1)">
+      <div class="module-head">
+        <span class="t-overline muted">Módulo {{ mi + 1 }}</span>
+        @if (!readonly()) {
+          <div class="tools">
+            <button type="button" class="tool" [disabled]="mi === 0" (click)="move(form, mi, -1)" [attr.aria-label]="'Subir módulo ' + (mi + 1)">↑</button>
+            <button type="button" class="tool" [disabled]="mi === form.length - 1" (click)="move(form, mi, 1)" [attr.aria-label]="'Descer módulo ' + (mi + 1)">↓</button>
+            <button type="button" class="tool danger" (click)="remove(form, mi)" [attr.aria-label]="'Remover módulo ' + (mi + 1)"><app-icon name="x" [size]="18" /></button>
+          </div>
+        }
+      </div>
+
+      <app-form-field label="Nome do módulo" [fieldId]="'m' + mi + '-title'" [control]="module.controls.title">
+        <input [formControl]="module.controls.title" maxlength="120" autocomplete="off" placeholder="Ex.: Antes de colher">
+      </app-form-field>
+
+      <ol class="lessons" role="list">
+        @for (lesson of module.controls.lessons.controls; track lesson; let li = $index) {
+          <li>
+            <details class="lesson" [open]="!lesson.controls.id.value || (submittedOnce() && lesson.invalid)">
+              <summary>
+                <span class="t-label">Aula {{ li + 1 }}: {{ lesson.controls.title.value || 'sem título' }}</span>
+                <span class="t-body-sm muted">{{ lesson.controls.duration_minutes.value }} min{{ lesson.controls.video_url.value ? ' · vídeo' : '' }}</span>
+                @if (lesson.invalid && (lesson.touched || submittedOnce())) { <span class="t-body-sm error-tag">Revisar</span> }
+              </summary>
+              <div class="lesson-body">
+                <app-form-field label="Título da aula" [fieldId]="'m' + mi + 'l' + li + '-title'" [control]="lesson.controls.title">
+                  <input [formControl]="lesson.controls.title" maxlength="120" autocomplete="off">
+                </app-form-field>
+                <app-form-field label="Duração estimada (minutos)" [fieldId]="'m' + mi + 'l' + li + '-min'" [control]="lesson.controls.duration_minutes" [messages]="messages.duration">
+                  <input type="number" inputmode="numeric" min="1" max="600" step="1" [formControl]="lesson.controls.duration_minutes">
+                </app-form-field>
+                <app-form-field label="Vídeo" [optional]="true" [fieldId]="'m' + mi + 'l' + li + '-video'" hint="Link do YouTube ou do Vimeo." [control]="lesson.controls.video_url" [messages]="messages.video">
+                  <input type="url" inputmode="url" [formControl]="lesson.controls.video_url" placeholder="https://www.youtube.com/watch?v=…">
+                </app-form-field>
+                <app-form-field
+                  label="Texto da aula"
+                  [optional]="true"
+                  [fieldId]="'m' + mi + 'l' + li + '-content'"
+                  hint="Aceita ## título, - listas, 1. passos, **negrito**, *itálico* e [links](https://…)."
+                  [control]="lesson.controls.content"
+                >
+                  <textarea rows="8" maxlength="20000" [formControl]="lesson.controls.content"></textarea>
+                </app-form-field>
+                @if (lesson.errors?.['empty'] && (lesson.touched || submittedOnce())) {
+                  <p class="field-error t-body-sm">A aula precisa de um vídeo ou de um texto.</p>
+                }
+                @if (!readonly()) {
+                  <div class="tools">
+                    <button type="button" class="tool" [disabled]="li === 0" (click)="move(module.controls.lessons, li, -1)">↑ Subir</button>
+                    <button type="button" class="tool" [disabled]="li === module.controls.lessons.length - 1" (click)="move(module.controls.lessons, li, 1)">↓ Descer</button>
+                    <button type="button" class="tool danger" (click)="remove(module.controls.lessons, li)">Remover aula</button>
+                  </div>
+                }
+              </div>
+            </details>
+          </li>
+        }
+      </ol>
+
+      @if (!readonly()) {
+        <button appButton variant="ghost" type="button" (click)="addLesson(module)"><app-icon name="plus" [size]="20" />Adicionar aula</button>
+      }
+    </section>
+  }
+
+  @if (live() && emptyModules() && submittedOnce()) {
+    <p class="field-error t-body-sm">Uma trilha publicada precisa de pelo menos um módulo, e nenhum módulo pode ficar sem aulas.</p>
+  }
+
+  @if (!readonly()) {
+    <div class="form-actions">
+      <button appButton variant="secondary" type="button" (click)="addModule()"><app-icon name="plus" [size]="20" />Adicionar módulo</button>
+      <button appButton type="button" [loading]="saving()" (click)="submit()">Salvar conteúdo</button>
+    </div>
+  }
+</div>

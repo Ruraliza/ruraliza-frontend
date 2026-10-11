@@ -40,7 +40,11 @@ import { Icon } from '@shared/ui/icon';
           @if (session.can('tracks:manage')) {
             <li class="card stack-sm">
               <h2 class="t-h3">Trilhas de estudo</h2>
-              <p class="muted">Em breve: cadastrar e editar as trilhas de qualificação dos trabalhadores.</p>
+              <p class="muted">Monte trilhas com módulos e aulas, publique para os trabalhadores e acompanhe as suas.</p>
+              <div class="cluster">
+                <a appButton variant="secondary" routerLink="/sistema/trilhas">Ver trilhas</a>
+                <a appButton variant="ghost" routerLink="/sistema/trilhas/nova">Nova trilha</a>
+              </div>
             </li>
           }
         </ul>

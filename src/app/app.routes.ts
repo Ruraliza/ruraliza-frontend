@@ -38,6 +38,17 @@ export const routes: Routes = [
         loadComponent: () => import('@features/system/pages/system-sign-in-page').then((m) => m.SystemSignInPage),
         title: 'Acesso da equipe · Ruraliza'
       },
+      // Validação pública dos certificados das trilhas (o código vai impresso no certificado).
+      {
+        path: 'certificados',
+        loadComponent: () => import('@features/public/pages/certificate-validation-page').then((m) => m.CertificateValidationPage),
+        title: 'Validar certificado · Ruraliza'
+      },
+      {
+        path: 'certificados/:code',
+        loadComponent: () => import('@features/public/pages/certificate-validation-page').then((m) => m.CertificateValidationPage),
+        title: 'Certificado · Ruraliza'
+      },
       { path: 'creditos', loadComponent: () => import('@features/public/pages/credits-page').then((m) => m.CreditsPage), title: 'Créditos das fotos · Ruraliza' }
     ]
   },
