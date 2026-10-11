@@ -26,8 +26,8 @@ export class FarmerService {
   }
 
   // Cadastro: cria a conta com este perfil e já devolve a sessão (`user`).
-  createFarmer(farmer: FarmerInput): Observable<{ message: string; farmer: Farmer; user: SessionUser }> {
-    return this.http.post<{ message: string; farmer: Farmer; user: SessionUser }>(this.apiUrl, farmer);
+  createFarmer(farmer: FarmerInput): Observable<{ message: string; farmer: Farmer; user: SessionUser; token: string }> {
+    return this.http.post<{ message: string; farmer: Farmer; user: SessionUser; token: string }>(this.apiUrl, farmer);
   }
 
   updateFarmer(farmerId: number, changes: FarmerUpdate): Observable<{ message: string; farmer: Farmer }> {

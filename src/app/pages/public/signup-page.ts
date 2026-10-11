@@ -136,8 +136,8 @@ export class SignupPage implements OnInit {
 
     this.saving.set(true);
     this.create(role).subscribe({
-      next: (user) => {
-        this.currentUser.set(user);
+      next: ({ user, token }) => {
+        this.currentUser.signIn(user, token);
         const resume = role === 'worker' ? this.form.controls.resume.value : null;
         if (resume) {
           this.sendResume(user.id, resume);
@@ -169,16 +169,16 @@ export class SignupPage implements OnInit {
     });
   }
 
-  // A resposta do cadastro já traz a sessão da conta nova.
-  private create(role: UserRole): Observable<SessionUser> {
+  // A resposta do cadastro já traz a sessão (e o token) da conta nova.
+  private create(role: UserRole): Observable<{ user: SessionUser; token: string }> {
     const { name, email, phone, cpf, password, experience, certificates } = this.form.getRawValue();
     const base = { name: name.trim(), email: email.trim(), phone, cpf, password };
 
     if (role === 'farmer') {
-      return this.farmerService.createFarmer(base).pipe(map((res) => res.user));
+      return this.farmerService.createFarmer(base).pipe(map(({ user, token }) => ({ user, token })));
     }
     return this.workerService
       .createWorker({ ...base, experience: experience.trim() || null, certificates: certificates.trim() || null })
-      .pipe(map((res) => res.user));
+      .pipe(map(({ user, token }) => ({ user, token })));
   }
 }

@@ -80,8 +80,8 @@ export class SignInPage {
     const { email, password } = this.form.getRawValue();
     this.saving.set(true);
     this.auth.login({ email: email.trim(), password }).subscribe({
-      next: ({ user }) => {
-        this.currentUser.set(user);
+      next: ({ user, token }) => {
+        this.currentUser.signIn(user, token);
         this.router.navigateByUrl(ROLE_HOME[user.role]);
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast

@@ -13,7 +13,9 @@ npm test         # ng test (Vitest)
 npm run build    # ng build
 ```
 
-Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe produtor ou trabalhador e informa e-mail e senha; os perfis de teste do backend são `produtor@exemplo.com` e `trabalhador@exemplo.com`, senha `ruraliza123`. Quem entrou fica em `sessionStorage`. A API ainda não emite token de sessão, então o guard das áreas não é segurança. Os dados vivem em memória no backend e somem quando ele reinicia.
+Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe produtor ou trabalhador e informa e-mail e senha; os perfis de teste do backend são `produtor@exemplo.com` e `trabalhador@exemplo.com`, senha `ruraliza123`. Quem entrou fica em `sessionStorage`, junto com o **token de sessão** da API: o `authInterceptor` (`core/http/auth.interceptor.ts`) envia `Authorization: Bearer <token>` em toda chamada, e o token também vai em `?access_token=` nas atualizações ao vivo (o `EventSource` não manda cabeçalhos). Quando a API responde 401 com `WWW-Authenticate: Bearer` (sessão vencida ou inválida), a sessão é limpa e a pessoa volta ao login. Os guards só evitam abrir telas sem sessão: quem protege os dados é a API. Os dados vivem em memória no backend e somem quando ele reinicia.
+
+**Área de sistema** (`/sistema`): para a equipe do Ruraliza (usuários de sistema), com login próprio em `/sistema/entrar` e sem cadastro público nem link no site. O cargo define o menu: **Administrador** vê e edita os usuários do app, remove fotos de perfil, perfis ou contas e cadastra e edita os membros da equipe (nome, e-mail e cargo, menos o próprio cargo); **Tutor** (trilhas de estudo) ainda só vê o início. Todo usuário de sistema edita o próprio nome e e-mail em `/sistema/perfil`. Teste com `admin@exemplo.com`, senha `ruraliza123`. A sessão de sistema é separada da conta do app (`core/session/system-session.service.ts`).
 
 ## Senha
 
