@@ -39,3 +39,28 @@ export function formatDate(isoDate: string): string {
 export function formatHours(hours: number): string {
   return hours === 1 ? '1 hora' : `${hours} horas`;
 }
+
+const longDate = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Sao_Paulo' });
+
+// "11 de outubro de 2026" (horário de Brasília), como nos certificados.
+export function formatLongDate(isoDate: string): string {
+  return longDate.format(new Date(isoDate));
+}
+
+// Carga horária: 45 -> "45 min"; 60 -> "1 h"; 105 -> "1 h 45 min".
+export function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
+}
+
+// Carga horária por extenso, como nos certificados: 60 -> "1 hora"; 105 -> "1 hora e 45 minutos".
+export function formatWorkload(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  const hours = h === 1 ? '1 hora' : `${h} horas`;
+  const mins = m === 1 ? '1 minuto' : `${m} minutos`;
+  if (h === 0) return mins;
+  return m === 0 ? hours : `${hours} e ${mins}`;
+}

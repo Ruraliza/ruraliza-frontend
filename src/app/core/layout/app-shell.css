@@ -11,7 +11,7 @@ main:focus { outline: none; }
 /* --- Bottom nav (mobile/tablet) --- */
 .bottom-nav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: stretch;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); align-items: stretch;
   height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--surface-raised); border-top: 1px solid var(--line);
@@ -58,4 +58,10 @@ main:focus { outline: none; }
   .account-actions { display: grid; gap: var(--space-1); margin-top: auto; }
   .switch { width: 100%; }
   .switch:disabled { opacity: 0.6; cursor: progress; }
+}
+
+@media print {
+  .skip-link, .banner, .sidebar, .bottom-nav { display: none !important; }
+  .shell { display: block !important; }
+  main { padding: 0 !important; }
 }

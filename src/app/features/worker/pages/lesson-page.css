@@ -1,0 +1,71 @@
+/* Celular/tablet: a aula ocupa a tela; o conteúdo da trilha fica no painel retrátil. */
+.player { display: block; }
+.lesson { max-width: 860px; }
+.side { display: none; }
+
+.outline-toggle {
+  display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: 48px; padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface-raised);
+  color: var(--ink); font-weight: 600; text-align: left;
+}
+.outline-toggle > span:nth-of-type(1) { flex: 1; }
+
+.with-icon { display: inline-flex; align-items: center; gap: var(--space-1); }
+
+.video { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); overflow: hidden; background: #000; }
+.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+.content { display: grid; gap: var(--space-4); font-size: 17px; line-height: 28px; overflow-wrap: anywhere; }
+.content :is(h2, h3) { font-family: var(--font-display); margin-top: var(--space-2); }
+.content h2 { font-size: 22px; line-height: 28px; }
+.content h3 { font-size: 19px; line-height: 26px; }
+.content :is(ul, ol) { display: grid; gap: var(--space-2); padding-left: var(--space-6); }
+
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--line); }
+.done { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--success); margin-right: auto; }
+.actions > button:only-child { width: 100%; }
+@media (min-width: 480px) { .actions > button:only-child { width: auto; } }
+
+.pager { display: flex; justify-content: space-between; gap: var(--space-3); }
+
+.side-body { display: grid; gap: var(--space-6); }
+.cert { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--success); text-decoration: none; min-height: 44px; }
+
+/* Painel retrátil: entra pela direita, ocupando quase toda a largura no celular. */
+.drawer {
+  position: fixed; inset: 0 0 0 auto; margin: 0; height: 100dvh; max-height: none;
+  width: min(400px, calc(100vw - var(--space-8))); padding: var(--space-4) var(--space-4) var(--space-12);
+  border: 0; border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  background: var(--surface-raised); color: var(--ink); box-shadow: var(--shadow-float); overflow-y: auto;
+}
+.drawer::backdrop { background: var(--scrim); }
+.drawer[open] { display: grid; align-content: start; gap: var(--space-4); }
+@media (prefers-reduced-motion: no-preference) {
+  .drawer[open] { animation: slide-in .25s var(--ease-out); }
+  @keyframes slide-in { from { transform: translateX(100%); } }
+}
+.drawer-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.close { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: var(--ink); }
+.close:hover { background: var(--surface-sunken); }
+
+/* Desktop: barra lateral direita fixa ao lado da aula; o botão e o painel saem de cena. */
+@media (min-width: 1024px) {
+  .player { display: grid; grid-template-columns: minmax(0, 1fr) 360px; align-items: start; }
+  .lesson { margin-inline: auto; width: 100%; }
+  .outline-toggle, .drawer { display: none !important; }
+  .side {
+    display: block; position: sticky; top: calc(var(--banner-height, 0px) + var(--safe-top, 0px));
+    height: calc(100dvh - var(--banner-height, 0px) - var(--safe-top, 0px)); overflow-y: auto;
+    padding: var(--space-6) var(--space-4); border-left: 1px solid var(--line); background: var(--surface-raised);
+  }
+}
+
+.congrats {
+  width: min(440px, calc(100vw - 2 * var(--space-4))); padding: var(--space-8) var(--space-6) var(--space-6);
+  border: 0; border-radius: var(--radius-lg); background: var(--surface-raised); color: var(--ink);
+  box-shadow: var(--shadow-float); text-align: center;
+}
+.congrats::backdrop { background: var(--scrim); }
+.congrats[open] { display: grid; justify-items: center; gap: var(--space-4); }
+.congrats app-icon { color: var(--orange-500); }
+.congrats-actions { display: flex; flex-wrap: wrap-reverse; justify-content: center; gap: var(--space-3); }

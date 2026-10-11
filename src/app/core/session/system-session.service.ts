@@ -7,10 +7,11 @@ import { SystemRole, SystemUser } from '../models/system.model';
 export const SYSTEM_SESSION_STORAGE_KEY = 'ruraliza.systemSession';
 
 // O que cada cargo pode fazer no painel (espelha as permissões da API).
-export type SystemPermission = 'users:manage' | 'system-users:manage' | 'tracks:manage';
+// `tracks:manage`: o tutor cria trilhas e edita as dele. `tracks:oversee`: o administrador vê, cria e edita todas.
+export type SystemPermission = 'users:manage' | 'system-users:manage' | 'tracks:manage' | 'tracks:oversee';
 
 const PERMISSIONS: Record<SystemRole, readonly SystemPermission[]> = {
-  admin: ['users:manage', 'system-users:manage'],
+  admin: ['users:manage', 'system-users:manage', 'tracks:oversee'],
   tutor: ['tracks:manage']
 };
 
@@ -47,6 +48,11 @@ export class SystemSessionService {
   can(permission: SystemPermission): boolean {
     const role = this.user()?.role;
     return role !== undefined && PERMISSIONS[role].includes(permission);
+  }
+
+  // Qualquer uma das permissões (ex.: as telas de trilhas, do tutor e do administrador).
+  canAny(permissions: readonly SystemPermission[]): boolean {
+    return permissions.some((p) => this.can(p));
   }
 
   private save(session: StoredSystemSession): void {

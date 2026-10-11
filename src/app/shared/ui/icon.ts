@@ -4,7 +4,7 @@ export type IconName =
   | 'clock' | 'play' | 'check' | 'x' | 'dash'
   | 'plus' | 'home' | 'list' | 'farm' | 'user' | 'search' | 'briefcase' | 'menu'
   | 'map-pin' | 'crosshair' | 'arrow-left' | 'arrow-right' | 'alert' | 'logout' | 'money' | 'sprout' | 'swap'
-  | 'download' | 'bell' | 'wifi-off' | 'refresh' | 'share';
+  | 'download' | 'bell' | 'wifi-off' | 'refresh' | 'share' | 'book' | 'award' | 'printer' | 'circle';
 
 // Conjunto pequeno de ícones SVG inline: 24px, traço 1.75px, cor do texto (currentColor).
 // Decorativo por padrão; passe `label` quando o ícone for o único conteúdo com significado.
@@ -47,6 +47,10 @@ export type IconName =
         @case ('share') { <path d="M12 3v12M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1" /> }
         @case ('logout') { <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4" /> }
         @case ('money') { <rect x="2.5" y="6" width="19" height="12" rx="2" /><circle cx="12" cy="12" r="2.5" /><path d="M6 9.5v.01M18 14.5v.01" /> }
+        @case ('book') { <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z" /> }
+        @case ('award') { <circle cx="12" cy="9" r="6" /><path d="M8.5 13.9 7 21l5-2.5 5 2.5-1.5-7.1" /> }
+        @case ('printer') { <path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z" /> }
+        @case ('circle') { <circle cx="12" cy="12" r="8" /> }
         @case ('sprout') { <path d="M12 21v-9M12 12C12 8 9 5 4 5c0 4 3 7 8 7zM12 14c0-3.5 2.5-6 7-6 0 3.5-2.5 6-7 6z" /> }
       }
     </svg>

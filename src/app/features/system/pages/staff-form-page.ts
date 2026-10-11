@@ -14,7 +14,7 @@ import { SegmentOption, SegmentedControl } from '@shared/ui/segmented-control';
 
 const ROLE_DESCRIPTION: Record<SystemRole, string> = {
   admin: 'Gerencia os usuários do app e a equipe.',
-  tutor: 'Vai cadastrar e editar as trilhas de estudo (em breve).'
+  tutor: 'Cria e edita as trilhas de estudo dos trabalhadores.'
 };
 
 // Cadastro de usuário de sistema: o único jeito de criar um (não existe cadastro público).
