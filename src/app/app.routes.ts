@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { RedirectFunction, Router, Routes } from '@angular/router';
 import { requireRole, requireSignedIn } from './core/session/require-role.guard';
+import { requireSystemSignedIn } from './core/session/require-system.guard';
 import { ROLE_SLUG } from './core/session/roles';
 import { UserRole } from '../models/auth.model';
 import { PublicLayout } from './layouts/public-layout';
@@ -31,6 +32,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/account/new-profile-page').then((m) => m.NewProfilePage),
         title: 'Novo perfil · Ruraliza'
       },
+      // Equipe do Ruraliza: sem link no site nem no cadastro (usuários de sistema não se cadastram).
+      {
+        path: 'sistema/entrar',
+        loadComponent: () => import('./pages/system/system-sign-in-page').then((m) => m.SystemSignInPage),
+        title: 'Acesso da equipe · Ruraliza'
+      },
       { path: 'creditos', loadComponent: () => import('./pages/public/credits-page').then((m) => m.CreditsPage), title: 'Créditos das fotos · Ruraliza' }
     ]
   },
@@ -43,6 +50,11 @@ export const routes: Routes = [
     path: 'trabalhador',
     canActivate: [requireRole('worker')],
     loadChildren: () => import('./pages/worker/worker.routes').then((m) => m.WORKER_ROUTES)
+  },
+  {
+    path: 'sistema',
+    canActivate: [requireSystemSignedIn],
+    loadChildren: () => import('./pages/system/system.routes').then((m) => m.SYSTEM_ROUTES)
   },
   // Endereço antigo do cadastro.
   { path: 'register/farmer', redirectTo: signupFor('farmer') },

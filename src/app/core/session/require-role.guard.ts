@@ -4,7 +4,7 @@ import { CurrentUserService, UserRole } from './current-user.service';
 import { newProfileUrl } from './roles';
 
 // ATENÇÃO: isto NÃO é segurança. Só evita abrir a área de um perfil sem ter
-// entrado com e-mail e senha. A API ainda não tem token de sessão: qualquer pessoa consegue chamá-la direto.
+// entrado com e-mail e senha. Quem protege os dados é a API (token de sessão + dono do recurso).
 //
 // Conta com os dois perfis abrindo um link do outro painel: troca o painel nesta aba.
 // Conta sem esse perfil: vai para a página que cria o perfil.

@@ -85,12 +85,14 @@ export class PushService {
     const subscription = this.subscription();
     if (!swPush || !subscription) return;
 
+    // Lidos antes do primeiro await: ao sair da conta, a sessão é limpa logo em seguida.
     const user = this.currentUser.user();
+    const token = this.currentUser.token() ?? undefined;
     this.busy.set(true);
     this.lastSynced = null;
     try {
       await swPush.unsubscribe();
-      if (user) await firstValueFrom(this.accounts.unsubscribePush(user.account_id, { endpoint: subscription.endpoint }));
+      if (user) await firstValueFrom(this.accounts.unsubscribePush(user.account_id, { endpoint: subscription.endpoint }, token));
     } catch {
       // Sem a inscrição no navegador, o backend apaga a dele no próximo envio (410).
     } finally {

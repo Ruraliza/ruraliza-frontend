@@ -23,8 +23,8 @@ export class WorkerService {
   }
 
   // Cadastro: cria a conta com este perfil e já devolve a sessão (`user`).
-  createWorker(worker: WorkerInput): Observable<{ message: string; worker: Worker; user: SessionUser }> {
-    return this.http.post<{ message: string; worker: Worker; user: SessionUser }>(this.apiUrl, worker);
+  createWorker(worker: WorkerInput): Observable<{ message: string; worker: Worker; user: SessionUser; token: string }> {
+    return this.http.post<{ message: string; worker: Worker; user: SessionUser; token: string }>(this.apiUrl, worker);
   }
 
   updateWorker(workerId: number, changes: WorkerUpdate): Observable<{ message: string; worker: Worker }> {

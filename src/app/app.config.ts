@@ -4,6 +4,7 @@ import { provideClientHydration, withEventReplay, withIncrementalHydration } fro
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
+import { authInterceptor } from './core/http/auth.interceptor';
 import { errorInterceptor } from './core/http/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -15,7 +16,8 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' })
     ),
     provideClientHydration(withEventReplay(), withIncrementalHydration()),
-    provideHttpClient(withFetch(), withInterceptors([errorInterceptor])),
+    // errorInterceptor por fora: o authInterceptor ainda vê o HttpErrorResponse (e o cabeçalho do 401 de sessão).
+    provideHttpClient(withFetch(), withInterceptors([errorInterceptor, authInterceptor])),
     // PWA: cache do app (ngsw-config.json), aviso de versão nova e push. Só no build de produção.
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

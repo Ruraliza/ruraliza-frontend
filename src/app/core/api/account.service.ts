@@ -31,8 +31,10 @@ export class AccountService {
     return this.http.post<{ message: string }>(`${this.apiUrl}/${accountId}/push-subscriptions`, input, { context: silent() });
   }
 
-  unsubscribePush(accountId: number, input: PushUnsubscribeInput): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.apiUrl}/${accountId}/push-subscriptions`, { body: input, context: silent() });
+  // `token`: o da sessão que está saindo (ao sair da conta, o pedido parte depois de a sessão ser limpa).
+  unsubscribePush(accountId: number, input: PushUnsubscribeInput, token?: string): Observable<{ message: string }> {
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+    return this.http.delete<{ message: string }>(`${this.apiUrl}/${accountId}/push-subscriptions`, { body: input, headers, context: silent() });
   }
 }
 

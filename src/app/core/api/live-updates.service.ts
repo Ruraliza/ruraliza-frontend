@@ -2,6 +2,7 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { EMPTY, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { CurrentUserService } from '../session/current-user.service';
 
 // Evento que a API manda (SSE) quando as candidaturas mudam.
 const APPLICATIONS_CHANGED_EVENT = 'applications';
@@ -12,6 +13,7 @@ const APPLICATIONS_CHANGED_EVENT = 'applications';
 @Injectable({ providedIn: 'root' })
 export class LiveUpdatesService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly currentUser = inject(CurrentUserService);
 
   // Alguém se candidatou, desistiu, foi aceito/recusado; ou o serviço mudou de status.
   serviceApplications(serviceId: number): Observable<void> {
@@ -27,8 +29,12 @@ export class LiveUpdatesService {
     // No servidor (SSR) não há conexão a manter.
     if (!this.isBrowser || typeof EventSource === 'undefined') return EMPTY;
 
+    // O EventSource não envia cabeçalhos: o token vai na query (a API aceita só nestas rotas).
+    const token = this.currentUser.token();
+    const withToken = token ? `${url}?access_token=${encodeURIComponent(token)}` : url;
+
     return new Observable<void>((subscriber) => {
-      const source = new EventSource(url);
+      const source = new EventSource(withToken);
       let connected = false;
 
       source.addEventListener(APPLICATIONS_CHANGED_EVENT, () => subscriber.next());

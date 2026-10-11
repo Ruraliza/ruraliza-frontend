@@ -4,12 +4,13 @@ import { SessionUser, UserRole } from '../../../models/auth.model';
 
 export type { UserRole };
 
-// Quem entrou com e-mail e senha, guardado na aba atual.
-// A API ainda não emite token de sessão: isto só lembra a conta depois do login.
-// `role`/`id` são o painel aberto; `profiles` diz quais perfis a conta tem.
+// Quem entrou com e-mail e senha, guardado na aba atual, com o token de sessão que o
+// authInterceptor envia em Authorization. `role`/`id` são o painel aberto; `profiles` diz quais
+// perfis a conta tem. Sessão guardada sem token (de antes do token existir) é descartada.
 export type CurrentUser = SessionUser;
 
 export const CURRENT_USER_STORAGE_KEY = 'ruraliza.currentUser';
+export const CURRENT_TOKEN_STORAGE_KEY = 'ruraliza.sessionToken';
 
 function isProfileId(value: unknown): value is number | null {
   return value === null || Number.isInteger(value);
@@ -18,11 +19,23 @@ function isProfileId(value: unknown): value is number | null {
 @Injectable({ providedIn: 'root' })
 export class CurrentUserService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly tokenState = signal<string | null>(this.isBrowser ? sessionStorage.getItem(CURRENT_TOKEN_STORAGE_KEY) : null);
   private readonly state = signal<CurrentUser | null>(this.restore());
 
   readonly user = this.state.asReadonly();
+  readonly token = this.tokenState.asReadonly();
   readonly role = computed(() => this.state()?.role ?? null);
 
+  // Login ou cadastro: a sessão e o token da conta.
+  signIn(user: CurrentUser, token: string): void {
+    this.tokenState.set(token);
+    if (this.isBrowser) {
+      sessionStorage.setItem(CURRENT_TOKEN_STORAGE_KEY, token);
+    }
+    this.set(user);
+  }
+
+  // Mudança na sessão (painel aberto, perfil novo): o token continua o mesmo.
   set(user: CurrentUser): void {
     this.state.set(user);
     if (this.isBrowser) {
@@ -32,8 +45,10 @@ export class CurrentUserService {
 
   clear(): void {
     this.state.set(null);
+    this.tokenState.set(null);
     if (this.isBrowser) {
       sessionStorage.removeItem(CURRENT_USER_STORAGE_KEY);
+      sessionStorage.removeItem(CURRENT_TOKEN_STORAGE_KEY);
     }
   }
 
@@ -66,6 +81,11 @@ export class CurrentUserService {
 
     const raw = sessionStorage.getItem(CURRENT_USER_STORAGE_KEY);
     if (raw === null) return null;
+    if (this.tokenState() === null) {
+      console.warn('Sessão guardada sem token de acesso; entre de novo.');
+      sessionStorage.removeItem(CURRENT_USER_STORAGE_KEY);
+      return null;
+    }
 
     try {
       const parsed = JSON.parse(raw) as Partial<CurrentUser>;
@@ -86,6 +106,8 @@ export class CurrentUserService {
     }
     console.warn(`Valor inválido em sessionStorage["${CURRENT_USER_STORAGE_KEY}"]; o perfil foi descartado.`);
     sessionStorage.removeItem(CURRENT_USER_STORAGE_KEY);
+    sessionStorage.removeItem(CURRENT_TOKEN_STORAGE_KEY);
+    this.tokenState.set(null);
     return null;
   }
 }
