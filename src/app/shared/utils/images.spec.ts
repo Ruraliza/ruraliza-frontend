@@ -1,4 +1,4 @@
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { PhotoError, apiAsset, centeredCrop, clampCrop, fitInside, preparePhoto, resizeCrop } from './images';
 
 describe('images', () => {

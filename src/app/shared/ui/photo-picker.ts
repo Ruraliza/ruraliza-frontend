@@ -1,5 +1,5 @@
 import { Directive, ElementRef, inject, input, output } from '@angular/core';
-import { ToastService } from '../../core/toast/toast.service';
+import { ToastService } from '@core/toast/toast.service';
 import { ACCEPTED_PHOTOS, PhotoError, preparePhoto } from '../utils/images';
 
 // Transforma um <input type="file"> em seletor de fotos: aceita só imagens, reduz no navegador

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { SystemUser } from '../../../models/system.model';
+import { SystemUser } from '../models/system.model';
 import { SYSTEM_SESSION_STORAGE_KEY, SystemSessionService } from './system-session.service';
 
 const tutor: SystemUser = { id: 2, email: 'tutor@exemplo.com', name: 'Tiago', role: 'tutor', insertion_date: '2026-01-01T00:00:00.000Z' };

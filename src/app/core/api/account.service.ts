@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { ProfileCreateInput, SessionResponse, SessionUser, UserRole } from '../../../models/auth.model';
-import { PushSubscriptionInput, PushUnsubscribeInput } from '../../../models/push.model';
+import { environment } from '@env/environment';
+import { ProfileCreateInput, SessionResponse, SessionUser, UserRole } from '../models/auth.model';
+import { PushSubscriptionInput, PushUnsubscribeInput } from '../models/push.model';
 import { SILENT_ERRORS } from '../http/error.interceptor';
 
 // Conta única: um e-mail e uma senha, com perfil de produtor e/ou de trabalhador.

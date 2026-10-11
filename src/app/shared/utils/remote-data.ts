@@ -1,6 +1,6 @@
 import { Signal, computed, signal } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiError } from '../../core/http/api-error';
+import { ApiError } from '@core/http/api-error';
 
 export type RemoteState<T> =
   | { status: 'loading' }

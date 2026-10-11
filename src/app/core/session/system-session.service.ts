@@ -1,6 +1,6 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { SystemRole, SystemUser } from '../../../models/system.model';
+import { SystemRole, SystemUser } from '../models/system.model';
 
 // Usuário de sistema (equipe do Ruraliza) que entrou em /sistema/entrar, guardado na aba atual.
 // Independente da conta do app: as duas sessões podem coexistir na mesma aba.

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree, provideRouter } from '@angular/router';
-import { SessionUser } from '../../../models/auth.model';
+import { SessionUser } from '../models/auth.model';
 import { CurrentUserService } from './current-user.service';
 import { requireRole } from './require-role.guard';
 

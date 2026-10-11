@@ -1,4 +1,4 @@
-import { UserRole } from '../../../models/auth.model';
+import { UserRole } from '../models/auth.model';
 
 // Os dois painéis da conta: endereço, nome e trecho da URL de cada perfil.
 export const ROLE_HOME: Record<UserRole, string> = { farmer: '/produtor', worker: '/trabalhador' };

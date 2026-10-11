@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { LiveUpdatesService } from './live-updates.service';
 
 // EventSource falso: o jsdom não tem um, e assim o teste dispara os eventos à mão.

@@ -3,8 +3,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { SwPush } from '@angular/service-worker';
 import { BehaviorSubject } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { SessionUser } from '../../../models/auth.model';
+import { environment } from '@env/environment';
+import { SessionUser } from '../models/auth.model';
 import { CurrentUserService } from '../session/current-user.service';
 import { PushService } from './push.service';
 
