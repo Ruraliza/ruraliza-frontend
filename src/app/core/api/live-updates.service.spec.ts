@@ -29,6 +29,8 @@ describe('LiveUpdatesService', () => {
   let service: LiveUpdatesService;
 
   beforeEach(() => {
+    // Os arquivos de teste dividem o sessionStorage: um token deixado por outro spec iria para a query.
+    sessionStorage.clear();
     vi.stubGlobal('EventSource', FakeEventSource);
     FakeEventSource.last = null;
     service = TestBed.inject(LiveUpdatesService);

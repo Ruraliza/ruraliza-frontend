@@ -108,4 +108,16 @@ O build de produção registra o service worker do Angular (`ngsw-config.json`),
 - **Versão nova:** quando um deploy novo é baixado, aparece a faixa "Nova versão disponível" com o botão Atualizar.
 - **Instalar:** o botão "Instalar app" aparece na landing e nas páginas de perfil quando o navegador permite. No iPhone ele explica o caminho pelo Compartilhar.
 - **Notificações push:** são ativadas no perfil e valem para os dois perfis da conta. Precisam das chaves VAPID no `.env` do backend. A inscrição é reenviada ao backend sempre que alguém entra, e "Sair" a desativa neste aparelho. Como a sessão fica no `sessionStorage`, clicar numa notificação com o app fechado abre a tela de entrada.
-- **Ícones:** `public/icons/` é gerado de `public/favicon.svg` com `node scripts/generate-pwa-icons.mjs`. Rode de novo se o logo mudar.
+- **Ícones:** `public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`, `public/icons/` (ícones do app, versão maskable e o badge monocromático das notificações) e `public/brand/` são gerados com `node scripts/generate-brand-assets.mjs`, a partir do desenho do símbolo que está no próprio script. Rode de novo se o logo mudar.
+
+## Marca
+
+O símbolo é o "R" em grade de 3×4 módulos, desenhado em SVG (menos de 400 bytes cada versão, nítido em qualquer tela). O componente `Logo` (`shared/ui/logo.ts`) desenha o símbolo inline com o wordmark:
+
+| Versão | Arquivo | Onde aparece |
+|---|---|---|
+| Ícone do app (fundo verde, R branco, lima e laranja) | `favicon.svg`, `icone-app.svg` | aba do navegador, ícone do app instalado, tela inicial do iPhone, notificações |
+| Verde (verde-escuro, verde e laranja) | `simbolo-verde.svg`, `tone="color"` | header com fundo branco, sidebar do painel |
+| Colorido (quatro cores) | `simbolo-colorido.svg`, `tone="vivid"` | tela de carregamento do app (`index.html`) |
+| Branco | `simbolo-branco.svg`, `tone="reverse"` | header transparente sobre a foto da landing, rodapé verde |
+| Preto | `simbolo-preto.svg` | badge das notificações no Android (`icons/badge-96.png`, só o formato conta) |

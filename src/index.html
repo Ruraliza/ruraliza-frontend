@@ -15,10 +15,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ruraliza">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <style>
+    /* Símbolo enquanto o app carrega (sinal fraco no campo). O Angular troca o conteúdo de <app-root> ao iniciar;
+       só aparece depois de 0,4 s, para não piscar em conexão boa. */
+    .boot { position: fixed; inset: 0; display: grid; place-items: center; animation: boot-in .3s .4s both; }
+    @keyframes boot-in { from { opacity: 0; } }
+  </style>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Figtree:wght@400;500;600&display=swap">
 </head>
 <body>
-  <app-root></app-root>
+  <app-root><div class="boot"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 40" width="60" height="80" role="img" aria-label="Ruraliza, carregando"><path d="M0 10A10 10 0 0 1 10 0H20V10H10V20H0Z" fill="#005320"/><path d="M20 0H30V10A10 10 0 0 1 20 20Z" fill="#017D08"/><path d="M10 20H20L30 30V40H20L10 30Z" fill="#89C401"/><path d="M0 30H10V40H0Z" fill="#FE8400"/></svg></div></app-root>
 </body>
 </html>

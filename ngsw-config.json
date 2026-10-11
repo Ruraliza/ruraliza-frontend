@@ -14,7 +14,7 @@
       "installMode": "lazy",
       "updateMode": "prefetch",
       "resources": {
-        "files": ["/assets/**", "/emoji/**", "/icons/**", "/*.(png|svg|webp|jpg|jpeg|gif|ico)"]
+        "files": ["/assets/**", "/brand/**", "/emoji/**", "/icons/**", "/*.(png|svg|webp|jpg|jpeg|gif|ico)"]
       }
     },
     {
