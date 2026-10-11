@@ -5,8 +5,8 @@ export type IconName =
   | 'plus' | 'home' | 'list' | 'farm' | 'user' | 'search' | 'briefcase' | 'menu'
   | 'map-pin' | 'crosshair' | 'arrow-left' | 'arrow-right' | 'alert' | 'logout' | 'money' | 'sprout' | 'swap'
   | 'download' | 'bell' | 'wifi-off' | 'refresh' | 'share'
-  | 'chat' | 'send' | 'lock' | 'phone' | 'star';
-  | 'download' | 'bell' | 'wifi-off' | 'refresh' | 'share' | 'book' | 'award' | 'printer' | 'circle';
+  | 'chat' | 'send' | 'lock' | 'phone' | 'star'
+  | 'book' | 'award' | 'printer' | 'circle';
 
 // Conjunto pequeno de ícones SVG inline: 24px, traço 1.75px, cor do texto (currentColor).
 // Decorativo por padrão; passe `label` quando o ícone for o único conteúdo com significado.
