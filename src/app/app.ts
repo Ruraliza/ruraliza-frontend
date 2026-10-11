@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { InstallPromptService } from './core/pwa/install-prompt.service';
-import { PushService } from './core/pwa/push.service';
-import { PwaBanners } from './shared/ui/pwa-banners';
-import { ToastContainer } from './shared/ui/toast-container';
+import { InstallPromptService } from '@core/pwa/install-prompt.service';
+import { PushService } from '@core/pwa/push.service';
+import { PwaBanners } from '@core/layout/pwa-banners';
+import { ToastContainer } from '@core/layout/toast-container';
 
 @Component({
   selector: 'app-root',

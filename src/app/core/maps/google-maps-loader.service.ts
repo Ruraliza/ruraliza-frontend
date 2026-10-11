@@ -2,8 +2,8 @@ import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { MapsConfig } from '../../../models/config.model';
+import { environment } from '@env/environment';
+import { MapsConfig } from '../models/config.model';
 
 const SCRIPT_ID = 'google-maps-sdk';
 const CALLBACK = '__ruralizaMapsReady'; // nome global do callback que o SDK chama ao terminar

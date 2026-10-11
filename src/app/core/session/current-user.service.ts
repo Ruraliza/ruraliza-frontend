@@ -1,6 +1,6 @@
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { SessionUser, UserRole } from '../../../models/auth.model';
+import { SessionUser, UserRole } from '../models/auth.model';
 
 export type { UserRole };
 

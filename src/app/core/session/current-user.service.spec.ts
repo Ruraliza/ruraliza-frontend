@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { SessionUser } from '../../../models/auth.model';
+import { SessionUser } from '../models/auth.model';
 import { CURRENT_TOKEN_STORAGE_KEY, CURRENT_USER_STORAGE_KEY, CurrentUserService } from './current-user.service';
 
 const farmer: SessionUser = { account_id: 1, role: 'farmer', id: 3, profiles: { farmer: 3, worker: null } };

@@ -20,8 +20,8 @@ Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe pro
 ## Senha
 
 - **Cadastro:** senha (8 a 128 caracteres) e confirmação, com botão *Mostrar* (`shared/ui/password-reveal.ts`, regras em `shared/utils/password.ts`).
-- **Esqueci minha senha** (`/entrar/esqueci-senha` → `/entrar/nova-senha`): a pessoa informa o e-mail e cria a nova senha. O envio do código por e-mail **ainda não existe**: a API devolve o token na resposta e a tela segue direto para a nova senha. O token vai pelo `state` da navegação (`pages/public/auth-prefill.ts`), não pela URL. Quando o e-mail existir, a segunda tela passa a pedir o código (ver `TODO(email)`).
-- **Alterar senha com a conta aberta:** cartão *Senha* no Perfil (produtor e trabalhador), pedindo a senha atual, sem código por e-mail (`shared/ui/password-change.ts`).
+- **Esqueci minha senha** (`/entrar/esqueci-senha` → `/entrar/nova-senha`): a pessoa informa o e-mail e cria a nova senha. O envio do código por e-mail **ainda não existe**: a API devolve o token na resposta e a tela segue direto para a nova senha. O token vai pelo `state` da navegação (`features/auth/models/auth-prefill.ts`), não pela URL. Quando o e-mail existir, a segunda tela passa a pedir o código (ver `TODO(email)`).
+- **Alterar senha com a conta aberta:** cartão *Senha* no Perfil (produtor e trabalhador), pedindo a senha atual, sem código por e-mail (`shared/domain/ui/password-change.ts`).
 
 ## Fluxo de teste
 
@@ -37,29 +37,45 @@ Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe pro
 
 - **Fotos:** antes do envio, o navegador reduz a foto para no máximo 1000 px e converte para WebP (`shared/utils/images.ts`), o que economiza dados no celular. O backend repete o tratamento e é quem garante a regra. As URLs que a API devolve (`/api/images/...`) passam por `apiAsset()` para apontar ao servidor da API.
 - **Filtros na URL:** os filtros de **Vagas** (`q`, `categoria`, `min`, `max`, `de`, `ate`, `ordem`) e de **Serviços** do produtor (`aba`, `q`, `categoria`, `fazenda`, `ordem`, `so`) ficam na query string. Voltar do detalhe mantém a busca e o link pode ser compartilhado. As vagas são filtradas no backend. Os serviços do produtor são filtrados no navegador, porque a lista é pequena; com o banco, dá para passar os filtros para a API.
-- **Sem foto → emoji do campo:** avatar sem foto mostra um emoji escolhido pelo nome (sempre o mesmo para a mesma pessoa), card de vaga sem foto usa o emoji da categoria (Colheita 🌾, Plantio 🌱, Manejo de gado 🐄…) e fazenda sem foto usa um emoji de paisagem (`shared/utils/farm-emoji.ts`). Os emojis são imagens no estilo do Facebook, em `public/emoji/<codepoints>.webp` (64 px, extraídas do pacote `emoji-datasource-facebook` 16.0.0). **Atenção:** o próprio pacote avisa que as imagens do Facebook não têm licença clara. Para trocar por Twemoji (CC-BY 4.0) ou Noto (Apache 2.0), basta substituir os arquivos mantendo os nomes.
-- **Prazo (`expires_at`):** dia do calendário no horário de Brasília (`shared/utils/expiry.ts`). Vaga vencida some da busca do trabalhador. O produtor a vê marcada como *Prazo encerrado* e pode renová-la editando a data.
+- **Sem foto → emoji do campo:** avatar sem foto mostra um emoji escolhido pelo nome (sempre o mesmo para a mesma pessoa), card de vaga sem foto usa o emoji da categoria (Colheita 🌾, Plantio 🌱, Manejo de gado 🐄…) e fazenda sem foto usa um emoji de paisagem (`shared/domain/utils/farm-emoji.ts`). Os emojis são imagens no estilo do Facebook, em `public/emoji/<codepoints>.webp` (64 px, extraídas do pacote `emoji-datasource-facebook` 16.0.0). **Atenção:** o próprio pacote avisa que as imagens do Facebook não têm licença clara. Para trocar por Twemoji (CC-BY 4.0) ou Noto (Apache 2.0), basta substituir os arquivos mantendo os nomes.
+- **Prazo (`expires_at`):** dia do calendário no horário de Brasília (`shared/domain/utils/expiry.ts`). Vaga vencida some da busca do trabalhador. O produtor a vê marcada como *Prazo encerrado* e pode renová-la editando a data.
 
 ## Estrutura
 
 ```text
 src/
-  styles/            tokens.css (brand system), base.css, layout.css
-  models/            tipos da API + status.ts (tradução, cor e ícone de cada status)
+  styles/              tokens.css (brand system), base.css, layout.css
   app/
-    core/api/        AuthService, FarmerService, WorkerService, CategoryService (único lugar com HttpClient)
-    core/http/       errorInterceptor + ApiError (mensagens claras, repassa o erro)
-    core/session/    CurrentUserService (quem entrou) + guard requireRole (não é segurança)
-    core/toast/      ToastService
-    core/pwa/        AppUpdateService, ConnectivityService, InstallPromptService, PushService
-    shared/ui/       Button, FormField, MaskedInput, StatusBadge, ServiceCard, ConfirmDialog,
-                     Avatar, AvatarEditor, PhotoGridEditor, PhotoStrip...
-    shared/utils/    CPF, máscaras, formatação pt-BR, RemoteData, fotos (images.ts), prazos (expiry.ts)
-    layouts/         PublicLayout, AppShell (bottom nav < 1024px / sidebar ≥ 1024px)
-    pages/public/    landing, cadastro, entrar, esqueci a senha, nova senha
-    pages/farmer/    área do produtor (lazy em /produtor)
-    pages/worker/    área do trabalhador (lazy em /trabalhador)
+    app.routes.ts      rotas de topo: o único lugar que importa features (lazy)
+    core/              singletons globais
+      models/          tipos da API (o contrato que o check:contracts do backend confere) + status.ts
+      api/             serviços HTTP usados por mais de uma feature: ProfileService, AccountService,
+                       CategoryService, LiveUpdatesService
+      http/            authInterceptor, errorInterceptor + ApiError
+      session/         CurrentUserService, SystemSessionService, guards (não são segurança)
+      layout/          PublicLayout, AppShell (bottom nav < 1024px / sidebar ≥ 1024px) e a UI que
+                       depende de serviços do core (faixas do PWA, instalar, push, troca de painel, toasts)
+      pwa/ maps/ toast/
+    shared/            reaproveitável, sem saber de features
+      ui/              Button, FormField, MaskedInput, ConfirmDialog, Skeleton, PhotoStrip... (sem domínio)
+      utils/           CPF, máscaras, formatação pt-BR, RemoteData, fotos (images.ts), senha
+      domain/ui/       UI de domínio usada por 2+ features: ServiceCard, StatusBadge, Avatar(Editor),
+                       FarmMap, CategoryChip, PasswordChange, ResumeDialog
+      domain/utils/    rascunho de vaga, prazos (expiry.ts), currículo, emoji do campo
+    features/          um domínio por pasta; uma feature nunca importa outra
+      public/          landing (ui/ com as seções) e créditos das fotos
+      auth/            cadastro, entrar, esqueci a senha, nova senha (data-access/AuthService)
+      account/         segundo perfil da conta
+      farmer/          área do produtor (lazy em /produtor): farmer.routes.ts, farmer-layout.ts,
+                       pages/ (containers), ui/ (WorkerCard, LocationPicker, PhotoGridEditor),
+                       data-access/FarmerService
+      worker/          área do trabalhador (lazy em /trabalhador): mesma organização
+      system/          área da equipe (lazy em /sistema): AdminService, SystemAuthService
 ```
+
+Imports: dentro da mesma área (core, shared ou a mesma feature), relativos; entre áreas, pelos aliases do `tsconfig.json` (`@core/*`, `@shared/*`, `@features/*`, `@env/*`). `shared` pode usar serviços de infraestrutura do `core` (toast, loader do Google Maps, `ApiError`), nunca uma feature. O que duas features precisam vai para `core/api` (dados) ou `shared/domain` (UI e regras de tela).
+
+Componentes: standalone, injeção com `inject()`, entradas e saídas com `input()`/`output()` e estado local com Signals (`RemoteData` para o que vem da API). No Angular 22 o `OnPush` já é o padrão de todo componente, então ele não é declarado.
 
 ## Renderização
 

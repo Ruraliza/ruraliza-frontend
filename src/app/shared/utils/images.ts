@@ -1,4 +1,4 @@
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 
 // Fotos: o servidor é quem garante a regra (≤ 1000px, WebP, sem metadados).
 // Aqui a foto só é reduzida ANTES do envio, para economizar dados em conexão ruim no campo

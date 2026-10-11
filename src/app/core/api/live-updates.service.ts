@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { EMPTY, Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '@env/environment';
 import { CurrentUserService } from '../session/current-user.service';
 
 // Evento que a API manda (SSE) quando as candidaturas mudam.

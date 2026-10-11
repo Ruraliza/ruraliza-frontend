@@ -13,7 +13,15 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    // Imports entre áreas: @core (singletons globais), @shared (UI e utilitários reaproveitáveis),
+    // @features (só o app.routes.ts importa features) e @env. Dentro da mesma área, relativo.
+    "paths": {
+      "@core/*": ["./src/app/core/*"],
+      "@shared/*": ["./src/app/shared/*"],
+      "@features/*": ["./src/app/features/*"],
+      "@env/*": ["./src/environments/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
