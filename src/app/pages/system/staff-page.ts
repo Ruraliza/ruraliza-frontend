@@ -37,6 +37,7 @@ import { Skeleton } from '../../shared/ui/skeleton';
                   <span class="t-body-sm muted">{{ member.email }} · desde {{ date(member.insertion_date) }}</span>
                 </span>
                 <span class="badge">{{ roleLabel[member.role] }}</span>
+                <a appButton variant="ghost" [routerLink]="['/sistema/equipe', member.id, 'editar']" [attr.aria-label]="'Editar ' + member.name">Editar</a>
               </li>
             }
           </ul>
@@ -46,7 +47,7 @@ import { Skeleton } from '../../shared/ui/skeleton';
   `,
   styles: `
     .list { display: grid; gap: var(--space-2); padding: 0; margin: 0; list-style: none; }
-    .row { display: flex; align-items: center; gap: var(--space-3); }
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
     .who { display: grid; min-width: 0; flex: 1; }
     .who > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .badge { padding: 2px var(--space-2); border-radius: 999px; background: var(--broto-soft); font-size: 12px; font-weight: 600; }

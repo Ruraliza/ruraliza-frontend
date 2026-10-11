@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Farmer, FarmerUpdate } from '../../../models/farmer.model';
-import { AdminUser, SystemUser, SystemUserInput, SystemUserResponse } from '../../../models/system.model';
+import { AdminSystemUserUpdate, AdminUser, SystemUser, SystemUserInput, SystemUserResponse } from '../../../models/system.model';
 import { Worker, WorkerUpdate } from '../../../models/worker.model';
 
 // Administração: contas do app (lista, edição e remoção) e equipe. O authInterceptor envia o token de sistema.
@@ -57,5 +57,14 @@ export class AdminService {
 
   createSystemUser(input: SystemUserInput): Observable<SystemUserResponse> {
     return this.http.post<SystemUserResponse>(`${this.apiUrl}/system-users`, input);
+  }
+
+  getSystemUser(id: number): Observable<SystemUser> {
+    return this.http.get<SystemUser>(`${this.apiUrl}/system-users/${id}`);
+  }
+
+  // Nome, e-mail e cargo (o próprio cargo a API recusa).
+  updateSystemUser(id: number, changes: AdminSystemUserUpdate): Observable<SystemUserResponse> {
+    return this.http.patch<SystemUserResponse>(`${this.apiUrl}/system-users/${id}`, changes);
   }
 }

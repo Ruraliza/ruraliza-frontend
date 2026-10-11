@@ -13,11 +13,12 @@ export class SystemLayout {
 
   readonly items = computed<NavItem[]>(() => {
     const items: NavItem[] = [{ label: 'Início', icon: 'home', link: '/sistema', exact: true }];
-    if (this.session.can('users:manage')) items.push({ label: 'Usuários', icon: 'user', link: '/sistema/usuarios' });
+    if (this.session.can('users:manage')) items.push({ label: 'Usuários', icon: 'list', link: '/sistema/usuarios' });
     if (this.session.can('system-users:manage')) {
       items.push({ label: 'Novo membro', icon: 'plus', link: '/sistema/equipe/novo', primary: true });
       items.push({ label: 'Equipe', icon: 'briefcase', link: '/sistema/equipe', exact: true });
     }
+    items.push({ label: 'Perfil', icon: 'user', link: '/sistema/perfil' });
     return items;
   });
 }
