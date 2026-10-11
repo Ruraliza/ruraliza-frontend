@@ -12,6 +12,9 @@ import { TracksAdminPage } from './pages/tracks-admin-page';
 import { TrackNewPage } from './pages/track-new-page';
 import { TrackEditorPage } from './pages/track-editor-page';
 
+// Trilhas: os tutores (as próprias) e o administrador (todas).
+const TRACKS = ['tracks:manage', 'tracks:oversee'] as const;
+
 // Área da equipe, carregada sob demanda a partir de /sistema (o login fica fora, em /sistema/entrar).
 export const SYSTEM_ROUTES: Routes = [
   {
@@ -24,9 +27,9 @@ export const SYSTEM_ROUTES: Routes = [
       { path: 'equipe', component: StaffPage, canActivate: [requireSystemPermission('system-users:manage')], title: 'Equipe · Ruraliza' },
       { path: 'equipe/novo', component: StaffFormPage, canActivate: [requireSystemPermission('system-users:manage')], title: 'Novo membro · Ruraliza' },
       { path: 'equipe/:id/editar', component: StaffEditPage, canActivate: [requireSystemPermission('system-users:manage')], title: 'Editar membro · Ruraliza' },
-      { path: 'trilhas', component: TracksAdminPage, canActivate: [requireSystemPermission('tracks:manage')], title: 'Trilhas · Ruraliza' },
-      { path: 'trilhas/nova', component: TrackNewPage, canActivate: [requireSystemPermission('tracks:manage')], title: 'Nova trilha · Ruraliza' },
-      { path: 'trilhas/:id', component: TrackEditorPage, canActivate: [requireSystemPermission('tracks:manage')], title: 'Trilha · Ruraliza' },
+      { path: 'trilhas', component: TracksAdminPage, canActivate: [requireSystemPermission(TRACKS)], title: 'Trilhas · Ruraliza' },
+      { path: 'trilhas/nova', component: TrackNewPage, canActivate: [requireSystemPermission(TRACKS)], title: 'Nova trilha · Ruraliza' },
+      { path: 'trilhas/:id', component: TrackEditorPage, canActivate: [requireSystemPermission(TRACKS)], title: 'Trilha · Ruraliza' },
       { path: 'perfil', component: SystemProfilePage, title: 'Perfil · Ruraliza' }
     ]
   }

@@ -39,7 +39,8 @@ const ACTIONS: Record<ManagedTrack['status'], StatusAction> = {
 };
 
 // Página de uma trilha para os tutores: status, dados gerais e tutores, e o editor de módulos e aulas.
-// Quem não é tutor da trilha vê tudo em modo leitura. Não existe excluir: só descontinuar.
+// Edita quem é tutor da trilha ou administrador; os outros tutores veem em modo leitura.
+// Não existe excluir: desabilitar é descontinuar.
 @Component({
   selector: 'app-track-editor-page',
   imports: [RouterLink, Button, ConfirmDialog, ErrorState, Icon, Skeleton, TrackContentEditor, TrackGeneralForm, TrackStatusBadge],
@@ -58,13 +59,15 @@ const ACTIONS: Record<ManagedTrack['status'], StatusAction> = {
                 <h1>{{ t.title }}</h1>
                 <p class="muted t-body-sm">{{ t.lesson_count }} {{ t.lesson_count === 1 ? 'aula' : 'aulas' }} · {{ duration(t.workload_minutes) }} · editada em {{ date(t.updated_at) }}</p>
               </div>
-              @if (t.is_tutor) {
+              @if (t.can_edit) {
                 <button appButton [variant]="action().variant === 'danger' ? 'secondary' : 'primary'" type="button" (click)="confirming.set(true)">{{ action().label }}</button>
               }
             </header>
 
-            @if (!t.is_tutor) {
+            @if (!t.can_edit) {
               <p class="card note" role="note"><app-icon name="alert" [size]="20" />Você não é tutor desta trilha: pode ver, mas só os tutores dela editam. Peça a um deles para incluir você.</p>
+            } @else if (!t.is_tutor) {
+              <p class="card note" role="note"><app-icon name="alert" [size]="20" />Você está editando como administrador. Os tutores da trilha continuam responsáveis por ela.</p>
             } @else if (t.status === 'draft') {
               <p class="card note" role="note"><app-icon name="alert" [size]="20" />Rascunho: os trabalhadores ainda não veem esta trilha. Monte os módulos e as aulas e publique.</p>
             }
@@ -75,7 +78,7 @@ const ACTIONS: Record<ManagedTrack['status'], StatusAction> = {
                 [value]="general()"
                 [categories]="categories.data() ?? []"
                 [tutors]="tutors.data() ?? []"
-                [readonly]="!t.is_tutor"
+                [readonly]="!t.can_edit"
                 [saving]="savingGeneral()"
                 (submitted)="saveGeneral(t, $event)"
               />
@@ -85,7 +88,7 @@ const ACTIONS: Record<ManagedTrack['status'], StatusAction> = {
               <h2 id="conteudo" class="t-h3">Módulos e aulas</h2>
               <app-track-content-editor
                 [modules]="t.modules"
-                [readonly]="!t.is_tutor"
+                [readonly]="!t.can_edit"
                 [live]="t.status !== 'draft'"
                 [saving]="savingContent()"
                 (save)="saveContent(t, $event)"
@@ -158,7 +161,7 @@ export class TrackEditorPage {
       next: ({ track }) => {
         this.savingGeneral.set(false);
         this.track.replace(track);
-        this.toast.success(track.is_tutor ? 'Dados da trilha salvos.' : 'Dados salvos. Você não é mais tutor desta trilha.');
+        this.toast.success(track.can_edit ? 'Dados da trilha salvos.' : 'Dados salvos. Você não é mais tutor desta trilha.');
       },
       error: () => this.savingGeneral.set(false)
     });

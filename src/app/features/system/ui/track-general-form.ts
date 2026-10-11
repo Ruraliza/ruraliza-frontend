@@ -41,7 +41,7 @@ export interface TrackGeneralValue {
       @if (tutors(); as list) {
         <fieldset class="stack-sm">
           <legend class="t-label">Tutores</legend>
-          <p class="t-body-sm muted">Só os tutores da trilha podem editá-la. Os nomes aparecem para os alunos.</p>
+          <p class="t-body-sm muted">{{ tutorsHint() }}</p>
           <div class="tutors">
             @for (t of list; track t.id) {
               <label class="check">
@@ -74,7 +74,8 @@ export interface TrackGeneralValue {
 export class TrackGeneralForm {
   readonly value = input<TrackGeneralValue | null>(null);
   readonly categories = input.required<string[]>();
-  readonly tutors = input<TrackTutor[] | null>(null); // null = sem escolha de tutores (criação)
+  readonly tutors = input<TrackTutor[] | null>(null); // null = sem escolha de tutores (criação pelo tutor)
+  readonly tutorsHint = input('Só os tutores da trilha (e o administrador) podem editá-la. Os nomes aparecem para os alunos.');
   readonly readonly = input(false);
   readonly saving = input(false);
   readonly submitLabel = input('Salvar');

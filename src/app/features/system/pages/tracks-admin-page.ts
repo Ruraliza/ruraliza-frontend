@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SystemSessionService } from '@core/session/system-session.service';
 import { RemoteData } from '@shared/utils/remote-data';
 import { formatDate, formatDuration } from '@shared/utils/format';
 import { Button } from '@shared/ui/button';
@@ -13,7 +14,8 @@ import { TrackStatusBadge } from '../ui/track-status-badge';
 
 type Scope = 'mine' | 'all';
 
-// Trilhas de estudo para os tutores: as dele primeiro (filtro "Minhas") e as dos colegas, só para ver.
+// Trilhas de estudo. O tutor vê as dele (filtro "Minhas") e as dos colegas, só para ver; o administrador
+// vê e edita todas.
 @Component({
   selector: 'app-tracks-admin-page',
   imports: [RouterLink, Button, EmptyState, ErrorState, Icon, SegmentedControl, Skeleton, TrackStatusBadge],
@@ -27,7 +29,7 @@ type Scope = 'mine' | 'all';
         <a appButton routerLink="/sistema/trilhas/nova"><app-icon name="plus" [size]="20" />Nova trilha</a>
       </div>
 
-      <app-segmented-control [options]="scopes" [(value)]="scope" label="Quais trilhas" />
+      @if (!oversees) { <app-segmented-control [options]="scopes" [(value)]="scope" label="Quais trilhas" /> }
 
       @switch (tracks.state().status) {
         @case ('loading') { <app-skeleton [count]="3" [height]="88" /> }
@@ -49,7 +51,7 @@ type Scope = 'mine' | 'all';
                     </span>
                     <span class="side">
                       <app-track-status-badge [status]="t.status" />
-                      @if (!t.is_tutor) { <span class="t-body-sm muted">Só leitura</span> }
+                      @if (!t.can_edit) { <span class="t-body-sm muted">Só leitura</span> }
                     </span>
                   </a>
                 </li>
@@ -79,12 +81,14 @@ type Scope = 'mine' | 'all';
 })
 export class TracksAdminPage {
   private readonly service = inject(TracksService);
+  // Administrador: todas as trilhas, sem o filtro "Minhas" (ele não é tutor de nenhuma).
+  readonly oversees = inject(SystemSessionService).can('tracks:oversee');
 
   readonly scopes: SegmentOption<Scope>[] = [
     { value: 'mine', label: 'Minhas' },
     { value: 'all', label: 'Todas' }
   ];
-  readonly scope = signal<Scope>('mine');
+  readonly scope = signal<Scope>(this.oversees ? 'all' : 'mine');
 
   readonly tracks = new RemoteData(() => this.service.list());
   readonly visible = computed(() => (this.tracks.data() ?? []).filter((t) => this.scope() === 'all' || t.is_tutor));

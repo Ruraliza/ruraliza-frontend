@@ -21,6 +21,9 @@ export class SystemLayout {
     if (this.session.can('tracks:manage')) {
       items.push({ label: 'Nova trilha', icon: 'plus', link: '/sistema/trilhas/nova', primary: true });
       items.push({ label: 'Trilhas', icon: 'book', link: '/sistema/trilhas' });
+    } else if (this.session.can('tracks:oversee')) {
+      // O administrador já tem "Novo membro" como ação central; "Nova trilha" fica na página de trilhas.
+      items.push({ label: 'Trilhas', icon: 'book', link: '/sistema/trilhas' });
     }
     items.push({ label: 'Perfil', icon: 'user', link: '/sistema/perfil' });
     return items;

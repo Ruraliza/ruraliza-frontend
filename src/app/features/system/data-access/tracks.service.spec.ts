@@ -25,7 +25,7 @@ describe('TracksService', () => {
   });
 
   it('cria, lê e edita os dados gerais', () => {
-    const input = { title: 'Café', description: 'Curso', categories: ['Colheita'] };
+    const input = { title: 'Café', description: 'Curso', categories: ['Colheita'], tutor_ids: [3] }; // tutor_ids: criação pelo administrador
     service.create(input).subscribe();
     const post = http.expectOne(base);
     expect(post.request.method).toBe('POST');
