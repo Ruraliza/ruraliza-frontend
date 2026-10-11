@@ -71,3 +71,9 @@ main:focus { outline: none; }
   .side-nav .badge { margin-left: auto; }
   .switch:disabled { opacity: 0.6; cursor: progress; }
 }
+
+@media print {
+  .skip-link, .banner, .sidebar, .bottom-nav { display: none !important; }
+  .shell { display: block !important; }
+  main { padding: 0 !important; }
+}

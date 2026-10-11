@@ -10,12 +10,13 @@ export const requireSystemSignedIn: CanActivateFn = () => {
   return session.user() ? true : inject(Router).createUrlTree(['/sistema/entrar']);
 };
 
-// Cargo com a permissão; sem ela, volta ao início do painel.
-export function requireSystemPermission(permission: SystemPermission): CanActivateFn {
+// Cargo com a permissão (com uma lista, qualquer uma delas); sem ela, volta ao início do painel.
+export function requireSystemPermission(permission: SystemPermission | readonly SystemPermission[]): CanActivateFn {
+  const accepted: readonly SystemPermission[] = typeof permission === 'string' ? [permission] : permission;
   return () => {
     const session = inject(SystemSessionService);
     const router = inject(Router);
     if (!session.user()) return router.createUrlTree(['/sistema/entrar']);
-    return session.can(permission) ? true : router.createUrlTree(['/sistema']);
+    return session.canAny(accepted) ? true : router.createUrlTree(['/sistema']);
   };
 }

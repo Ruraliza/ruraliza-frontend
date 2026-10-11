@@ -18,6 +18,7 @@ export class WorkerLayout {
     { label: 'Candidaturas', icon: 'list', link: '/trabalhador/candidaturas' },
     { label: 'Buscar', icon: 'search', link: '/trabalhador/vagas', queryParams: { buscar: '1' }, primary: true },
     { label: 'Conversas', icon: 'chat', link: '/trabalhador/conversas', badge: this.inbox.unread() },
+    { label: 'Trilhas', icon: 'book', link: '/trabalhador/trilhas' },
     { label: 'Perfil', icon: 'user', link: '/trabalhador/perfil' }
   ]);
 

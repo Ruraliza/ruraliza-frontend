@@ -37,10 +37,18 @@ import { Icon } from '@shared/ui/icon';
               </div>
             </li>
           }
-          @if (session.can('tracks:manage')) {
+          @if (session.canAny(['tracks:manage', 'tracks:oversee'])) {
             <li class="card stack-sm">
               <h2 class="t-h3">Trilhas de estudo</h2>
-              <p class="muted">Em breve: cadastrar e editar as trilhas de qualificação dos trabalhadores.</p>
+              @if (session.can('tracks:oversee')) {
+                <p class="muted">Veja, edite e descontinue qualquer trilha, ou crie uma escolhendo os tutores.</p>
+              } @else {
+                <p class="muted">Monte trilhas com módulos e aulas, publique para os trabalhadores e acompanhe as suas.</p>
+              }
+              <div class="cluster">
+                <a appButton variant="secondary" routerLink="/sistema/trilhas">Ver trilhas</a>
+                <a appButton variant="ghost" routerLink="/sistema/trilhas/nova">Nova trilha</a>
+              </div>
             </li>
           }
         </ul>

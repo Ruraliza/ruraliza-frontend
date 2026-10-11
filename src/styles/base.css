@@ -73,3 +73,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { border-color
 /* --- Superfícies do navegador --- */
 ::selection { background: var(--lime-500); color: var(--ink); }
 html { accent-color: var(--green-900); caret-color: var(--green-900); scrollbar-color: var(--line-strong) var(--bg-alt); }
+
+/* Impressão (certificados): só o conteúdo marcado sai no papel. As cascas das áreas escondem
+   a navegação nas próprias regras de @media print. */
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+}

@@ -44,7 +44,7 @@ const COPY: Record<Audience, AudienceCopy> = {
       { icon: 'search', title: 'Vagas claras', text: 'Categoria, cidade, horas e valor antes de se candidatar.' },
       { icon: 'check', title: 'Candidatura com um toque', text: 'E a resposta do produtor aparece nas suas candidaturas.' },
       { icon: 'briefcase', title: 'Histórico de serviços', text: 'Os trabalhos que você fez ficam registrados no seu perfil.' },
-      { icon: 'sprout', title: 'Trilhas de qualificação', text: 'Cursos práticos para quem está começando no campo.', soon: true }
+      { icon: 'sprout', title: 'Trilhas de qualificação', text: 'Cursos práticos com certificado de conclusão da Ruraliza.' }
     ]
   }
 };

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Photo } from './photo';
 
-// Trilhas de qualificação: recurso em desenvolvimento. Cargas horárias são previstas
-// e a barra de progresso é só um exemplo de como vai aparecer.
+// Trilhas de qualificação: prévia na landing (os cards são exemplos; as trilhas de verdade
+// ficam na área do trabalhador). A barra de progresso é só um exemplo de como aparece.
 @Component({
   selector: 'app-tracks-section',
   imports: [Photo],
@@ -11,11 +11,11 @@ import { Photo } from './photo';
       <div class="container">
         <div class="head">
           <h2 id="trilhas-title">Trilhas de qualificação</h2>
-          <span class="soon">Em breve</span>
+          <span class="soon">Novo</span>
         </div>
         <p class="support">
-          Estamos preparando cursos práticos para quem quer começar ou crescer no campo.
-          O recurso ainda está em desenvolvimento; abaixo, uma prévia de como vai funcionar.
+          Cursos práticos, em módulos e aulas curtas, para quem quer começar ou crescer no campo.
+          Ao concluir, você recebe um certificado da Ruraliza com a carga horária.
         </p>
         <ul class="list" role="list">
           @for (t of tracks; track t.title) {
@@ -23,7 +23,7 @@ import { Photo } from './photo';
               <app-photo class="img" [file]="t.photo" [decorative]="true" sizes="(min-width: 900px) 33vw, 100vw" />
               <div class="body">
                 <h3>{{ t.title }}</h3>
-                <p class="hours">Carga horária prevista: {{ t.hours }} horas</p>
+                <p class="hours">Carga horária: {{ t.hours }} horas</p>
                 <div class="progress">
                   <span class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="t.example" [attr.aria-label]="'Exemplo de progresso: ' + t.example + '%'">
                     <span [style.width.%]="t.example"></span>
