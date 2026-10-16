@@ -15,11 +15,7 @@
 .video { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); overflow: hidden; background: #000; }
 .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
-.content { display: grid; gap: var(--space-4); font-size: 1.0625rem; line-height: 1.75rem; overflow-wrap: anywhere; }
-.content :is(h2, h3) { font-family: var(--font-display); margin-top: var(--space-2); }
-.content h2 { font-size: 1.375rem; line-height: 1.75rem; }
-.content h3 { font-size: 1.1875rem; line-height: 1.625rem; }
-.content :is(ul, ol) { display: grid; gap: var(--space-2); padding-left: var(--space-6); }
+/* O texto da aula usa .prose (src/styles/base.css): chega por innerHTML, fora do encapsulamento. */
 
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--line); }
 .done { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--success); margin-right: auto; }

@@ -52,7 +52,7 @@ interface Position {
 
               @if (position(); as pos) {
                 <header class="stack-sm">
-                  <p class="t-overline muted">Módulo {{ pos.moduleNumber }} · {{ pos.moduleTitle }}</p>
+                  <p class="t-label muted">Módulo {{ pos.moduleNumber }}: {{ pos.moduleTitle }}</p>
                   <h1>{{ pos.lesson.title }}</h1>
                   <p class="t-body-sm muted with-icon"><app-icon name="clock" [size]="16" />{{ duration(pos.lesson.duration_minutes) }}</p>
                 </header>
@@ -70,7 +70,7 @@ interface Position {
                   </div>
                 }
 
-                @if (contentHtml()) { <div class="content" [innerHTML]="contentHtml()"></div> }
+                @if (contentHtml()) { <div class="prose" [innerHTML]="contentHtml()"></div> }
 
                 <div class="actions">
                   @if (isDone()) {
@@ -112,7 +112,7 @@ interface Position {
               <div class="side-body">
                 <div class="stack-sm">
                   <p class="t-label">{{ t.title }}</p>
-                  <p class="t-body-sm muted">{{ t.progress.percent }}% concluído · {{ duration(t.workload_minutes) }}</p>
+                  <p class="t-body-sm muted">{{ t.progress.percent }}% concluído, {{ duration(t.workload_minutes) }} no total</p>
                   <app-progress-bar [value]="t.progress.percent" [label]="'Progresso em ' + t.title" />
                   @if (t.certificate_code) {
                     <a class="cert t-label" [routerLink]="['/trabalhador/certificados', t.certificate_code]"><app-icon name="award" [size]="18" />Ver certificado</a>
