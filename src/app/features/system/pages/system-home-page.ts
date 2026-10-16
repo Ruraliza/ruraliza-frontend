@@ -37,6 +37,13 @@ import { Icon } from '@shared/ui/icon';
               </div>
             </li>
           }
+          @if (session.can('content:manage')) {
+            <li class="card stack-sm">
+              <h2 class="t-h3">Central de ajuda</h2>
+              <p class="muted">Crie, edite, ordene e despublique as perguntas frequentes que aparecem para todos em /ajuda.</p>
+              <div><a appButton variant="secondary" routerLink="/sistema/ajuda">Editar perguntas</a></div>
+            </li>
+          }
           @if (session.canAny(['tracks:manage', 'tracks:oversee'])) {
             <li class="card stack-sm">
               <h2 class="t-h3">Trilhas de estudo</h2>

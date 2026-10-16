@@ -11,6 +11,7 @@ import { Farmer } from '@core/models/farmer.model';
 import { RemoteData } from '@shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '@shared/utils/format';
 import { AvatarEditor } from '@shared/domain/ui/avatar-editor';
+import { HelpLinks } from '@shared/domain/ui/help-links';
 import { Button } from '@shared/ui/button';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog';
 import { ErrorState } from '@shared/ui/error-state';
@@ -27,7 +28,7 @@ import { Skeleton } from '@shared/ui/skeleton';
 // Perfil do produtor: leitura, edição (id e cpf fixos) e remoção da conta.
 @Component({
   selector: 'app-farmer-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, RoleSwitchButton, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, HelpLinks, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, RoleSwitchButton, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -94,6 +95,8 @@ import { Skeleton } from '@shared/ui/skeleton';
         <app-push-toggle />
         <app-install-app-button />
       </div>
+
+      <app-help-links helpLink="/produtor/ajuda" />
 
       <div class="cluster">
         <app-role-switch-button area="farmer" />

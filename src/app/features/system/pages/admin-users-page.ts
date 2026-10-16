@@ -7,6 +7,7 @@ import { Avatar } from '@shared/domain/ui/avatar';
 import { EmptyState } from '@shared/ui/empty-state';
 import { ErrorState } from '@shared/ui/error-state';
 import { Skeleton } from '@shared/ui/skeleton';
+import { searchable as normalize } from '@shared/utils/search';
 
 // Nome que representa a conta: o do produtor ou, sem ele, o do trabalhador.
 export function accountName(user: AdminUser): string {
@@ -14,9 +15,6 @@ export function accountName(user: AdminUser): string {
 }
 
 // Sem acento e em minúsculas, para a busca.
-function normalize(text: string): string {
-  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-}
 
 // Contas do app (produtores e trabalhadores), com busca por nome, e-mail ou CPF.
 @Component({

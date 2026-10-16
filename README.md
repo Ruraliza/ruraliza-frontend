@@ -71,6 +71,13 @@ O menu de baixo do celular segue a regra do Material e do iOS: **de 3 a 5 destin
 
 No celular, o **perfil** fica no avatar (foto ou emoji) da **barra de cima**, junto da marca, que leva ao Início. Nome e foto do avatar vêm do `ProfileSummaryService` (`core/api`), que a página de perfil atualiza quando a pessoa troca o nome ou a foto. *Trocar de painel* e *Sair* continuam na página de perfil (no desktop, no fim da sidebar). As páginas que têm algo grudado no topo usam `--shell-top` (altura da barra de cima no celular; só a área do relógio no desktop).
 
+## Termos, privacidade e ajuda
+
+- **Termos de Uso** (`/termos`) e **Política de Privacidade** (`/privacidade`): resumo em linguagem simples no topo, sumário fixo no desktop e cláusulas numeradas (`features/public/models/legal-content.ts`, desenhadas pelo `LegalDocumentView`). São pré-renderizadas no build. **Os textos são uma base para a fase de testes e precisam de revisão jurídica antes do lançamento** (razão social, CNPJ e encarregado de dados não foram inventados).
+- **Aceite no cadastro:** a caixa "Li e concordo com os Termos de Uso e a Política de Privacidade" é obrigatória; a API guarda a data e a versão aceitas (`TERMS_VERSION` em `core/models/legal.ts`, igual à do backend). Mudou um texto? Troque a versão nos dois lados.
+- **Central de ajuda** (`/ajuda`, e dentro das áreas em `/produtor/ajuda` e `/trabalhador/ajuda`): perguntas frequentes da API (`GET /api/help`), com busca sem acento (`shared/utils/search.ts`), filtro por tema e respostas que abrem no lugar (`<details>`). Links no rodapé, no perfil (`HelpLinks`), na sidebar e nas Dúvidas da landing.
+- **Gestão das perguntas** (`/sistema/ajuda`, cargo administrador, permissão `content:manage`): criar, editar, subir/descer no tema, despublicar (rascunho) e apagar, sem mexer no código.
+
 ## Notificações
 
 **Central de notificações** (`/produtor/notificacoes` e `/trabalhador/notificacoes`): o histórico de tudo o que vira push (candidaturas, aceites, recusas, pagamentos, mensagens, avaliações), mesmo para quem não ativou as notificações do celular. O **sino** da barra de cima (no desktop, o item *Notificações* da sidebar) mostra quantos avisos faltam ler.

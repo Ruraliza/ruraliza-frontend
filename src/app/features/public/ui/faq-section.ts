@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Icon } from '@shared/ui/icon';
 
 // Dúvidas frequentes com <details>: acessível por padrão, sem JavaScript.
 @Component({
   selector: 'app-faq-section',
-  imports: [Icon],
+  imports: [RouterLink, Icon],
   template: `
     <section id="duvidas" class="faq" aria-labelledby="duvidas-title">
       <div class="container grid">
         <div>
           <h2 id="duvidas-title">Dúvidas frequentes</h2>
           <p class="support">Respostas diretas sobre como a RURALIZA funciona hoje.</p>
+          <p class="more"><a routerLink="/ajuda">Ver todas na Central de ajuda</a></p>
         </div>
         <div class="list">
           @for (q of questions; track q.q) {
@@ -29,6 +31,7 @@ import { Icon } from '@shared/ui/icon';
     @media (min-width: 1024px) { .grid { grid-template-columns: 1fr 1.6fr; gap: var(--space-16); } }
     h2 { font: 800 clamp(2.125rem, 5vw, 3.5rem)/1.02 var(--font-display); letter-spacing: -0.03em; }
     .support { margin-top: var(--space-4); font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); }
+    .more { margin-top: var(--space-4); font-weight: 700; }
     .list { border-top: 1px solid var(--line); }
     details { border-bottom: 1px solid var(--line); }
     summary {

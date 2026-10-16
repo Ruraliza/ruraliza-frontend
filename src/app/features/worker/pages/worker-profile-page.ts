@@ -12,6 +12,7 @@ import { RemoteData } from '@shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '@shared/utils/format';
 import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeErrors } from '@shared/domain/utils/resume';
 import { AvatarEditor } from '@shared/domain/ui/avatar-editor';
+import { HelpLinks } from '@shared/domain/ui/help-links';
 import { Button } from '@shared/ui/button';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog';
 import { ErrorState } from '@shared/ui/error-state';
@@ -35,7 +36,7 @@ const MAX_TEXT = 1000;
 // Perfil do trabalhador: foto, currículo, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
 @Component({
   selector: 'app-worker-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, ReputationSummary, ResumeDialog, RoleSwitchButton, Skeleton, WhatsAppAlerts],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, HelpLinks, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, ReputationSummary, ResumeDialog, RoleSwitchButton, Skeleton, WhatsAppAlerts],
   templateUrl: './worker-profile-page.html',
   styleUrl: './worker-profile-page.css'
 })

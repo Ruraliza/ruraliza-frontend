@@ -18,7 +18,8 @@ export function farmerNavItems(unreadChats: number, unreadNotifications = 0): Na
     { label: 'Conversas', icon: 'chat', link: '/produtor/conversas', badge: unreadChats },
     { label: 'Fazendas', icon: 'farm', link: '/produtor/fazendas' },
     { label: 'Notificações', icon: 'bell', link: NOTIFICATIONS_LINK, sidebarOnly: true, badge: unreadNotifications },
-    { label: 'Perfil', icon: 'user', link: PROFILE_LINK, sidebarOnly: true }
+    { label: 'Perfil', icon: 'user', link: PROFILE_LINK, sidebarOnly: true },
+    { label: 'Ajuda', icon: 'help', link: '/produtor/ajuda', sidebarOnly: true }
   ];
 }
 

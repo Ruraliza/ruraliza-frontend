@@ -19,7 +19,8 @@ export function workerNavItems(unreadChats: number, unreadNotifications = 0): Na
     { label: 'Conversas', icon: 'chat', link: '/trabalhador/conversas', badge: unreadChats },
     { label: 'Trilhas', icon: 'book', link: '/trabalhador/trilhas' },
     { label: 'Notificações', icon: 'bell', link: NOTIFICATIONS_LINK, sidebarOnly: true, badge: unreadNotifications },
-    { label: 'Perfil', icon: 'user', link: PROFILE_LINK, sidebarOnly: true }
+    { label: 'Perfil', icon: 'user', link: PROFILE_LINK, sidebarOnly: true },
+    { label: 'Ajuda', icon: 'help', link: '/trabalhador/ajuda', sidebarOnly: true }
   ];
 }
 

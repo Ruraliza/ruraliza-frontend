@@ -49,7 +49,10 @@ export const routes: Routes = [
         loadComponent: () => import('@features/public/pages/certificate-validation-page').then((m) => m.CertificateValidationPage),
         title: 'Certificado · Ruraliza'
       },
-      { path: 'creditos', loadComponent: () => import('@features/public/pages/credits-page').then((m) => m.CreditsPage), title: 'Créditos das fotos · Ruraliza' }
+      { path: 'creditos', loadComponent: () => import('@features/public/pages/credits-page').then((m) => m.CreditsPage), title: 'Créditos das fotos · Ruraliza' },
+      { path: 'termos', loadComponent: () => import('@features/public/pages/terms-page').then((m) => m.TermsPage), title: 'Termos de Uso · Ruraliza' },
+      { path: 'privacidade', loadComponent: () => import('@features/public/pages/privacy-page').then((m) => m.PrivacyPage), title: 'Política de Privacidade · Ruraliza' },
+      { path: 'ajuda', loadComponent: () => import('@features/public/pages/help-page').then((m) => m.HelpPage), title: 'Central de ajuda · Ruraliza' }
     ]
   },
   {
