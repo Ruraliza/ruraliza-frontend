@@ -74,9 +74,9 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
     .top { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: space-between; align-items: center; margin-bottom: var(--space-1); }
     .meta { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); }
     .deadline { color: var(--orange-700); font-weight: 600; }
-    .expired { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--ink-muted); font-size: 14px; font-weight: 600; }
-    .own { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-size: 14px; font-weight: 600; }
-    .price { font: 700 24px/30px var(--font-display); font-variant-numeric: tabular-nums; margin-top: var(--space-1); }
+    .expired { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--ink-muted); font-size: 0.875rem; font-weight: 600; }
+    .own { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-size: 0.875rem; font-weight: 600; }
+    .price { font: 700 1.5rem/1.875rem var(--font-display); font-variant-numeric: tabular-nums; margin-top: var(--space-1); }
     .pending { justify-self: start; padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-weight: 600; }
   `
 })

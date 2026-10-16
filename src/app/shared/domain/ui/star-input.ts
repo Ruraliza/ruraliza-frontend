@@ -29,7 +29,7 @@ let nextId = 0;
     fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
     legend { display: grid; gap: 2px; padding: 0; margin-bottom: var(--space-1); }
     .label { font-weight: 700; }
-    .hint { color: var(--ink-muted); font-size: 14px; line-height: 20px; }
+    .hint { color: var(--ink-muted); font-size: 0.875rem; line-height: 1.25rem; }
     .stars { display: flex; align-items: center; flex-wrap: wrap; }
     label { position: relative; display: grid; place-items: center; width: 44px; height: 44px; cursor: pointer; border-radius: var(--radius-sm); }
     input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }

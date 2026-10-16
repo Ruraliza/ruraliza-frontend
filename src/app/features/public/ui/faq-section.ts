@@ -27,19 +27,19 @@ import { Icon } from '@shared/ui/icon';
     .faq { padding-block: var(--space-24); background: var(--bg); scroll-margin-top: var(--header-offset); }
     .grid { display: grid; gap: var(--space-8); }
     @media (min-width: 1024px) { .grid { grid-template-columns: 1fr 1.6fr; gap: var(--space-16); } }
-    h2 { font: 800 clamp(34px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: -0.03em; }
-    .support { margin-top: var(--space-4); font-size: 18px; line-height: 28px; color: var(--ink-muted); }
+    h2 { font: 800 clamp(2.125rem, 5vw, 3.5rem)/1.02 var(--font-display); letter-spacing: -0.03em; }
+    .support { margin-top: var(--space-4); font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); }
     .list { border-top: 1px solid var(--line); }
     details { border-bottom: 1px solid var(--line); }
     summary {
       display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
       min-height: 64px; padding-block: var(--space-4); cursor: pointer; list-style: none;
-      font: 700 20px/28px var(--font-display);
+      font: 700 1.25rem/1.75rem var(--font-display);
     }
     summary::-webkit-details-marker { display: none; }
     summary app-icon { flex: none; color: var(--green-900); transition: transform .3s var(--ease-out); }
     details[open] summary app-icon { transform: rotate(45deg); }
-    details p { padding-bottom: var(--space-6); font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 62ch; }
+    details p { padding-bottom: var(--space-6); font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); max-width: 62ch; }
   `
 })
 export class FaqSection {

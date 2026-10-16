@@ -164,7 +164,7 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
   `,
   styles: `
     .tags { margin-bottom: var(--space-2); }
-    .price { font: 700 24px/30px var(--font-display); font-variant-numeric: tabular-nums; }
+    .price { font: 700 1.5rem/1.875rem var(--font-display); font-variant-numeric: tabular-nums; }
     .with-icon { display: flex; align-items: center; gap: var(--space-2); }
     .description { display: grid; gap: var(--space-2); padding-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
     .description p { white-space: pre-line; max-width: 68ch; }
@@ -174,7 +174,7 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
     .apply > div { display: grid; gap: var(--space-1); flex: 1; min-width: 220px; }
     .rating { flex-wrap: wrap; }
     .link { padding: 0; border: 0; background: none; color: var(--mata); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; cursor: pointer; }
-    .unread { min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-size: 13px; font-weight: 800; line-height: 22px; }
+    .unread { min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-size: 0.8125rem; font-weight: 800; line-height: 1.375rem; }
   `
 })
 export class JobDetailPage implements OnInit {

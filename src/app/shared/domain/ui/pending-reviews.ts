@@ -57,7 +57,7 @@ import { FARM_EMOJIS, pickEmoji } from '../utils/farm-emoji';
     .farm { width: 48px; height: 48px; border-radius: var(--radius-sm); object-fit: cover; flex: none; }
     .placeholder { display: grid; place-items: center; background: var(--broto-soft); }
     .what { display: grid; flex: 1; min-width: 180px; }
-    .waiting { display: inline-flex; align-items: center; gap: var(--space-1); padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-size: 14px; font-weight: 600; }
+    .waiting { display: inline-flex; align-items: center; gap: var(--space-1); padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-size: 0.875rem; font-weight: 600; }
     .cta { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--mata); font-weight: 700; }
   `
 })

@@ -50,7 +50,7 @@ import { Skeleton } from '@shared/ui/skeleton';
     .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
     .who { display: grid; min-width: 0; flex: 1; }
     .who > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .badge { padding: 2px var(--space-2); border-radius: 999px; background: var(--broto-soft); font-size: 12px; font-weight: 600; }
+    .badge { padding: 2px var(--space-2); border-radius: 999px; background: var(--broto-soft); font-size: 0.75rem; font-weight: 600; }
   `
 })
 export class StaffPage {

@@ -44,7 +44,7 @@ export interface GridPhoto {
     .grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr)); }
     .tile, .add { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius-md); overflow: hidden; }
     .tile img { width: 100%; height: 100%; object-fit: cover; }
-    .cover { position: absolute; left: var(--space-2); top: var(--space-2); padding: 2px var(--space-2); border-radius: var(--radius-pill); background: var(--lime-500); color: var(--ink); font-size: 13px; font-weight: 700; }
+    .cover { position: absolute; left: var(--space-2); top: var(--space-2); padding: 2px var(--space-2); border-radius: var(--radius-pill); background: var(--lime-500); color: var(--ink); font-size: 0.8125rem; font-weight: 700; }
     .remove {
       position: absolute; right: var(--space-2); top: var(--space-2); display: grid; place-items: center;
       width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgba(0,40,20,.72); color: var(--on-dark);

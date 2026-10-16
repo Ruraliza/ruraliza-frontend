@@ -14,7 +14,7 @@ export const TRACK_STATUS_LABEL: Record<TrackStatus, string> = {
   styles: `
     :host {
       display: inline-flex; align-items: center; min-height: 28px; padding: 2px var(--space-3);
-      border-radius: var(--radius-pill); font-size: 13px; line-height: 20px; font-weight: 600; white-space: nowrap;
+      border-radius: var(--radius-pill); font-size: 0.8125rem; line-height: 1.25rem; font-weight: 600; white-space: nowrap;
     }
     :host(.badge--draft) { background: var(--surface-sunken); color: var(--ink-muted); }
     :host(.badge--published) { background: var(--success-soft); color: var(--success); }

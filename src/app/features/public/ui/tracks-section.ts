@@ -40,20 +40,20 @@ import { Photo } from './photo';
   styles: `
     .tracks { padding-block: var(--space-24); background: var(--bg-alt); }
     .head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
-    h2 { font: 800 clamp(34px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: -0.03em; }
+    h2 { font: 800 clamp(2.125rem, 5vw, 3.5rem)/1.02 var(--font-display); letter-spacing: -0.03em; }
     .soon { padding: var(--space-1) var(--space-4); border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-weight: 700; }
-    .support { margin: var(--space-4) 0 var(--space-12); font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 56ch; }
+    .support { margin: var(--space-4) 0 var(--space-12); font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); max-width: 56ch; }
     .list { display: grid; gap: var(--space-4); }
     @media (min-width: 900px) { .list { grid-template-columns: repeat(3, 1fr); } }
     .track { overflow: hidden; border-radius: var(--radius-lg); background: var(--bg); border: 1px solid var(--line); }
     .img { aspect-ratio: 16 / 10; }
     .body { display: grid; gap: var(--space-3); padding: var(--space-6); }
-    h3 { font: 700 20px/26px var(--font-display); }
+    h3 { font: 700 1.25rem/1.625rem var(--font-display); }
     .hours { color: var(--ink-muted); }
     .progress { display: grid; gap: var(--space-1); }
     .bar { display: block; height: 8px; border-radius: var(--radius-pill); background: var(--lime-100); overflow: hidden; }
     .bar span { display: block; height: 100%; border-radius: inherit; background: var(--lime-500); }
-    small { color: var(--ink-muted); font-size: 13px; }
+    small { color: var(--ink-muted); font-size: 0.8125rem; }
   `
 })
 export class TracksSection {

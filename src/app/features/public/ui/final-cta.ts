@@ -25,8 +25,8 @@ import { Photo } from './photo';
     .bg { position: absolute; inset: 0; z-index: -2; }
     .overlay { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(0,85,42,.9), rgba(0,85,42,.55) 50%, rgba(0,85,42,.08) 85%); }
     .inner { display: grid; gap: var(--space-6); justify-items: start; }
-    h2 { font: 800 clamp(40px, 7vw, 80px)/1 var(--font-display); letter-spacing: -0.03em; }
-    p { font-size: 18px; line-height: 28px; max-width: 44ch; }
+    h2 { font: 800 clamp(2.5rem, 7vw, 5rem)/1 var(--font-display); letter-spacing: -0.03em; }
+    p { font-size: 1.125rem; line-height: 1.75rem; max-width: 44ch; }
     .ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); }
     @media (max-width: 767px) { .overlay { background: rgba(0,85,42,.84); } }
   `

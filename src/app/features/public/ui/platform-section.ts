@@ -29,8 +29,8 @@ import { TalhaoPattern } from './talhao';
       background: var(--green-900); color: var(--on-dark); --pattern-color: var(--lime-500); --pattern-opacity: .16;
     }
     .inner { position: relative; }
-    h2 { font: 800 clamp(34px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: -0.03em; }
-    .support { margin: var(--space-4) 0 var(--space-12); font-size: 18px; line-height: 28px; max-width: 48ch; text-wrap: pretty; }
+    h2 { font: 800 clamp(2.125rem, 5vw, 3.5rem)/1.02 var(--font-display); letter-spacing: -0.03em; }
+    .support { margin: var(--space-4) 0 var(--space-12); font-size: 1.125rem; line-height: 1.75rem; max-width: 48ch; text-wrap: pretty; }
     .shots { display: flex; gap: var(--space-8); overflow-x: auto; scroll-snap-type: x mandatory; padding: var(--space-4) var(--space-2) var(--space-6); scrollbar-width: none; }
     .shot { flex: none; display: grid; justify-items: center; gap: var(--space-4); scroll-snap-align: center; }
     .shot app-phone { width: 250px; }

@@ -32,7 +32,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'acce
       display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
       min-height: 48px; padding: 0 var(--space-6);
       border: 1px solid transparent; border-radius: var(--radius-pill);
-      font: 600 16px/24px var(--font-sans); text-decoration: none; white-space: nowrap;
+      font: 600 1rem/1.5rem var(--font-sans); text-decoration: none; white-space: nowrap;
       transition: background-color .15s ease, border-color .15s ease;
     }
     :host(.btn--primary) { background: var(--mata); color: var(--on-mata); }

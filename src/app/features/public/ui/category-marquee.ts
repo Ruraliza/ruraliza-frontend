@@ -33,7 +33,7 @@ import { LANDING_CATEGORIES } from '../models/landing-content';
       display: inline-flex; align-items: center; gap: var(--space-3); min-height: 56px;
       padding: var(--space-2) var(--space-6) var(--space-2) var(--space-2);
       border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--bg);
-      color: var(--ink); font: 600 18px/1 var(--font-sans); text-decoration: none; white-space: nowrap;
+      color: var(--ink); font: 600 1.125rem/1 var(--font-sans); text-decoration: none; white-space: nowrap;
     }
     .pill:hover { border-color: var(--green-700); background: var(--lime-100); }
     .pill img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }

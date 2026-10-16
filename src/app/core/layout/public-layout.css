@@ -44,7 +44,7 @@ main.under-header { padding-top: var(--header-offset); }
   padding: var(--space-6) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom));
   background: var(--bg); color: var(--ink);
 }
-.menu-mobile > a { display: flex; align-items: center; min-height: 56px; font: 700 26px/1.2 var(--font-display); color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+.menu-mobile > a { display: flex; align-items: center; min-height: 56px; font: 700 1.625rem/1.2 var(--font-display); color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
 .menu-actions { display: grid; gap: var(--space-3); margin-top: auto; padding-top: var(--space-8); }
 
 /* --- Footer --- */

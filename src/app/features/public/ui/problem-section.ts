@@ -33,12 +33,12 @@ import { RevealDirective } from './reveal.directive';
     .split { display: grid; gap: var(--space-12); align-items: center; }
     .talhao { aspect-ratio: 4 / 3; clip-path: url(#talhao-a); --photo-position: 40% 50%; }
     .copy { display: grid; gap: var(--space-6); }
-    h2 { font: 800 clamp(34px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: -0.03em; }
-    .support { font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 48ch; }
+    h2 { font: 800 clamp(2.125rem, 5vw, 3.5rem)/1.02 var(--font-display); letter-spacing: -0.03em; }
+    .support { font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); max-width: 48ch; }
     .pains { display: grid; gap: var(--space-4); }
     .pains li { display: flex; gap: var(--space-4); align-items: flex-start; padding: var(--space-4) 0; border-top: 1px solid var(--line); }
     .icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: 50%; background: var(--orange-100); color: var(--orange-700); }
-    h3 { font: 700 20px/28px var(--font-display); }
+    h3 { font: 700 1.25rem/1.75rem var(--font-display); }
     .pains p { color: var(--ink-muted); }
     @media (min-width: 900px) {
       .split { grid-template-columns: 1.1fr 1fr; gap: var(--space-16); }

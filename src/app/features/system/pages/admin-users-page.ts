@@ -76,7 +76,7 @@ function normalize(text: string): string {
     .who { display: grid; min-width: 0; flex: 1; }
     .who > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .badges { display: flex; flex-wrap: wrap; gap: var(--space-1); justify-content: flex-end; }
-    .badge { padding: 2px var(--space-2); border-radius: 999px; background: var(--broto-soft); font-size: 12px; font-weight: 600; }
+    .badge { padding: 2px var(--space-2); border-radius: 999px; background: var(--broto-soft); font-size: 0.75rem; font-weight: 600; }
   `
 })
 export class AdminUsersPage {

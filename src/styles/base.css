@@ -9,8 +9,8 @@ body {
   background: var(--surface);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -31,15 +31,15 @@ a { color: var(--mata); text-underline-offset: 3px; }
 }
 
 /* --- Tipografia --- */
-.t-display { font: 700 clamp(36px, 7vw, 48px)/1.08 var(--font-display); letter-spacing: -0.02em; }
-h1, .t-h1 { font: 700 32px/38px var(--font-display); letter-spacing: -0.01em; }
-h2, .t-h2 { font: 650 24px/30px var(--font-display); }
-h3, .t-h3 { font: 600 18px/24px var(--font-sans); }
-.t-metric { font: 700 40px/44px var(--font-display); font-variant-numeric: tabular-nums; }
-.t-body { font-size: 16px; line-height: 24px; }
-.t-body-sm { font-size: 14px; line-height: 20px; }
-.t-label { font-size: 14px; line-height: 20px; font-weight: 600; }
-.t-overline { font-size: 12px; line-height: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.t-display { font: 700 clamp(2.25rem, 7vw, 3rem)/1.08 var(--font-display); letter-spacing: -0.02em; }
+h1, .t-h1 { font: 700 2rem/2.375rem var(--font-display); letter-spacing: -0.01em; }
+h2, .t-h2 { font: 650 1.5rem/1.875rem var(--font-display); }
+h3, .t-h3 { font: 600 1.125rem/1.5rem var(--font-sans); }
+.t-metric { font: 700 2.5rem/2.75rem var(--font-display); font-variant-numeric: tabular-nums; }
+.t-body { font-size: 1rem; line-height: 1.5rem; }
+.t-body-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.t-label { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; }
+.t-overline { font-size: 0.75rem; line-height: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
 .muted { color: var(--ink-muted); }
 .tabular { font-variant-numeric: tabular-nums; }
 
@@ -51,8 +51,8 @@ input:not([type="checkbox"]):not([type="radio"]), select, textarea {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   background: var(--surface-raised);
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 textarea { min-height: 96px; resize: vertical; }
 input::placeholder, textarea::placeholder { color: var(--ink-muted); opacity: 1; }

@@ -4,26 +4,26 @@
 
 /* --- Com quem --- */
 .who { display: flex; align-items: center; gap: var(--space-3); }
-.who h1 { margin: 0; font-size: 24px; line-height: 30px; overflow-wrap: anywhere; }
+.who h1 { margin: 0; font-size: 1.5rem; line-height: 1.875rem; overflow-wrap: anywhere; }
 .service { color: var(--ink-muted); font-weight: 600; }
 
 /* --- Mensagens --- */
 .messages { display: grid; gap: var(--space-2); padding: var(--space-2) 0; }
 .day { justify-self: center; margin-block: var(--space-2); }
-.day span { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--ink-muted); font-size: 13px; font-weight: 600; }
+.day span { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--ink-muted); font-size: 0.8125rem; font-weight: 600; }
 .msg { display: grid; gap: 2px; max-width: min(78%, 520px); }
 .msg.mine { justify-self: end; justify-items: end; }
 .msg.theirs { justify-self: start; justify-items: start; }
 .msg.system { justify-self: center; max-width: min(92%, 520px); }
-.bubble { margin: 0; padding: var(--space-2) var(--space-3); white-space: pre-line; overflow-wrap: anywhere; line-height: 22px; }
+.bubble { margin: 0; padding: var(--space-2) var(--space-3); white-space: pre-line; overflow-wrap: anywhere; line-height: 1.375rem; }
 .mine .bubble { border-radius: 18px 18px 4px 18px; background: var(--mata); color: var(--on-mata); }
 .theirs .bubble { border-radius: 18px 18px 18px 4px; background: var(--surface-raised); border: 1px solid var(--line-strong); }
 .bubble.failed { background: var(--danger-soft); color: var(--ink); border: 1px solid var(--danger); }
 .system {
   margin: 0; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md);
-  background: var(--lime-100); color: var(--ink); font-size: 14px; line-height: 20px; text-align: center;
+  background: var(--lime-100); color: var(--ink); font-size: 0.875rem; line-height: 1.25rem; text-align: center;
 }
-time, .state { color: var(--ink-muted); font-size: 12px; line-height: 16px; font-variant-numeric: tabular-nums; }
+time, .state { color: var(--ink-muted); font-size: 0.75rem; line-height: 1rem; font-variant-numeric: tabular-nums; }
 .retry {
   display: inline-flex; align-items: center; gap: var(--space-1); min-height: 32px; padding: 0;
   border: 0; background: none; color: var(--danger); font-weight: 700; cursor: pointer;
@@ -40,7 +40,7 @@ time, .state { color: var(--ink-muted); font-size: 12px; line-height: 16px; font
 .quick::-webkit-scrollbar { display: none; }
 .quick button {
   flex: none; min-height: 36px; padding: 0 var(--space-3); border-radius: var(--radius-pill);
-  border: 1px solid var(--line-strong); background: var(--surface-raised); color: var(--ink); font: 600 14px/20px var(--font-sans); cursor: pointer;
+  border: 1px solid var(--line-strong); background: var(--surface-raised); color: var(--ink); font: 600 0.875rem/1.25rem var(--font-sans); cursor: pointer;
 }
 .quick button:hover { border-color: var(--mata); }
 .warn { display: flex; align-items: center; gap: var(--space-2); margin: 0; color: var(--orange-700); font-weight: 600; }
@@ -48,7 +48,7 @@ time, .state { color: var(--ink-muted); font-size: 12px; line-height: 16px; font
 textarea {
   flex: 1; min-width: 0; min-height: 48px; padding: 11px var(--space-4); resize: none;
   border: 1px solid var(--line-strong); border-radius: 24px; background: var(--surface-raised); color: var(--ink);
-  font: 16px/24px var(--font-sans); /* 16px: o iPhone não dá zoom ao focar */
+  font: 1rem/1.5rem var(--font-sans); /* 16px: o iPhone não dá zoom ao focar */
 }
 textarea:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 .send {

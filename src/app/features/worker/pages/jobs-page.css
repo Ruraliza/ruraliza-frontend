@@ -11,7 +11,7 @@
   color: var(--ink); font-weight: 600;
 }
 .toggle[aria-expanded="true"] { border-color: var(--green-900); }
-.count { display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--green-900); color: var(--on-dark); font-size: 13px; }
+.count { display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--green-900); color: var(--on-dark); font-size: 0.8125rem; }
 
 .chips { flex-wrap: nowrap; overflow-x: auto; padding: var(--space-1) 0 var(--space-2); scrollbar-width: thin; }
 @media (min-width: 768px) { .chips { flex-wrap: wrap; overflow-x: visible; } }
