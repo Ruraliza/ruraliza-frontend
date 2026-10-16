@@ -3,6 +3,7 @@ import { WorkerLayout } from './worker-layout';
 import { WorkerDashboardPage } from './pages/worker-dashboard-page';
 import { JobsPage } from './pages/jobs-page';
 import { JobDetailPage } from './pages/job-detail-page';
+import { RecommendedJobsPage } from './pages/recommended-jobs-page';
 import { WorkerApplicationsPage } from './pages/worker-applications-page';
 import { WorkerProfilePage } from './pages/worker-profile-page';
 import { ChatsPage } from './pages/chats-page';
@@ -23,6 +24,7 @@ export const WORKER_ROUTES: Routes = [
     children: [
       { path: '', component: WorkerDashboardPage, title: 'Início · Ruraliza' },
       { path: 'vagas', component: JobsPage, title: 'Vagas · Ruraliza' },
+      { path: 'vagas/para-voce', component: RecommendedJobsPage, title: 'Vagas para você · Ruraliza' },
       { path: 'vagas/:id', component: JobDetailPage, title: 'Vaga · Ruraliza' },
       { path: 'candidaturas', component: WorkerApplicationsPage, title: 'Candidaturas · Ruraliza' },
       { path: 'conversas', component: ChatsPage, title: 'Conversas · Ruraliza' },

@@ -121,6 +121,8 @@
             </dl>
           </section>
 
+          <app-job-interests-card [workerId]="profileId" />
+
           <app-verification-card role="worker" [profileId]="profileId" [name]="w.name" />
 
           <app-password-change [submit]="changePassword" />

@@ -12,10 +12,11 @@ import { MetricCard } from '@shared/ui/metric-card';
 import { ServiceCard } from '@shared/domain/ui/service-card';
 import { Skeleton } from '@shared/ui/skeleton';
 import { PendingReviews } from '@shared/domain/ui/pending-reviews';
+import { RecommendedJobs } from '../ui/recommended-jobs';
 
 @Component({
   selector: 'app-worker-dashboard-page',
-  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, PendingReviews, ServiceCard, Skeleton],
+  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, PendingReviews, RecommendedJobs, ServiceCard, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -39,6 +40,8 @@ import { PendingReviews } from '@shared/domain/ui/pending-reviews';
           }
 
           <app-pending-reviews role="worker" [profileId]="workerId" />
+
+          <app-recommended-jobs [workerId]="workerId" />
 
           <section class="stack">
             <h2>Em andamento</h2>

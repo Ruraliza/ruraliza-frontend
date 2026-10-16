@@ -54,6 +54,11 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
           @if (!expired()) { <p class="meta t-body-sm deadline"><app-icon name="alert" [size]="18" />{{ text }}</p> }
         }
         <p class="price">{{ price() }}</p>
+        @if (reasons().length) {
+          <ul class="reasons t-body-sm" role="list" aria-label="Por que combina com você">
+            @for (reason of reasons().slice(0, 2); track reason) { <li><app-icon name="check" [size]="16" />{{ reason }}</li> }
+          </ul>
+        }
         @if (service().applications_pending) {
           <p class="pending t-body-sm">
             {{ service().applications_pending }} {{ service().applications_pending === 1 ? 'candidatura' : 'candidaturas' }} para analisar
@@ -81,6 +86,8 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
     .expired { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--ink-muted); font-size: 0.875rem; font-weight: 600; }
     .own { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-size: 0.875rem; font-weight: 600; }
     .price { font: 700 1.5rem/1.875rem var(--font-display); font-variant-numeric: tabular-nums; margin-top: var(--space-1); }
+    .reasons { display: grid; gap: 2px; margin: 0; padding: var(--space-2) 0 0; border-top: 1px solid var(--line); list-style: none; color: var(--mata-deep); }
+    .reasons li { display: flex; align-items: center; gap: var(--space-1); }
     .pending { justify-self: start; padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-weight: 600; }
   `
 })
@@ -91,6 +98,8 @@ export class ServiceCard {
   readonly showCover = input(true);
   // Vaga publicada pelo perfil de produtor da mesma conta (o trabalhador não pode se candidatar).
   readonly own = input(false);
+  // Por que a vaga foi sugerida (vagas para você): até dois motivos, embaixo do valor.
+  readonly reasons = input<readonly string[]>([]);
 
   readonly price = computed(() => formatBRL(this.service().price));
   readonly hours = computed(() => formatHours(this.service().duration));
