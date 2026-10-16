@@ -143,7 +143,8 @@ Só a landing (`/`) é pré-renderizada no build. `/produtor/**`, `/trabalhador/
 
 O build de produção registra o service worker do Angular (`ngsw-config.json`), que guarda o app em cache. Em desenvolvimento (`ng serve`) ele não é registrado; para testar, faça o build e sirva `dist/ruraliza-frontend/browser`.
 
-- **Cache:** o app (JS, CSS e `index.csr.html`, que serve para qualquer rota), as imagens e as fontes. A API não entra no cache: sem conexão o app abre, mostra a faixa de offline, e as chamadas falham.
+- **Cache:** o app (JS, CSS e `index.csr.html`, que serve para qualquer rota), as imagens e as fontes.
+- **Sem internet:** cada tela que a pessoa abre guarda a última resposta da API no aparelho (Cache Storage, `core/offline`); se o sinal cai, a tela mostra essa cópia e a faixa diz de quando ela é. Perfis, serviços, candidatos, vagas, conversas, avisos e trilhas funcionam assim; streams, área do sistema e documentos nunca são guardados. Concluir uma aula sem sinal fica numa fila e é enviado sozinho quando a conexão volta (assim como as mensagens da conversa que não saíram). Sair da conta, ou entrar com outra, apaga a cópia. Como a sessão fica no `sessionStorage`, o modo vale enquanto o app está aberto: reabrir o app sem sinal pede para entrar de novo.
 - **Versão nova:** quando um deploy novo é baixado, aparece a faixa "Nova versão disponível" com o botão Atualizar.
 - **Instalar:** o botão "Instalar app" aparece na landing e nas páginas de perfil quando o navegador permite. No iPhone ele explica o caminho pelo Compartilhar.
 - **Notificações push:** são ativadas no perfil e valem para os dois perfis da conta. Precisam das chaves VAPID no `.env` do backend. A inscrição é reenviada ao backend sempre que alguém entra, e "Sair" a desativa neste aparelho. Como a sessão fica no `sessionStorage`, clicar numa notificação com o app fechado abre a tela de entrada.

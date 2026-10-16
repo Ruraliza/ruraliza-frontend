@@ -4,11 +4,13 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { SILENT_ERRORS } from '@core/http/error.interceptor';
 import { Certificate, EnrolledTrack, EnrolledTrackResponse, LessonCompletionResponse, TrackDetail, TrackFilters, WorkerTrackSummary } from '@core/models/track.model';
+import { OfflineQueueService } from '@core/offline/offline-queue.service';
 
 // Trilhas de estudo do lado do trabalhador: listar, ver, começar, estudar e os certificados.
 @Injectable({ providedIn: 'root' })
 export class LearningService {
   private readonly http = inject(HttpClient);
+  private readonly queue = inject(OfflineQueueService);
   private readonly apiUrl = `${environment.apiUrl}/workers`;
 
   listTracks(filters: TrackFilters = {}): Observable<WorkerTrackSummary[]> {
@@ -35,8 +37,16 @@ export class LearningService {
     });
   }
 
+  // Sem toast automático: sem sinal, a tela guarda a conclusão na fila (queueCompletion) e avisa do seu jeito.
   completeLesson(workerId: number, trackId: number, lessonId: number): Observable<LessonCompletionResponse> {
-    return this.http.put<LessonCompletionResponse>(`${this.lessonUrl(workerId, trackId, lessonId)}/completion`, null);
+    return this.http.put<LessonCompletionResponse>(`${this.lessonUrl(workerId, trackId, lessonId)}/completion`, null, {
+      context: new HttpContext().set(SILENT_ERRORS, true)
+    });
+  }
+
+  // Modo sem internet: a conclusão espera o sinal (repetir não tem efeito duplo).
+  queueCompletion(workerId: number, trackId: number, lessonId: number, lessonTitle: string): void {
+    this.queue.enqueue({ method: 'PUT', url: `${this.lessonUrl(workerId, trackId, lessonId)}/completion`, label: `a aula "${lessonTitle}"` });
   }
 
   uncompleteLesson(workerId: number, trackId: number, lessonId: number): Observable<EnrolledTrackResponse> {

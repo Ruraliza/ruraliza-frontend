@@ -2,6 +2,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 export const SERVER_UNREACHABLE_MESSAGE =
   'Não conseguimos falar com o servidor. Verifique se a API está rodando em localhost:3000.';
+// Sem sinal no aparelho (modo sem internet): o que dá para ler continua; ações precisam de conexão.
+export const OFFLINE_MESSAGE = 'Sem internet. Isto precisa de conexão: tente de novo quando o sinal voltar.';
 
 // Erro de API já traduzido para a pessoa usuária. É o que os componentes recebem.
 export class ApiError extends Error {
@@ -17,7 +19,8 @@ export class ApiError extends Error {
 // Converte a resposta HTTP em uma mensagem clara, dizendo o que aconteceu e o que fazer.
 export function toApiError(response: HttpErrorResponse): ApiError {
   if (response.status === 0) {
-    return new ApiError(0, SERVER_UNREACHABLE_MESSAGE);
+    const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
+    return new ApiError(0, offline ? OFFLINE_MESSAGE : SERVER_UNREACHABLE_MESSAGE);
   }
 
   const apiMessage = typeof response.error?.error === 'string' ? response.error.error : null;

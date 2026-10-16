@@ -5,6 +5,7 @@ import { NavigationStart, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, filter, throwError } from 'rxjs';
 import { ApiError } from '@core/http/api-error';
+import { ToastService } from '@core/toast/toast.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { Certificate, EnrolledTrack, Lesson } from '@core/models/track.model';
 import { RemoteData } from '@shared/utils/remote-data';
@@ -146,6 +147,7 @@ export class LessonPage {
   readonly lessonId = input<string>();
 
   private readonly learning = inject(LearningService);
+  private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly workerId = inject(CurrentUserService).requireId('worker');
@@ -237,8 +239,32 @@ export class LessonPage {
           void this.router.navigate(['/trabalhador/trilhas', t.id, 'aulas', pos.next.id]);
         }
       },
-      error: (error: unknown) => this.onActionError(error)
+      error: (error: unknown) => {
+        // Sem sinal: a aula fica marcada aqui e a conclusão espera a internet (modo sem internet).
+        if (error instanceof ApiError && error.status === 0) {
+          this.completeOffline(t, pos);
+          return;
+        }
+        if (error instanceof ApiError) this.toast.error(error.message);
+        this.onActionError(error);
+      }
     });
+  }
+
+  private completeOffline(t: EnrolledTrack, pos: Position): void {
+    this.saving.set(false);
+    this.learning.queueCompletion(this.workerId, t.id, pos.lesson.id, pos.lesson.title);
+    const done = [...new Set([...t.completed_lesson_ids, pos.lesson.id])];
+    const total = t.progress.total_lessons;
+    this.track.replace({
+      ...t,
+      completed_lesson_ids: done,
+      progress: { ...t.progress, completed_lessons: done.length, percent: Math.round((done.length / total) * 100), last_lesson_id: pos.lesson.id }
+    });
+    this.toast.info(pos.next
+      ? 'Sem internet: a aula ficou marcada e vai ser enviada quando o sinal voltar.'
+      : 'Sem internet: a última aula ficou marcada. O certificado sai quando o sinal voltar.');
+    if (pos.next) void this.router.navigate(['/trabalhador/trilhas', t.id, 'aulas', pos.next.id]);
   }
 
   uncomplete(t: EnrolledTrack, lesson: Lesson): void {

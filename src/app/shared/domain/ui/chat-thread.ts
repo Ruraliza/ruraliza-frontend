@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ChatService } from '@core/api/chat.service';
 import { LiveUpdatesService } from '@core/api/live-updates.service';
+import { ConnectivityService } from '@core/pwa/connectivity.service';
 import { ToastService } from '@core/toast/toast.service';
 import { UserRole } from '@core/models/auth.model';
 import { ChatDetail, ChatMessage, ChatPerson } from '@core/models/chat.model';
@@ -133,6 +134,7 @@ export class ChatThread {
   private readonly chatService = inject(ChatService);
   private readonly live = inject(LiveUpdatesService);
   private readonly toast = inject(ToastService);
+  private readonly connectivity = inject(ConnectivityService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly box = viewChild<ElementRef<HTMLTextAreaElement>>('box');
@@ -255,6 +257,14 @@ export class ChatThread {
     event.preventDefault();
     this.send();
   }
+
+  // O sinal voltou: reenvia sozinho as mensagens que não saíram (modo sem internet).
+  private retryFailedWhenOnline = effect(() => {
+    if (!this.connectivity.online()) return;
+    untracked(() => {
+      for (const out of this.outgoing().filter((o) => o.status === 'failed')) this.retry(out);
+    });
+  });
 
   retry(out: Outgoing): void {
     this.outgoing.update((list) => list.filter((o) => o.key !== out.key));
