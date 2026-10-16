@@ -26,6 +26,7 @@ import { RoleSwitchButton } from '@core/layout/role-switch-button';
 import { ResumeDialog } from '@shared/domain/ui/resume-dialog';
 import { Skeleton } from '@shared/ui/skeleton';
 import { ReputationSummary } from '@shared/domain/ui/reputation-summary';
+import { WhatsAppAlerts } from '@shared/domain/ui/whatsapp-alerts';
 
 // Limites iguais aos da API.
 const MAX_BIO = 500;
@@ -34,7 +35,7 @@ const MAX_TEXT = 1000;
 // Perfil do trabalhador: foto, currículo, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
 @Component({
   selector: 'app-worker-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, ReputationSummary, ResumeDialog, RoleSwitchButton, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, ReputationSummary, ResumeDialog, RoleSwitchButton, Skeleton, WhatsAppAlerts],
   templateUrl: './worker-profile-page.html',
   styleUrl: './worker-profile-page.css'
 })

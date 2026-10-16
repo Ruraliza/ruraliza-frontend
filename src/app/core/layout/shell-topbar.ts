@@ -4,10 +4,10 @@ import { Avatar } from '@shared/domain/ui/avatar';
 import { Icon } from '@shared/ui/icon';
 import { Logo } from '@shared/ui/logo';
 import { PreferencesService } from '../preferences/preferences.service';
-import type { ShellProfile } from './app-shell';
+import type { ShellNotifications, ShellProfile } from './app-shell';
 
 // Barra de cima das áreas logadas no celular (< 1024px): a marca leva ao Início; à direita, o atalho de
-// leitura fácil (letras maiores + alto contraste) e o avatar, que leva ao perfil.
+// leitura fácil (letras maiores + alto contraste), o sino da central de notificações e o avatar (perfil).
 // Fica grudada no topo, abaixo da área do relógio do app instalado (--safe-top).
 @Component({
   selector: 'app-shell-topbar',
@@ -28,6 +28,12 @@ import type { ShellProfile } from './app-shell';
       >
         <app-icon name="text-size" />
       </button>
+      @if (notifications(); as n) {
+        <a class="icon-button bell" [routerLink]="n.link" routerLinkActive="active" ariaCurrentWhenActive="page" [attr.aria-label]="bellLabel(n.unread)">
+          <app-icon name="bell" />
+          @if (n.unread) { <span class="count" aria-hidden="true">{{ n.unread > 99 ? '99+' : n.unread }}</span> }
+        </a>
+      }
       @if (profile(); as p) {
         <a class="me" [routerLink]="p.link" routerLinkActive="active" ariaCurrentWhenActive="page" aria-label="Seu perfil">
           @if (p.name) { <app-avatar [name]="p.name" [photoUrl]="p.photoUrl" [size]="36" /> }
@@ -53,7 +59,13 @@ import type { ShellProfile } from './app-shell';
       border: 0; border-radius: 50%; background: transparent; color: var(--ink);
     }
     .icon-button:hover { background: var(--surface-sunken); }
-    .icon-button[aria-pressed="true"] { background: var(--broto-soft); }
+    .icon-button[aria-pressed="true"], .icon-button.active { background: var(--broto-soft); }
+    .bell { position: relative; }
+    .count {
+      position: absolute; top: 4px; right: 2px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: var(--radius-pill);
+      background: var(--orange-500); color: var(--on-accent); box-shadow: 0 0 0 2px var(--surface-raised);
+      font-size: 12px; font-weight: 800; line-height: 20px; text-align: center;
+    }
     .me { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; color: var(--ink); }
     .fallback { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--broto-soft); }
     .me app-avatar, .fallback { transition: box-shadow .15s ease; }
@@ -68,4 +80,10 @@ export class ShellTopbar {
   readonly homeLink = input.required<string>();
   readonly areaLabel = input.required<string>();
   readonly profile = input<ShellProfile | null>(null);
+  readonly notifications = input<ShellNotifications | null>(null);
+
+  bellLabel(unread: number): string {
+    if (!unread) return 'Notificações';
+    return `Notificações, ${unread === 1 ? '1 não lida' : `${unread} não lidas`}`;
+  }
 }

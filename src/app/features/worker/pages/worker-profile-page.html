@@ -132,6 +132,8 @@
     }
   }
 
+  @if (worker.data(); as w) { <app-whatsapp-alerts [phone]="w.phone" /> }
+
   <app-display-preferences />
 
   <div class="cluster">

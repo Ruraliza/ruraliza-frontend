@@ -27,6 +27,12 @@ export interface ShellProfile {
   photoUrl: string | null;
 }
 
+// Central de notificações do painel: o sino da barra de cima do celular (na sidebar, um item com o contador).
+export interface ShellNotifications {
+  link: string;
+  unread: number;
+}
+
 // Regra do menu de baixo (Material e iOS): de 3 a 5 destinos. Com número ímpar, a ação central
 // fica no meio de verdade. O que não cabe vai para a sidebar (sidebarOnly) e ganha outro caminho
 // no celular, como o perfil, que fica no avatar da barra de cima.
@@ -46,7 +52,7 @@ export function bottomNavItems(items: readonly NavItem[]): NavItem[] {
   template: `
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-    <app-shell-topbar [homeLink]="homeLink()" [areaLabel]="areaLabel()" [profile]="profile()" />
+    <app-shell-topbar [homeLink]="homeLink()" [areaLabel]="areaLabel()" [profile]="profile()" [notifications]="notifications()" />
 
     <div class="shell">
       <aside class="sidebar" [attr.aria-label]="areaLabel()">
@@ -106,6 +112,7 @@ export class AppShell {
   readonly areaLabel = input.required<string>();
   readonly area = input.required<UserRole | 'system'>();
   readonly profile = input<ShellProfile | null>(null);
+  readonly notifications = input<ShellNotifications | null>(null);
 
   protected readonly switcher = inject(RoleSwitchService);
   protected readonly prefs = inject(PreferencesService);

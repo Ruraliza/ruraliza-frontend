@@ -13,6 +13,6 @@ describe('workerNavItems', () => {
   it('keeps "Vagas" and the profile only in the sidebar', () => {
     const sidebarOnly = workerNavItems(0).filter((item) => item.sidebarOnly).map((item) => item.label);
 
-    expect(sidebarOnly).toEqual(['Vagas', 'Perfil']);
+    expect(sidebarOnly).toEqual(['Vagas', 'Notificações', 'Perfil']);
   });
 });

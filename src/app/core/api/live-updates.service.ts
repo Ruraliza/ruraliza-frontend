@@ -5,10 +5,11 @@ import { environment } from '@env/environment';
 import { CurrentUserService, UserRole } from '../session/current-user.service';
 
 // Eventos que a API manda (SSE): as candidaturas mudaram; chegou mensagem numa conversa;
-// alguma conversa do perfil mudou (lista e contador do menu).
+// alguma conversa do perfil mudou (lista e contador do menu); chegou aviso novo (sino).
 const APPLICATIONS_CHANGED_EVENT = 'applications';
 const CHAT_CHANGED_EVENT = 'chat';
 const CHATS_CHANGED_EVENT = 'chats';
+const NOTIFICATIONS_CHANGED_EVENT = 'notifications';
 
 // Avisos em tempo real da API (Server-Sent Events): cada emissão diz "mudou, busque de novo".
 // O aviso não traz dados; a tela recarrega pela rota de sempre. A conexão fica aberta enquanto
@@ -37,6 +38,12 @@ export class LiveUpdatesService {
   chats(role: UserRole, profileId: number): Observable<void> {
     const area = role === 'farmer' ? 'farmers' : 'workers';
     return this.listen(`${environment.apiUrl}/${area}/${profileId}/chats/events`, CHATS_CHANGED_EVENT);
+  }
+
+  // Chegou aviso novo na central de notificações do perfil (ou algum foi lido).
+  notifications(role: UserRole, profileId: number): Observable<void> {
+    const area = role === 'farmer' ? 'farmers' : 'workers';
+    return this.listen(`${environment.apiUrl}/${area}/${profileId}/notifications/events`, NOTIFICATIONS_CHANGED_EVENT);
   }
 
   private listen(url: string, event: string): Observable<void> {

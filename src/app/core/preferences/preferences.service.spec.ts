@@ -59,11 +59,11 @@ describe('PreferencesService', () => {
     TestBed.tick();
 
     expect(saved).toEqual([{ high_contrast: true }]);
-    expect(JSON.parse(localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? '{}')).toEqual({ theme: 'light', text_size: 'normal', high_contrast: true });
+    expect(JSON.parse(localStorage.getItem(PREFERENCES_STORAGE_KEY) ?? '{}')).toEqual({ theme: 'light', text_size: 'normal', high_contrast: true, whatsapp_alerts: false });
   });
 
   it('uses the preferences saved in the account after signing in', () => {
-    fromAccount = { theme: 'dark', text_size: 'large', high_contrast: false };
+    fromAccount = { theme: 'dark', text_size: 'large', high_contrast: false, whatsapp_alerts: false };
     const service = setup();
 
     TestBed.inject(CurrentUserService).signIn(session, 'token');
@@ -84,6 +84,12 @@ describe('PreferencesService', () => {
     service.toggleEasyReading();
     TestBed.tick();
     expect([root.dataset['text'], root.dataset['contrast']]).toEqual([undefined, undefined]);
+  });
+
+  it('reads what older versions saved (without the WhatsApp choice) as WhatsApp off', () => {
+    localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify({ theme: 'dark', text_size: 'normal', high_contrast: false }));
+
+    expect(setup().preferences()).toEqual({ theme: 'dark', text_size: 'normal', high_contrast: false, whatsapp_alerts: false });
   });
 
   it('ignores a broken saved value', () => {

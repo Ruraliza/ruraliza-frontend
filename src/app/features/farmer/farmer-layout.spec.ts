@@ -11,9 +11,10 @@ describe('farmerNavItems', () => {
   });
 
   it('keeps the profile in the sidebar (on the phone it is the avatar) and counts unread chats', () => {
-    const items = farmerNavItems(3);
+    const items = farmerNavItems(3, 2);
 
     expect(items.find((item) => item.label === 'Perfil')?.sidebarOnly).toBe(true);
     expect(items.find((item) => item.label === 'Conversas')?.badge).toBe(3);
+    expect(items.find((item) => item.label === 'Notificações')).toMatchObject({ sidebarOnly: true, badge: 2 });
   });
 });

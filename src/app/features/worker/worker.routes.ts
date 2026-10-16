@@ -7,6 +7,7 @@ import { WorkerApplicationsPage } from './pages/worker-applications-page';
 import { WorkerProfilePage } from './pages/worker-profile-page';
 import { ChatsPage } from './pages/chats-page';
 import { ChatPage } from './pages/chat-page';
+import { NotificationsPage } from './pages/notifications-page';
 import { TracksPage } from './pages/tracks-page';
 import { TrackDetailPage } from './pages/track-detail-page';
 import { LessonPage } from './pages/lesson-page';
@@ -32,6 +33,7 @@ export const WORKER_ROUTES: Routes = [
       { path: 'trilhas/:id/aulas/:lessonId', component: LessonPage, title: 'Aula · Ruraliza' },
       { path: 'certificados', component: CertificatesPage, title: 'Certificados · Ruraliza' },
       { path: 'certificados/:code', component: CertificatePage, title: 'Certificado · Ruraliza' },
+      { path: 'notificacoes', component: NotificationsPage, title: 'Notificações · Ruraliza' },
       { path: 'perfil', component: WorkerProfilePage, title: 'Perfil · Ruraliza' }
     ]
   }

@@ -71,6 +71,14 @@ O menu de baixo do celular segue a regra do Material e do iOS: **de 3 a 5 destin
 
 No celular, o **perfil** fica no avatar (foto ou emoji) da **barra de cima**, junto da marca, que leva ao Início. Nome e foto do avatar vêm do `ProfileSummaryService` (`core/api`), que a página de perfil atualiza quando a pessoa troca o nome ou a foto. *Trocar de painel* e *Sair* continuam na página de perfil (no desktop, no fim da sidebar). As páginas que têm algo grudado no topo usam `--shell-top` (altura da barra de cima no celular; só a área do relógio no desktop).
 
+## Notificações
+
+**Central de notificações** (`/produtor/notificacoes` e `/trabalhador/notificacoes`): o histórico de tudo o que vira push (candidaturas, aceites, recusas, pagamentos, mensagens, avaliações), mesmo para quem não ativou as notificações do celular. O **sino** da barra de cima (no desktop, o item *Notificações* da sidebar) mostra quantos avisos faltam ler.
+
+- `NotificationInboxService` (`core/api`) mantém a lista do painel aberto, atualizada por SSE (`LiveUpdatesService.notifications()`); o layout de cada área conecta ao abrir, como as conversas.
+- A tela agrupa por dia ("Hoje", "Ontem", data), destaca os não lidos e escolhe o ícone pela tela que o aviso abre. Tocar marca como lido e abre a tela; *Marcar todas como lidas* zera o sino. Avisos iguais ainda não lidos chegam agrupados, com a contagem.
+- **Avisos no WhatsApp** (cartão no perfil do trabalhador): quando um produtor aceita a candidatura, chega mensagem no WhatsApp com o link do app. Só com o sim da pessoa (`whatsapp_alerts` nas preferências da conta), só para celular com DDD e só se o servidor tiver a integração (`GET /api/config/whatsapp`); sem ela, o cartão explica que ainda não está ligado.
+
 ## Aparência e acessibilidade
 
 Cada conta escolhe **tema** (claro, escuro ou automático, que segue o aparelho), **letras maiores** (+25% em todos os textos) e **alto contraste** (texto secundário quase preto, bordas escuras, sem sombras), no cartão *Aparência e leitura* do perfil. O atalho **Aa** da barra de cima (no desktop, no fim da sidebar) liga letras maiores e alto contraste juntos, pensado para quem usa o celular sob o sol forte.

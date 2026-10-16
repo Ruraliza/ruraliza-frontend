@@ -28,6 +28,11 @@ export function formatPhone(digits: string): string {
   return `(${area}) ${rest.slice(0, split)}-${rest.slice(split)}`;
 }
 
+// Celular brasileiro com DDD (11 dígitos, o terceiro é 9): o único tipo de número com WhatsApp.
+export function isMobilePhone(digits: string): boolean {
+  return /^[1-9]{2}9\d{8}$/.test(onlyDigits(digits));
+}
+
 export function formatBRL(value: number): string {
   return brl.format(value);
 }
