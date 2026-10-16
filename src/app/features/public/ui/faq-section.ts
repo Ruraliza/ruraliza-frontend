@@ -37,7 +37,7 @@ import { Icon } from '@shared/ui/icon';
       font: 700 1.25rem/1.75rem var(--font-display);
     }
     summary::-webkit-details-marker { display: none; }
-    summary app-icon { flex: none; color: var(--green-900); transition: transform .3s var(--ease-out); }
+    summary app-icon { flex: none; color: var(--mata); transition: transform .3s var(--ease-out); }
     details[open] summary app-icon { transform: rotate(45deg); }
     details p { padding-bottom: var(--space-6); font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); max-width: 62ch; }
   `

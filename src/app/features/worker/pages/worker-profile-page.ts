@@ -19,6 +19,7 @@ import { FormField } from '@shared/ui/form-field';
 import { Icon } from '@shared/ui/icon';
 import { MaskedInput } from '@shared/ui/masked-input';
 import { PasswordChange } from '@shared/domain/ui/password-change';
+import { DisplayPreferences } from '@core/layout/display-preferences';
 import { InstallAppButton } from '@core/layout/install-app-button';
 import { PushToggle } from '@core/layout/push-toggle';
 import { RoleSwitchButton } from '@core/layout/role-switch-button';
@@ -33,7 +34,7 @@ const MAX_TEXT = 1000;
 // Perfil do trabalhador: foto, currículo, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
 @Component({
   selector: 'app-worker-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, ReputationSummary, ResumeDialog, RoleSwitchButton, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, ReputationSummary, ResumeDialog, RoleSwitchButton, Skeleton],
   templateUrl: './worker-profile-page.html',
   styleUrl: './worker-profile-page.css'
 })

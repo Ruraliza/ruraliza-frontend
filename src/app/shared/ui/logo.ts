@@ -38,6 +38,10 @@ import { Component, computed, input } from '@angular/core';
     .broto { fill: #89C401; }
     .ipe { fill: #FE8400; }
     .wordmark { font-family: var(--font-display); font-weight: 800; line-height: 1; letter-spacing: 0.01em; }
+    /* Tema escuro: o verde-escuro some no fundo escuro. Arco e perna ficam na cor do texto (claro)
+       e o quadrado laranja continua, como no ícone do app (R claro com o acento laranja). */
+    :host-context([data-theme="dark"]) { color: var(--ink); }
+    :host-context([data-theme="dark"]) .mata, :host-context([data-theme="dark"]) .verde { fill: currentColor; }
   `
 })
 export class Logo {

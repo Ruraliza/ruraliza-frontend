@@ -41,7 +41,7 @@ import { Photo } from './photo';
     .tracks { padding-block: var(--space-24); background: var(--bg-alt); }
     .head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
     h2 { font: 800 clamp(2.125rem, 5vw, 3.5rem)/1.02 var(--font-display); letter-spacing: -0.03em; }
-    .soon { padding: var(--space-1) var(--space-4); border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-weight: 700; }
+    .soon { padding: var(--space-1) var(--space-4); border-radius: var(--radius-pill); background: var(--orange-500); color: var(--on-accent); font-weight: 700; }
     .support { margin: var(--space-4) 0 var(--space-12); font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); max-width: 56ch; }
     .list { display: grid; gap: var(--space-4); }
     @media (min-width: 900px) { .list { grid-template-columns: repeat(3, 1fr); } }

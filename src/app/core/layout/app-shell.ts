@@ -1,6 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { UserRole } from '../session/current-user.service';
+import { PreferencesService } from '../preferences/preferences.service';
 import { RoleSwitchService } from '../session/role-switch.service';
 import { SystemSessionService } from '../session/system-session.service';
 import { Icon, IconName } from '@shared/ui/icon';
@@ -67,6 +68,9 @@ export function bottomNavItems(items: readonly NavItem[]): NavItem[] {
           }
         </nav>
         <div class="account-actions">
+          <button type="button" class="switch" [attr.aria-pressed]="prefs.easyReading()" (click)="prefs.toggleEasyReading()">
+            <app-icon name="text-size" />Letras maiores e contraste
+          </button>
           @if (accountArea(); as role) {
             <button type="button" class="switch" [disabled]="switcher.switching()" (click)="switcher.switchFrom(role)">
               <app-icon name="swap" />{{ switcher.labelFor(role) }}
@@ -104,6 +108,7 @@ export class AppShell {
   readonly profile = input<ShellProfile | null>(null);
 
   protected readonly switcher = inject(RoleSwitchService);
+  protected readonly prefs = inject(PreferencesService);
   private readonly systemSession = inject(SystemSessionService);
   private readonly router = inject(Router);
 

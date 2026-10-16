@@ -1,11 +1,13 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Avatar } from '@shared/domain/ui/avatar';
 import { Icon } from '@shared/ui/icon';
 import { Logo } from '@shared/ui/logo';
+import { PreferencesService } from '../preferences/preferences.service';
 import type { ShellProfile } from './app-shell';
 
-// Barra de cima das áreas logadas no celular (< 1024px): a marca leva ao Início e o avatar, ao perfil.
+// Barra de cima das áreas logadas no celular (< 1024px): a marca leva ao Início; à direita, o atalho de
+// leitura fácil (letras maiores + alto contraste) e o avatar, que leva ao perfil.
 // Fica grudada no topo, abaixo da área do relógio do app instalado (--safe-top).
 @Component({
   selector: 'app-shell-topbar',
@@ -16,6 +18,16 @@ import type { ShellProfile } from './app-shell';
       <app-logo [size]="28" />
     </a>
     <div class="actions">
+      <button
+        type="button"
+        class="icon-button"
+        [attr.aria-pressed]="prefs.easyReading()"
+        aria-label="Letras maiores e alto contraste"
+        title="Letras maiores e alto contraste"
+        (click)="prefs.toggleEasyReading()"
+      >
+        <app-icon name="text-size" />
+      </button>
       @if (profile(); as p) {
         <a class="me" [routerLink]="p.link" routerLinkActive="active" ariaCurrentWhenActive="page" aria-label="Seu perfil">
           @if (p.name) { <app-avatar [name]="p.name" [photoUrl]="p.photoUrl" [size]="36" /> }
@@ -36,6 +48,12 @@ import type { ShellProfile } from './app-shell';
       margin-left: calc(-1 * var(--space-1)); border-radius: var(--radius-sm); text-decoration: none;
     }
     .actions { display: flex; align-items: center; gap: var(--space-1); }
+    .icon-button {
+      display: grid; place-items: center; width: 48px; height: 48px; padding: 0;
+      border: 0; border-radius: 50%; background: transparent; color: var(--ink);
+    }
+    .icon-button:hover { background: var(--surface-sunken); }
+    .icon-button[aria-pressed="true"] { background: var(--broto-soft); }
     .me { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; color: var(--ink); }
     .fallback { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--broto-soft); }
     .me app-avatar, .fallback { transition: box-shadow .15s ease; }
@@ -46,6 +64,7 @@ import type { ShellProfile } from './app-shell';
   `
 })
 export class ShellTopbar {
+  protected readonly prefs = inject(PreferencesService);
   readonly homeLink = input.required<string>();
   readonly areaLabel = input.required<string>();
   readonly profile = input<ShellProfile | null>(null);

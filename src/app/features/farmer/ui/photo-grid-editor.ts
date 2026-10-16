@@ -44,14 +44,14 @@ export interface GridPhoto {
     .grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr)); }
     .tile, .add { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius-md); overflow: hidden; }
     .tile img { width: 100%; height: 100%; object-fit: cover; }
-    .cover { position: absolute; left: var(--space-2); top: var(--space-2); padding: 2px var(--space-2); border-radius: var(--radius-pill); background: var(--lime-500); color: var(--ink); font-size: 0.8125rem; font-weight: 700; }
+    .cover { position: absolute; left: var(--space-2); top: var(--space-2); padding: 2px var(--space-2); border-radius: var(--radius-pill); background: var(--lime-500); color: var(--on-accent); font-size: 0.8125rem; font-weight: 700; }
     .remove {
       position: absolute; right: var(--space-2); top: var(--space-2); display: grid; place-items: center;
       width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgba(0,40,20,.72); color: var(--on-dark);
     }
     .add {
       display: grid; place-items: center; align-content: center; gap: var(--space-1); height: 100%; cursor: pointer;
-      border: 2px dashed var(--line-strong); color: var(--green-900); font-weight: 600; background: var(--bg-alt);
+      border: 2px dashed var(--line-strong); color: var(--mata); font-weight: 600; background: var(--bg-alt);
     }
     .add:focus-within { box-shadow: var(--focus-ring); }
     .add.is-busy { opacity: .6; pointer-events: none; }

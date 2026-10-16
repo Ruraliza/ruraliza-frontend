@@ -78,7 +78,7 @@ import { chatTime } from '../utils/chat';
     .unread .preview { color: var(--ink); font-weight: 600; }
     .badge {
       flex: none; min-width: 24px; height: 24px; padding: 0 7px; border-radius: var(--radius-pill);
-      background: var(--orange-500); color: var(--ink); font-size: 0.8125rem; font-weight: 800; line-height: 1.5rem; text-align: center;
+      background: var(--orange-500); color: var(--on-accent); font-size: 0.8125rem; font-weight: 800; line-height: 1.5rem; text-align: center;
     }
     .link { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 700; }
   `

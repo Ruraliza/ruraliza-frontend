@@ -174,7 +174,7 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
     .apply > div { display: grid; gap: var(--space-1); flex: 1; min-width: 220px; }
     .rating { flex-wrap: wrap; }
     .link { padding: 0; border: 0; background: none; color: var(--mata); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; cursor: pointer; }
-    .unread { min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-size: 0.8125rem; font-weight: 800; line-height: 1.375rem; }
+    .unread { min-width: 1.375rem; height: 1.375rem; padding: 0 0.375rem; border-radius: var(--radius-pill); background: var(--orange-500); color: var(--on-accent); font-size: 0.8125rem; font-weight: 800; line-height: 1.375rem; }
   `
 })
 export class JobDetailPage implements OnInit {

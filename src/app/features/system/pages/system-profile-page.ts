@@ -5,6 +5,7 @@ import { SystemAuthService } from '../data-access/system-auth.service';
 import { SYSTEM_ROLE_LABEL, SystemSessionService } from '@core/session/system-session.service';
 import { ToastService } from '@core/toast/toast.service';
 import { SystemUser } from '@core/models/system.model';
+import { DisplayPreferences } from '@core/layout/display-preferences';
 import { formatDate } from '@shared/utils/format';
 import { Avatar } from '@shared/domain/ui/avatar';
 import { Button } from '@shared/ui/button';
@@ -14,7 +15,7 @@ import { Icon } from '@shared/ui/icon';
 // Perfil do próprio usuário de sistema: nome e e-mail. O cargo só um administrador muda.
 @Component({
   selector: 'app-system-profile-page',
-  imports: [ReactiveFormsModule, Avatar, Button, FormField, Icon],
+  imports: [ReactiveFormsModule, Avatar, Button, DisplayPreferences, FormField, Icon],
   template: `
     <div class="container page">
       @if (session.user(); as user) {
@@ -59,6 +60,8 @@ import { Icon } from '@shared/ui/icon';
           </div>
         }
       }
+
+      <app-display-preferences />
 
       <div class="cluster">
         <button appButton variant="secondary" type="button" (click)="signOut()"><app-icon name="logout" [size]="20" />Sair</button>

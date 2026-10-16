@@ -71,6 +71,15 @@ O menu de baixo do celular segue a regra do Material e do iOS: **de 3 a 5 destin
 
 No celular, o **perfil** fica no avatar (foto ou emoji) da **barra de cima**, junto da marca, que leva ao Início. Nome e foto do avatar vêm do `ProfileSummaryService` (`core/api`), que a página de perfil atualiza quando a pessoa troca o nome ou a foto. *Trocar de painel* e *Sair* continuam na página de perfil (no desktop, no fim da sidebar). As páginas que têm algo grudado no topo usam `--shell-top` (altura da barra de cima no celular; só a área do relógio no desktop).
 
+## Aparência e acessibilidade
+
+Cada conta escolhe **tema** (claro, escuro ou automático, que segue o aparelho), **letras maiores** (+25% em todos os textos) e **alto contraste** (texto secundário quase preto, bordas escuras, sem sombras), no cartão *Aparência e leitura* do perfil. O atalho **Aa** da barra de cima (no desktop, no fim da sidebar) liga letras maiores e alto contraste juntos, pensado para quem usa o celular sob o sol forte.
+
+- `PreferencesService` (`core/preferences`) aplica no `<html>` os atributos `data-theme`, `data-text` e `data-contrast`; as cores de cada combinação estão em `styles/tokens.css` (contraste conferido: texto ≥ 4,5:1, bordas de campo ≥ 3:1).
+- Vale na hora neste aparelho (`localStorage`, lido também por um script em `index.html`, para o tema escuro não piscar em branco) e, com a conta aberta, fica salvo nela (`GET/PATCH /api/accounts/:id/preferences`): quem entra em outro aparelho encontra o app do mesmo jeito. Na área da equipe, que não tem conta do app, vale só no aparelho.
+- Os tamanhos de texto estão em `rem`: letras maiores é só `html { font-size: 125% }`, e o app também respeita o tamanho de fonte escolhido no navegador. Os rótulos do menu de baixo ficam em px para "Candidaturas" caber nos ~72px de cada item.
+- Texto sobre lima ou laranja usa `--on-accent` (escuro em qualquer tema); verde como texto usa `--mata`, que vira verde-claro no tema escuro. As faixas verdes da marca (rodapé, blocos da landing) continuam no `--green-900`.
+
 ## Estrutura
 
 ```text

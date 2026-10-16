@@ -42,7 +42,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'acce
     :host(.btn--danger) { background: var(--danger); color: var(--surface); }
     :host(.btn--ghost) { background: transparent; color: var(--mata); padding-inline: var(--space-3); }
     :host(.btn--ghost:hover:not([disabled])) { background: var(--surface-sunken); }
-    :host(.btn--accent) { background: var(--orange-500); color: var(--ink); }
+    :host(.btn--accent) { background: var(--orange-500); color: var(--on-accent); }
     :host(.btn--accent:hover:not([disabled])) { box-shadow: inset 0 0 0 999px rgba(255,255,255,.16); }
     :host(.btn--inverse) { background: transparent; color: var(--on-dark); border-color: var(--on-dark-line); }
     :host(.btn--inverse:hover:not([disabled])) { background: rgba(255,255,255,.12); }

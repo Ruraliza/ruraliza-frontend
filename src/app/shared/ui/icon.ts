@@ -6,7 +6,8 @@ export type IconName =
   | 'map-pin' | 'crosshair' | 'arrow-left' | 'arrow-right' | 'alert' | 'logout' | 'money' | 'sprout' | 'swap'
   | 'download' | 'bell' | 'wifi-off' | 'refresh' | 'share'
   | 'chat' | 'send' | 'lock' | 'phone' | 'star'
-  | 'book' | 'award' | 'printer' | 'circle';
+  | 'book' | 'award' | 'printer' | 'circle'
+  | 'text-size';
 
 // Conjunto pequeno de ícones SVG inline: 24px, traço 1.75px, cor do texto (currentColor).
 // Decorativo por padrão; passe `label` quando o ícone for o único conteúdo com significado.
@@ -58,6 +59,7 @@ export type IconName =
         @case ('award') { <circle cx="12" cy="9" r="6" /><path d="M8.5 13.9 7 21l5-2.5 5 2.5-1.5-7.1" /> }
         @case ('printer') { <path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z" /> }
         @case ('circle') { <circle cx="12" cy="12" r="8" /> }
+        @case ('text-size') { <path d="M3 19 8.5 5 14 19M5.2 14h6.6M15 19l3.2-8 3.3 8M16.1 16.3h4.3" /> }
         @case ('sprout') { <path d="M12 21v-9M12 12C12 8 9 5 4 5c0 4 3 7 8 7zM12 14c0-3.5 2.5-6 7-6 0 3.5-2.5 6-7 6z" /> }
       }
     </svg>
