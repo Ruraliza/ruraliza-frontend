@@ -1,4 +1,4 @@
-import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal, untracked } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserRole } from '../models/auth.model';
 import { ProfileService } from './profile.service';
@@ -37,11 +37,15 @@ export class ProfileSummaryService {
   }
 
   // Perfil salvo ou foto trocada. Resposta de um painel que já foi trocado é ignorada.
+  // Lê o estado sem rastrear: a página de perfil chama de dentro de um effect, e ler e escrever
+  // o mesmo signal ali faria o effect rodar de novo sem parar.
   update(role: UserRole, profileId: number, profile: ProfileSummary): void {
-    const current = this.target();
-    if (current && this.matches(role, profileId)) {
-      this.target.set({ ...current, summary: { name: profile.name, photo_url: profile.photo_url } });
-    }
+    untracked(() => {
+      const current = this.target();
+      if (current && this.matches(role, profileId)) {
+        this.target.set({ ...current, summary: { name: profile.name, photo_url: profile.photo_url } });
+      }
+    });
   }
 
   private matches(role: UserRole, profileId: number): boolean {

@@ -1,4 +1,4 @@
-import { DestroyRef } from '@angular/core';
+import { DestroyRef, Injector, effect, runInInjectionContext, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { ProfileService } from './profile.service';
@@ -31,6 +31,22 @@ describe('ProfileSummaryService', () => {
     service.update('farmer', 2, { name: 'Outra pessoa', photo_url: null });
 
     expect(service.summary()).toEqual({ name: 'Maria Trabalhadora', photo_url: '/api/images/b.webp' });
+  });
+
+  it('can be updated from an effect without running it again (the profile page does that)', () => {
+    const service = setup({ getFarmer: () => of({ name: 'João', photo_url: null }) });
+    service.connect('farmer', 1, destroyRef);
+    const page = signal({ name: 'João Produtor', photo_url: null });
+    let runs = 0;
+
+    runInInjectionContext(TestBed.inject(Injector), () => effect(() => {
+      runs++;
+      service.update('farmer', 1, page());
+    }));
+    TestBed.tick();
+
+    expect(runs).toBe(1);
+    expect(service.summary()?.name).toBe('João Produtor');
   });
 
   it('stays empty without a connection and forgets the profile when the area closes', () => {
