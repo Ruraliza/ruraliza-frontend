@@ -9,6 +9,7 @@ import { CurrentUserService, UserRole } from '@core/session/current-user.service
 import { ROLE_HOME, roleFromSlug } from '@core/session/roles';
 import { ToastService } from '@core/toast/toast.service';
 import { cpfValidator } from '@shared/utils/cpf';
+import { noBlockedTerms } from '@shared/utils/moderation';
 import { Button } from '@shared/ui/button';
 import { FormField } from '@shared/ui/form-field';
 import { Icon } from '@shared/ui/icon';
@@ -93,8 +94,8 @@ export class SignupPage implements OnInit {
     cpf: ['', [Validators.required, cpfValidator]],
     password: ['', passwordValidators],
     confirmation: ['', [Validators.required, matchesField('password')]],
-    experience: [''],
-    certificates: [''],
+    experience: ['', noBlockedTerms],
+    certificates: ['', noBlockedTerms],
     resume: this.fb.control<File | null>(null, resumeValidator), // só trabalhador; enviado depois do cadastro
     acceptTerms: [false, Validators.requiredTrue] // Termos de Uso e Política de Privacidade (a API guarda a data do aceite)
   });

@@ -10,6 +10,7 @@ import { PasswordChangeInput } from '@core/models/auth.model';
 import { Worker } from '@core/models/worker.model';
 import { RemoteData } from '@shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '@shared/utils/format';
+import { noBlockedTerms } from '@shared/utils/moderation';
 import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeErrors } from '@shared/domain/utils/resume';
 import { AvatarEditor } from '@shared/domain/ui/avatar-editor';
 import { HelpLinks } from '@shared/domain/ui/help-links';
@@ -67,10 +68,10 @@ export class WorkerProfilePage {
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required, Validators.minLength(10)]],
-    bio: ['', Validators.maxLength(MAX_BIO)],
-    experience: ['', Validators.maxLength(MAX_TEXT)],
-    certificates: ['', Validators.maxLength(MAX_TEXT)],
-    courses: ['', Validators.maxLength(MAX_TEXT)]
+    bio: ['', [Validators.maxLength(MAX_BIO), noBlockedTerms]],
+    experience: ['', [Validators.maxLength(MAX_TEXT), noBlockedTerms]],
+    certificates: ['', [Validators.maxLength(MAX_TEXT), noBlockedTerms]],
+    courses: ['', [Validators.maxLength(MAX_TEXT), noBlockedTerms]]
   });
 
   readonly phoneMessages = { minlength: 'Digite o telefone com DDD, só números.' };

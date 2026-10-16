@@ -7,6 +7,7 @@ import { CurrentUserService } from '@core/session/current-user.service';
 import { ToastService } from '@core/toast/toast.service';
 import { RemoteData, mergeStates } from '@shared/utils/remote-data';
 import { positiveNumberValidator } from '@shared/utils/validators';
+import { noBlockedTerms } from '@shared/utils/moderation';
 import { draftNumber, draftParams } from '@shared/domain/utils/service-draft';
 import { formatDay, isExpired, todayBr } from '@shared/domain/utils/expiry';
 
@@ -90,8 +91,8 @@ export class ServiceFormPage implements OnInit {
 
   readonly form = this.fb.group({
     what: this.fb.group({
-      name: ['', Validators.required],
-      description: ['', Validators.maxLength(MAX_DESCRIPTION)],
+      name: ['', [Validators.required, noBlockedTerms]],
+      description: ['', [Validators.maxLength(MAX_DESCRIPTION), noBlockedTerms]],
       category: ['', Validators.required]
     }),
     where: this.fb.group({
