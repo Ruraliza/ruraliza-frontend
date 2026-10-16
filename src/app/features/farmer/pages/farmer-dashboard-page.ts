@@ -12,10 +12,11 @@ import { MetricCard } from '@shared/ui/metric-card';
 import { ServiceCard } from '@shared/domain/ui/service-card';
 import { Skeleton } from '@shared/ui/skeleton';
 import { PendingReviews } from '@shared/domain/ui/pending-reviews';
+import { FarmStatsPanel } from '../ui/farm-stats-panel';
 
 @Component({
   selector: 'app-farmer-dashboard-page',
-  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, PendingReviews, ServiceCard, Skeleton],
+  imports: [RouterLink, Button, EmptyState, ErrorState, FarmStatsPanel, Icon, MetricCard, PendingReviews, ServiceCard, Skeleton],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -57,6 +58,8 @@ import { PendingReviews } from '@shared/domain/ui/pending-reviews';
               </app-empty-state>
             }
           </section>
+
+          <app-farm-stats-panel [farmerId]="farmerId" />
         }
       }
     </div>

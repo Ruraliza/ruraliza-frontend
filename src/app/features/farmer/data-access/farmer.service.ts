@@ -8,6 +8,7 @@ import { Farm, FarmInput, FarmUpdate } from '@core/models/farm.model';
 import { FarmerServiceItem, Service, ServiceInput, ServiceUpdate, ServiceWithFarm } from '@core/models/service.model';
 import { AnalyzeAction, ApplicationWithWorker, ServiceApplication } from '@core/models/service-application.model';
 import { Payment } from '@core/models/payment.model';
+import { FarmerStats } from '@core/models/farm-stats.model';
 import { ServiceStatus } from '@core/models/status';
 
 // Painel do produtor: perfil, fazendas, serviços, candidaturas e pagamento. Ler o perfil e o
@@ -25,6 +26,11 @@ export class FarmerService {
 
   updateFarmer(farmerId: number, changes: FarmerUpdate): Observable<{ message: string; farmer: Farmer }> {
     return this.http.patch<{ message: string; farmer: Farmer }>(`${this.apiUrl}/${farmerId}`, changes);
+  }
+
+  // Painel da fazenda: horas, nota, pagamentos e quem já passou por aqui.
+  getStats(farmerId: number): Observable<FarmerStats> {
+    return this.http.get<FarmerStats>(`${this.apiUrl}/${farmerId}/stats`);
   }
 
   deleteFarmer(farmerId: number): Observable<{ message: string }> {
