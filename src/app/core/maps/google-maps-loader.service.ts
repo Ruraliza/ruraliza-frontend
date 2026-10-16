@@ -1,9 +1,10 @@
 import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '@env/environment';
 import { MapsConfig } from '../models/config.model';
+import { SILENT_ERRORS } from '../http/error.interceptor';
 
 const SCRIPT_ID = 'google-maps-sdk';
 const CALLBACK = '__ruralizaMapsReady'; // nome global do callback que o SDK chama ao terminar
@@ -38,9 +39,11 @@ export class GoogleMapsLoader {
     return this.loading;
   }
 
-  // Chave e Map ID, buscados uma vez por sessão (uma falha permite tentar de novo).
+  // Chave e Map ID, buscados uma vez por sessão (uma falha permite tentar de novo). Sem toast: quem usa o
+  // mapa já mostra a alternativa (o link "Abrir no Google Maps" ou o aviso "Mapa indisponível").
   fetchConfig(): Promise<MapsConfig> {
-    this.configRequest ??= firstValueFrom(this.http.get<MapsConfig>(`${environment.apiUrl}/config/maps`)).catch(
+    const context = new HttpContext().set(SILENT_ERRORS, true);
+    this.configRequest ??= firstValueFrom(this.http.get<MapsConfig>(`${environment.apiUrl}/config/maps`, { context })).catch(
       (error: unknown) => {
         this.configRequest = null;
         throw error;
