@@ -25,6 +25,9 @@
           <a appButton routerLink="/produtor/fazendas/nova" [queryParams]="farmLinkParams()">Cadastrar fazenda</a>
         </app-empty-state>
       } @else {
+        @if (source.data(); as copied) {
+          <p class="copy-note" role="status">Copiado de <b>{{ copied.name }}</b>. Confira os dados e escolha o novo prazo, se quiser um.</p>
+        }
         <ol class="progress" role="list" aria-label="Etapas">
           <li [class.done]="step() === 2" [attr.aria-current]="step() === 1 ? 'step' : null">1. O quê</li>
           <li [attr.aria-current]="step() === 2 ? 'step' : null" [class.current]="step() === 2">2. Onde e quanto</li>

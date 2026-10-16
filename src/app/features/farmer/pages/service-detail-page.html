@@ -60,6 +60,15 @@
             </div>
           }
 
+          <!-- Publicar de novo (issue #32): o formulário abre com estes dados, menos o prazo. -->
+          <section class="again" aria-labelledby="again-title">
+            <div>
+              <h2 id="again-title" class="t-label">Precisa deste serviço de novo?</h2>
+              <p class="t-body-sm muted">Abre o formulário já preenchido. É só ajustar o que mudou e o prazo.</p>
+            </div>
+            <a appButton variant="secondary" routerLink="/produtor/servicos/novo" [queryParams]="{ copiar: s.id }"><app-icon name="refresh" [size]="20" />Publicar de novo</a>
+          </section>
+
           @if (s.status === 'Cancelled') {
             <section class="card" role="status">
               <p class="muted">Este serviço foi cancelado e não aparece mais para os trabalhadores.</p>

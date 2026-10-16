@@ -25,3 +25,4 @@
 .sim-note { color: var(--warning); font-weight: 600; }
 
 .farm-map { margin-top: var(--space-4); }
+.again { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-4) var(--space-6); border: 1px dashed var(--line-strong); border-radius: var(--radius-lg); }
