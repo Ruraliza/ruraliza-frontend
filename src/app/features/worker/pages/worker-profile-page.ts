@@ -1,7 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WorkerService } from '../data-access/worker.service';
 import { ProfileService } from '@core/api/profile.service';
+import { ProfileSummaryService } from '@core/api/profile-summary.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { RoleSwitchService } from '@core/session/role-switch.service';
 import { ToastService } from '@core/toast/toast.service';
@@ -9,8 +10,10 @@ import { PasswordChangeInput } from '@core/models/auth.model';
 import { Worker } from '@core/models/worker.model';
 import { RemoteData } from '@shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '@shared/utils/format';
+import { noBlockedTerms } from '@shared/utils/moderation';
 import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeErrors } from '@shared/domain/utils/resume';
 import { AvatarEditor } from '@shared/domain/ui/avatar-editor';
+import { HelpLinks } from '@shared/domain/ui/help-links';
 import { Button } from '@shared/ui/button';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog';
 import { ErrorState } from '@shared/ui/error-state';
@@ -18,12 +21,16 @@ import { FormField } from '@shared/ui/form-field';
 import { Icon } from '@shared/ui/icon';
 import { MaskedInput } from '@shared/ui/masked-input';
 import { PasswordChange } from '@shared/domain/ui/password-change';
+import { DisplayPreferences } from '@core/layout/display-preferences';
 import { InstallAppButton } from '@core/layout/install-app-button';
 import { PushToggle } from '@core/layout/push-toggle';
 import { RoleSwitchButton } from '@core/layout/role-switch-button';
 import { ResumeDialog } from '@shared/domain/ui/resume-dialog';
 import { Skeleton } from '@shared/ui/skeleton';
 import { ReputationSummary } from '@shared/domain/ui/reputation-summary';
+import { VerificationCard } from '@shared/domain/ui/verification-card';
+import { JobInterestsCard } from '../ui/job-interests-card';
+import { WhatsAppAlerts } from '@shared/domain/ui/whatsapp-alerts';
 
 // Limites iguais aos da API.
 const MAX_BIO = 500;
@@ -32,7 +39,7 @@ const MAX_TEXT = 1000;
 // Perfil do trabalhador: foto, currículo, apresentação, contato e qualificação; edição (id e cpf fixos) e remoção.
 @Component({
   selector: 'app-worker-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, ReputationSummary, ResumeDialog, RoleSwitchButton, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, HelpLinks, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, ReputationSummary, ResumeDialog, JobInterestsCard, RoleSwitchButton, Skeleton, VerificationCard, WhatsAppAlerts],
   templateUrl: './worker-profile-page.html',
   styleUrl: './worker-profile-page.css'
 })
@@ -44,6 +51,7 @@ export class WorkerProfilePage {
   private readonly toast = inject(ToastService);
   protected readonly switcher = inject(RoleSwitchService);
   private readonly workerId = this.currentUser.requireId('worker');
+  readonly profileId = this.workerId;
   readonly hasFarmerProfile = this.currentUser.hasProfile('farmer');
 
   readonly worker = new RemoteData(() => this.profiles.getWorker(this.workerId));
@@ -63,10 +71,10 @@ export class WorkerProfilePage {
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required, Validators.minLength(10)]],
-    bio: ['', Validators.maxLength(MAX_BIO)],
-    experience: ['', Validators.maxLength(MAX_TEXT)],
-    certificates: ['', Validators.maxLength(MAX_TEXT)],
-    courses: ['', Validators.maxLength(MAX_TEXT)]
+    bio: ['', [Validators.maxLength(MAX_BIO), noBlockedTerms]],
+    experience: ['', [Validators.maxLength(MAX_TEXT), noBlockedTerms]],
+    certificates: ['', [Validators.maxLength(MAX_TEXT), noBlockedTerms]],
+    courses: ['', [Validators.maxLength(MAX_TEXT), noBlockedTerms]]
   });
 
   readonly phoneMessages = { minlength: 'Digite o telefone com DDD, só números.' };
@@ -94,6 +102,12 @@ export class WorkerProfilePage {
 
   constructor() {
     this.worker.load();
+    // Nome ou foto mudaram: o avatar da barra de cima acompanha.
+    const summary = inject(ProfileSummaryService);
+    effect(() => {
+      const profile = this.worker.data();
+      if (profile) summary.update('worker', this.workerId, profile);
+    });
   }
 
   startEdit(worker: Worker): void {

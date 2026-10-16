@@ -58,6 +58,43 @@ Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe pro
 - **Feita para o campo:** respostas rápidas ("Estou a caminho.", "Cheguei na fazenda."), campo de 16 px (o iPhone não dá zoom), Enter envia, e sem sinal a mensagem fica *Não enviada* com um toque para reenviar.
 - **Menu:** *Conversas* entrou no menu com o contador. No celular o trabalhador não tem mais *Vagas* e *Buscar* lado a lado (os dois abriam a mesma tela): fica *Buscar*, e *Vagas* continua na sidebar. O botão central do produtor aparece como *Novo* no menu de baixo.
 
+## Menu das áreas logadas
+
+O menu de baixo do celular segue a regra do Material e do iOS: **de 3 a 5 destinos**, com a ação principal no meio (com número ímpar, ela fica no centro de verdade). O `AppShell` (`core/layout/app-shell.ts`) exporta `MAX_BOTTOM_NAV_ITEMS` e `bottomNavItems()`, e cada layout tem o teste que confere a regra (`farmer-layout.spec.ts`, `worker-layout.spec.ts`, `system-layout.spec.ts`).
+
+| Área | Menu de baixo (celular) | Só na sidebar (desktop) |
+|---|---|---|
+| Produtor | Início · Serviços · **Novo** · Conversas · Fazendas | Perfil |
+| Trabalhador | Início · Candidaturas · **Buscar** · Conversas · Trilhas | Vagas (a mesma tela de Buscar), Perfil |
+| Administrador | Início · Usuários · Trilhas · Equipe | Perfil |
+| Tutor | Início · **Nova trilha** · Trilhas | Perfil |
+
+No celular, o **perfil** fica no avatar (foto ou emoji) da **barra de cima**, junto da marca, que leva ao Início. Nome e foto do avatar vêm do `ProfileSummaryService` (`core/api`), que a página de perfil atualiza quando a pessoa troca o nome ou a foto. *Trocar de painel* e *Sair* continuam na página de perfil (no desktop, no fim da sidebar). As páginas que têm algo grudado no topo usam `--shell-top` (altura da barra de cima no celular; só a área do relógio no desktop).
+
+## Termos, privacidade e ajuda
+
+- **Termos de Uso** (`/termos`) e **Política de Privacidade** (`/privacidade`): resumo em linguagem simples no topo, sumário fixo no desktop e cláusulas numeradas (`features/public/models/legal-content.ts`, desenhadas pelo `LegalDocumentView`). São pré-renderizadas no build. **Os textos são uma base para a fase de testes e precisam de revisão jurídica antes do lançamento** (razão social, CNPJ e encarregado de dados não foram inventados).
+- **Aceite no cadastro:** a caixa "Li e concordo com os Termos de Uso e a Política de Privacidade" é obrigatória; a API guarda a data e a versão aceitas (`TERMS_VERSION` em `core/models/legal.ts`, igual à do backend). Mudou um texto? Troque a versão nos dois lados.
+- **Central de ajuda** (`/ajuda`, e dentro das áreas em `/produtor/ajuda` e `/trabalhador/ajuda`): perguntas frequentes da API (`GET /api/help`), com busca sem acento (`shared/utils/search.ts`), filtro por tema e respostas que abrem no lugar (`<details>`). Links no rodapé, no perfil (`HelpLinks`), na sidebar e nas Dúvidas da landing.
+- **Gestão das perguntas** (`/sistema/ajuda`, cargo administrador, permissão `content:manage`): criar, editar, subir/descer no tema, despublicar (rascunho) e apagar, sem mexer no código.
+
+## Notificações
+
+**Central de notificações** (`/produtor/notificacoes` e `/trabalhador/notificacoes`): o histórico de tudo o que vira push (candidaturas, aceites, recusas, pagamentos, mensagens, avaliações), mesmo para quem não ativou as notificações do celular. O **sino** da barra de cima (no desktop, o item *Notificações* da sidebar) mostra quantos avisos faltam ler.
+
+- `NotificationInboxService` (`core/api`) mantém a lista do painel aberto, atualizada por SSE (`LiveUpdatesService.notifications()`); o layout de cada área conecta ao abrir, como as conversas.
+- A tela agrupa por dia ("Hoje", "Ontem", data), destaca os não lidos e escolhe o ícone pela tela que o aviso abre. Tocar marca como lido e abre a tela; *Marcar todas como lidas* zera o sino. Avisos iguais ainda não lidos chegam agrupados, com a contagem.
+- **Avisos no WhatsApp** (cartão no perfil do trabalhador): quando um produtor aceita a candidatura, chega mensagem no WhatsApp com o link do app. Só com o sim da pessoa (`whatsapp_alerts` nas preferências da conta), só para celular com DDD e só se o servidor tiver a integração (`GET /api/config/whatsapp`); sem ela, o cartão explica que ainda não está ligado.
+
+## Aparência e acessibilidade
+
+Cada conta escolhe **tema** (claro, escuro ou automático, que segue o aparelho), **letras maiores** (+25% em todos os textos) e **alto contraste** (texto secundário quase preto, bordas escuras, sem sombras), no cartão *Aparência e leitura* do perfil. O atalho **Aa** da barra de cima (no desktop, no fim da sidebar) liga letras maiores e alto contraste juntos, pensado para quem usa o celular sob o sol forte.
+
+- `PreferencesService` (`core/preferences`) aplica no `<html>` os atributos `data-theme`, `data-text` e `data-contrast`; as cores de cada combinação estão em `styles/tokens.css` (contraste conferido: texto ≥ 4,5:1, bordas de campo ≥ 3:1).
+- Vale na hora neste aparelho (`localStorage`, lido também por um script em `index.html`, para o tema escuro não piscar em branco) e, com a conta aberta, fica salvo nela (`GET/PATCH /api/accounts/:id/preferences`): quem entra em outro aparelho encontra o app do mesmo jeito. Na área da equipe, que não tem conta do app, vale só no aparelho.
+- Os tamanhos de texto estão em `rem`: letras maiores é só `html { font-size: 125% }`, e o app também respeita o tamanho de fonte escolhido no navegador. Os rótulos do menu de baixo ficam em px para "Candidaturas" caber nos ~72px de cada item.
+- Texto sobre lima ou laranja usa `--on-accent` (escuro em qualquer tema); verde como texto usa `--mata`, que vira verde-claro no tema escuro. As faixas verdes da marca (rodapé, blocos da landing) continuam no `--green-900`.
+
 ## Estrutura
 
 ```text
@@ -71,7 +108,7 @@ src/
                        CategoryService, LiveUpdatesService, ReviewService, ChatService, ChatInboxService
       http/            authInterceptor, errorInterceptor + ApiError
       session/         CurrentUserService, SystemSessionService, guards (não são segurança)
-      layout/          PublicLayout, AppShell (bottom nav < 1024px / sidebar ≥ 1024px) e a UI que
+      layout/          PublicLayout, AppShell (barra de cima + menu de baixo < 1024px / sidebar ≥ 1024px) e a UI que
                        depende de serviços do core (faixas do PWA, instalar, push, troca de painel, toasts)
       pwa/ maps/ toast/
     shared/            reaproveitável, sem saber de features
@@ -106,7 +143,8 @@ Só a landing (`/`) é pré-renderizada no build. `/produtor/**`, `/trabalhador/
 
 O build de produção registra o service worker do Angular (`ngsw-config.json`), que guarda o app em cache. Em desenvolvimento (`ng serve`) ele não é registrado; para testar, faça o build e sirva `dist/ruraliza-frontend/browser`.
 
-- **Cache:** o app (JS, CSS e `index.csr.html`, que serve para qualquer rota), as imagens e as fontes. A API não entra no cache: sem conexão o app abre, mostra a faixa de offline, e as chamadas falham.
+- **Cache:** o app (JS, CSS e `index.csr.html`, que serve para qualquer rota), as imagens e as fontes.
+- **Sem internet:** cada tela que a pessoa abre guarda a última resposta da API no aparelho (Cache Storage, `core/offline`); se o sinal cai, a tela mostra essa cópia e a faixa diz de quando ela é. Perfis, serviços, candidatos, vagas, conversas, avisos e trilhas funcionam assim; streams, área do sistema e documentos nunca são guardados. Concluir uma aula sem sinal fica numa fila e é enviado sozinho quando a conexão volta (assim como as mensagens da conversa que não saíram). Sair da conta, ou entrar com outra, apaga a cópia. Como a sessão fica no `sessionStorage`, o modo vale enquanto o app está aberto: reabrir o app sem sinal pede para entrar de novo.
 - **Versão nova:** quando um deploy novo é baixado, aparece a faixa "Nova versão disponível" com o botão Atualizar.
 - **Instalar:** o botão "Instalar app" aparece na landing e nas páginas de perfil quando o navegador permite. No iPhone ele explica o caminho pelo Compartilhar.
 - **Notificações push:** são ativadas no perfil e valem para os dois perfis da conta. Precisam das chaves VAPID no `.env` do backend. A inscrição é reenviada ao backend sempre que alguém entra, e "Sair" a desativa neste aparelho. Como a sessão fica no `sessionStorage`, clicar numa notificação com o app fechado abre a tela de entrada.

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
-import { ProfileCreateInput, SessionResponse, SessionUser, UserRole } from '../models/auth.model';
+import { AccountPreferences, AccountPreferencesInput, PreferencesResponse, ProfileCreateInput, SessionResponse, SessionUser, UserRole } from '../models/auth.model';
 import { PushSubscriptionInput, PushUnsubscribeInput } from '../models/push.model';
 import { SILENT_ERRORS } from '../http/error.interceptor';
 
@@ -24,6 +24,15 @@ export class AccountService {
   // Troca o painel aberto (e o que abre no próximo login).
   setActiveRole(accountId: number, role: UserRole): Observable<SessionResponse> {
     return this.http.patch<SessionResponse>(`${this.apiUrl}/${accountId}/active-role`, { role });
+  }
+
+  // Tema, tamanho do texto e contraste da conta. Em segundo plano: sem toast (o aparelho guarda a cópia local).
+  getPreferences(accountId: number): Observable<AccountPreferences> {
+    return this.http.get<AccountPreferences>(`${this.apiUrl}/${accountId}/preferences`, { context: silent() });
+  }
+
+  updatePreferences(accountId: number, changes: AccountPreferencesInput): Observable<PreferencesResponse> {
+    return this.http.patch<PreferencesResponse>(`${this.apiUrl}/${accountId}/preferences`, changes, { context: silent() });
   }
 
   // Notificações push neste navegador (para os dois perfis da conta). Chamadas em segundo plano: sem toast.

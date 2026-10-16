@@ -11,15 +11,16 @@ import { FarmEmoji } from './farm-emoji';
 import { Icon } from '../../ui/icon';
 import { StatusBadge } from './status-badge';
 import { RatingBadge } from './rating-badge';
+import { VerifiedBadge } from './verified-badge';
 
 // A fazenda chega completa no produtor (fotos com id e url) e resumida no trabalhador (só URLs).
-type CardFarm = { city: string; state: string; photos: (string | FarmPhoto)[]; reputation?: { average: number | null; count: number } };
+type CardFarm = { city: string; state: string; photos: (string | FarmPhoto)[]; reputation?: { average: number | null; count: number }; farmer_verified?: true };
 type CardService = Service & { farm?: CardFarm; applications_pending?: number };
 
 // Card de serviço/vaga. O card inteiro é um link para o detalhe.
 @Component({
   selector: 'app-service-card',
-  imports: [RouterLink, CategoryChip, FarmEmoji, Icon, RatingBadge, StatusBadge],
+  imports: [RouterLink, CategoryChip, FarmEmoji, Icon, RatingBadge, StatusBadge, VerifiedBadge],
   template: `
     <a class="card-link" [routerLink]="link()">
       @if (cover(); as src) {
@@ -41,8 +42,11 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
         <h3>{{ service().name }}</h3>
         @if (service().farm; as farm) {
           <p class="meta t-body-sm"><app-icon name="map-pin" [size]="18" />{{ farm.city }}, {{ farm.state }}</p>
-          @if (farm.reputation; as rep) {
-            <p class="meta t-body-sm"><app-rating-badge [reputation]="rep" /></p>
+          @if (farm.reputation || farm.farmer_verified) {
+            <p class="meta t-body-sm">
+              @if (farm.reputation; as rep) { <app-rating-badge [reputation]="rep" /> }
+              @if (farm.farmer_verified) { <app-verified-badge /> }
+            </p>
           }
         }
         <p class="meta t-body-sm"><app-icon name="clock" [size]="18" />{{ hours() }}</p>
@@ -50,6 +54,11 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
           @if (!expired()) { <p class="meta t-body-sm deadline"><app-icon name="alert" [size]="18" />{{ text }}</p> }
         }
         <p class="price">{{ price() }}</p>
+        @if (reasons().length) {
+          <ul class="reasons t-body-sm" role="list" aria-label="Por que combina com você">
+            @for (reason of reasons().slice(0, 2); track reason) { <li><app-icon name="check" [size]="16" />{{ reason }}</li> }
+          </ul>
+        }
         @if (service().applications_pending) {
           <p class="pending t-body-sm">
             {{ service().applications_pending }} {{ service().applications_pending === 1 ? 'candidatura' : 'candidaturas' }} para analisar
@@ -74,9 +83,11 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
     .top { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: space-between; align-items: center; margin-bottom: var(--space-1); }
     .meta { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); }
     .deadline { color: var(--orange-700); font-weight: 600; }
-    .expired { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--ink-muted); font-size: 14px; font-weight: 600; }
-    .own { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-size: 14px; font-weight: 600; }
-    .price { font: 700 24px/30px var(--font-display); font-variant-numeric: tabular-nums; margin-top: var(--space-1); }
+    .expired { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--ink-muted); font-size: 0.875rem; font-weight: 600; }
+    .own { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-size: 0.875rem; font-weight: 600; }
+    .price { font: 700 1.5rem/1.875rem var(--font-display); font-variant-numeric: tabular-nums; margin-top: var(--space-1); }
+    .reasons { display: grid; gap: 2px; margin: 0; padding: var(--space-2) 0 0; border-top: 1px solid var(--line); list-style: none; color: var(--mata-deep); }
+    .reasons li { display: flex; align-items: center; gap: var(--space-1); }
     .pending { justify-self: start; padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-weight: 600; }
   `
 })
@@ -87,6 +98,8 @@ export class ServiceCard {
   readonly showCover = input(true);
   // Vaga publicada pelo perfil de produtor da mesma conta (o trabalhador não pode se candidatar).
   readonly own = input(false);
+  // Por que a vaga foi sugerida (vagas para você): até dois motivos, embaixo do valor.
+  readonly reasons = input<readonly string[]>([]);
 
   readonly price = computed(() => formatBRL(this.service().price));
   readonly hours = computed(() => formatHours(this.service().duration));

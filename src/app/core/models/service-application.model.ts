@@ -17,6 +17,7 @@ export interface ServiceApplication {
 export interface ApplicationWithWorker extends ServiceApplication {
   worker: Worker;
   reputation: WorkerReputation; // avaliações publicadas do trabalhador
+  verified: boolean; // identidade conferida pela equipe (selo)
 }
 
 // GET /workers/:id/applications

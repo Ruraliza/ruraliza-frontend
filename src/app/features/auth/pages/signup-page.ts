@@ -9,6 +9,7 @@ import { CurrentUserService, UserRole } from '@core/session/current-user.service
 import { ROLE_HOME, roleFromSlug } from '@core/session/roles';
 import { ToastService } from '@core/toast/toast.service';
 import { cpfValidator } from '@shared/utils/cpf';
+import { noBlockedTerms } from '@shared/utils/moderation';
 import { Button } from '@shared/ui/button';
 import { FormField } from '@shared/ui/form-field';
 import { Icon } from '@shared/ui/icon';
@@ -61,6 +62,10 @@ export const ROLE_CHOICES: RoleChoice[] = [
     .choice:has(input:focus-visible) { box-shadow: var(--focus-ring); }
     .choice .icon { grid-row: span 2; display: grid; place-items: center; width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--broto-soft); }
     .choice-error { color: var(--danger); font-weight: 600; }
+    .terms { display: grid; gap: var(--space-2); }
+    .check { display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: start; cursor: pointer; line-height: 1.5rem; }
+    .check input { width: 22px; height: 22px; margin: 1px 0 0; }
+    .check a { font-weight: 600; }
   `
 })
 export class SignupPage implements OnInit {
@@ -89,9 +94,10 @@ export class SignupPage implements OnInit {
     cpf: ['', [Validators.required, cpfValidator]],
     password: ['', passwordValidators],
     confirmation: ['', [Validators.required, matchesField('password')]],
-    experience: [''],
-    certificates: [''],
-    resume: this.fb.control<File | null>(null, resumeValidator) // só trabalhador; enviado depois do cadastro
+    experience: ['', noBlockedTerms],
+    certificates: ['', noBlockedTerms],
+    resume: this.fb.control<File | null>(null, resumeValidator), // só trabalhador; enviado depois do cadastro
+    acceptTerms: [false, Validators.requiredTrue] // Termos de Uso e Política de Privacidade (a API guarda a data do aceite)
   });
 
   readonly role = toSignal(this.form.controls.role.valueChanges, { initialValue: null });
@@ -170,7 +176,7 @@ export class SignupPage implements OnInit {
   // A resposta do cadastro já traz a sessão (e o token) da conta nova.
   private create(role: UserRole): Observable<{ user: SessionUser; token: string }> {
     const { name, email, phone, cpf, password, experience, certificates } = this.form.getRawValue();
-    const base = { name: name.trim(), email: email.trim(), phone, cpf, password };
+    const base = { name: name.trim(), email: email.trim(), phone, cpf, password, accept_terms: true };
 
     if (role === 'farmer') {
       return this.profiles.createFarmer(base).pipe(map(({ user, token }) => ({ user, token })));

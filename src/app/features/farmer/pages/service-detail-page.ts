@@ -23,6 +23,7 @@ import { Icon } from '@shared/ui/icon';
 import { Skeleton } from '@shared/ui/skeleton';
 import { StatusBadge } from '@shared/domain/ui/status-badge';
 import { WorkerCard } from '../ui/worker-card';
+import { ReportDialog, ReportTarget } from '@shared/domain/ui/report-dialog';
 import { ReputationDialog, ReputationTarget } from '@shared/domain/ui/reputation-dialog';
 import { ServiceReviews } from '@shared/domain/ui/service-reviews';
 import { SegmentedControl } from '@shared/ui/segmented-control';
@@ -43,7 +44,7 @@ interface DialogCopy {
 
 @Component({
   selector: 'app-service-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, FarmMap, Icon, PhotoStrip, ReputationDialog, SegmentedControl, ServiceReviews, Skeleton, StatusBadge, WorkerCard],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, FarmMap, Icon, PhotoStrip, ReportDialog, ReputationDialog, SegmentedControl, ServiceReviews, Skeleton, StatusBadge, WorkerCard],
   templateUrl: './service-detail-page.html',
   styleUrl: './service-detail-page.css'
 })
@@ -100,6 +101,8 @@ export class ServiceDetailPage implements OnInit {
 
   // Avaliações do candidato abertas no diálogo.
   readonly reviewing = signal<ReputationTarget | null>(null);
+  // Candidato sendo denunciado.
+  readonly reporting = signal<ReportTarget | null>(null);
   // Muda a cada aviso em tempo real: o painel de avaliações recarrega junto.
   readonly tick = signal(0);
   readonly price = computed(() => formatBRL(this.service.data()?.price ?? 0));
@@ -175,6 +178,10 @@ export class ServiceDetailPage implements OnInit {
 
   showReviews(application: ApplicationWithWorker): void {
     this.reviewing.set({ kind: 'worker', id: application.worker_id, name: application.worker.name });
+  }
+
+  reportWorker(application: ApplicationWithWorker): void {
+    this.reporting.set({ type: 'worker', id: application.worker_id, name: application.worker.name });
   }
 
   ask(action: PendingAction): void {

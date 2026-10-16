@@ -3,13 +3,16 @@ import { DOCUMENT } from '@angular/common';
 import { Certificate } from '@core/models/track.model';
 import { formatLongDate, formatWorkload } from '@shared/utils/format';
 import { Logo } from '@shared/ui/logo';
+import { QrCode } from '@shared/ui/qr-code';
+import { hashGroups } from '../utils/certificate-hash';
 
 // O certificado de conclusão de uma trilha, em nome da Ruraliza, no formato A4 deitado.
 // Na impressão ("Baixar PDF" = imprimir e salvar em PDF) só ele aparece: a casca do app some
 // pelas regras de @media print (ver styles/base.css e as cascas em core/layout).
+// Para conferir: o código, o QR code que abre a validação pública e o resumo SHA-256 dos dados.
 @Component({
   selector: 'app-certificate-view',
-  imports: [Logo],
+  imports: [Logo, QrCode],
   template: `
     <article class="sheet" aria-label="Certificado de conclusão">
       <div class="frame">
@@ -33,9 +36,16 @@ import { Logo } from '@shared/ui/logo';
             <span class="role">Trilhas de estudo</span>
           </div>
           <div class="check">
-            <span>Código de validação</span>
-            <strong class="code">{{ certificate().code }}</strong>
-            <span class="url">{{ validationUrl() }}</span>
+            <div class="check-text">
+              <span>Código de validação</span>
+              <strong class="code">{{ certificate().code }}</strong>
+              <span class="url">{{ validationUrl() }}</span>
+              @if (hash().length) {
+                <span class="hash-label">Resumo SHA-256 dos dados</span>
+                <span class="hash">@for (group of hash(); track $index) {<span>{{ group }}</span>}</span>
+              }
+            </div>
+            <app-qr-code class="qr" [value]="link()" label="QR code para validar o certificado" />
           </div>
         </footer>
       </div>
@@ -69,9 +79,18 @@ import { Logo } from '@shared/ui/logo';
     .line { width: 100%; border-top: 0.12cqi solid #10251a; }
     .who { font: 700 1.7cqi/1 var(--font-display); color: var(--green-900); }
     .role { color: #4a5d52; }
-    .check { display: grid; justify-items: end; gap: 0.3cqi; text-align: right; color: #4a5d52; }
+    .check { display: flex; align-items: flex-end; gap: 1.6cqi; min-width: 0; }
+    .check-text { display: grid; justify-items: end; gap: 0.3cqi; min-width: 0; text-align: right; color: #4a5d52; }
     .code { font: 700 1.8cqi/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.08em; color: #10251a; }
     .url { overflow-wrap: anywhere; }
+    .hash-label { margin-top: 0.5cqi; }
+    /* Os 64 caracteres em duas linhas de 4 grupos; o espaço entre eles é só visual (copiar dá o resumo inteiro). */
+    .hash {
+      display: grid; grid-template-columns: repeat(4, auto); column-gap: 0.7ch;
+      font: 500 1.1cqi/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; color: #10251a;
+    }
+    /* ~27 mm na folha impressa: o tamanho que a câmera do celular lê sem esforço. */
+    .qr { flex: none; width: 9cqi; }
 
     @media print {
       @page { size: A4 landscape; margin: 0; }
@@ -87,5 +106,9 @@ export class CertificateView {
 
   readonly workload = computed(() => formatWorkload(this.certificate().workload_minutes));
   readonly completedAt = computed(() => formatLongDate(this.certificate().completed_at));
-  readonly validationUrl = computed(() => `${this.origin.replace(/^https?:\/\//, '')}/certificados/${this.certificate().code}`);
+  // O QR code leva o endereço completo; impresso ao lado, sem o https://.
+  readonly link = computed(() => `${this.origin}/certificados/${this.certificate().code}`);
+  readonly validationUrl = computed(() => this.link().replace(/^https?:\/\//, ''));
+  // Sem o resumo (API anterior a ele), a linha não aparece.
+  readonly hash = computed(() => hashGroups(this.certificate().data_hash ?? ''));
 }

@@ -7,6 +7,7 @@ import { Avatar } from '@shared/domain/ui/avatar';
 import { EmptyState } from '@shared/ui/empty-state';
 import { ErrorState } from '@shared/ui/error-state';
 import { Skeleton } from '@shared/ui/skeleton';
+import { searchable as normalize } from '@shared/utils/search';
 
 // Nome que representa a conta: o do produtor ou, sem ele, o do trabalhador.
 export function accountName(user: AdminUser): string {
@@ -14,9 +15,6 @@ export function accountName(user: AdminUser): string {
 }
 
 // Sem acento e em minúsculas, para a busca.
-function normalize(text: string): string {
-  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-}
 
 // Contas do app (produtores e trabalhadores), com busca por nome, e-mail ou CPF.
 @Component({
@@ -76,7 +74,7 @@ function normalize(text: string): string {
     .who { display: grid; min-width: 0; flex: 1; }
     .who > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .badges { display: flex; flex-wrap: wrap; gap: var(--space-1); justify-content: flex-end; }
-    .badge { padding: 2px var(--space-2); border-radius: 999px; background: var(--broto-soft); font-size: 12px; font-weight: 600; }
+    .badge { padding: 2px var(--space-2); border-radius: 999px; background: var(--broto-soft); font-size: 0.75rem; font-weight: 600; }
   `
 })
 export class AdminUsersPage {

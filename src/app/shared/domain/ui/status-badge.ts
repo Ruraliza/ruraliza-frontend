@@ -12,7 +12,7 @@ import { Icon } from '../../ui/icon';
     :host {
       display: inline-flex; align-items: center; gap: var(--space-1);
       padding: 2px var(--space-3) 2px var(--space-2); border-radius: var(--radius-pill);
-      font-size: 14px; line-height: 20px; font-weight: 600; white-space: nowrap;
+      font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; white-space: nowrap;
     }
     :host(.badge--pending) { background: var(--ipe-soft); color: var(--ink); }
     :host(.badge--progress) { background: var(--info-soft); color: var(--info); }

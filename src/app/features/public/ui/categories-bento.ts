@@ -29,8 +29,8 @@ import { RevealDirective } from './reveal.directive';
   `,
   styles: `
     .cats { padding-block: var(--space-24); background: var(--bg-alt); scroll-margin-top: var(--header-offset); }
-    h2 { font: 800 clamp(34px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: -0.03em; }
-    .support { margin: var(--space-4) 0 var(--space-12); font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 48ch; text-wrap: pretty; }
+    h2 { font: 800 clamp(2.125rem, 5vw, 3.5rem)/1.02 var(--font-display); letter-spacing: -0.03em; }
+    .support { margin: var(--space-4) 0 var(--space-12); font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); max-width: 48ch; text-wrap: pretty; }
 
     .bento { display: grid; gap: var(--space-3); grid-template-columns: repeat(2, 1fr); grid-auto-rows: 180px; }
     .tile { position: relative; overflow: hidden; border-radius: var(--radius-lg); color: var(--on-dark); }
@@ -43,9 +43,9 @@ import { RevealDirective } from './reveal.directive';
       padding: var(--space-12) var(--space-4) var(--space-4);
       background: linear-gradient(0deg, rgba(0,40,20,.88) 0%, rgba(0,40,20,.6) 55%, transparent 100%);
     }
-    h3 { font: 700 20px/1.15 var(--font-display); }
-    .tile--0 h3 { font-size: clamp(26px, 3vw, 36px); }
-    .caption p { font-size: 14px; line-height: 20px; }
+    h3 { font: 700 1.25rem/1.15 var(--font-display); }
+    .tile--0 h3 { font-size: clamp(1.625rem, 3vw, 2.25rem); }
+    .caption p { font-size: 0.875rem; line-height: 1.25rem; }
 
     @media (min-width: 900px) {
       .bento { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 230px; }

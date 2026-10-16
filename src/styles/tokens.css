@@ -1,5 +1,6 @@
 /* RURALIZA design tokens (landing v2). Único lugar com valores de cor.
-   Tema claro, fundo branco. Sem modo escuro por enquanto. */
+   Tema claro (padrão: o app é usado ao ar livre), tema escuro, alto contraste e letras maiores,
+   aplicados no <html> pelo PreferencesService (core/preferences) a partir das preferências da conta. */
 :root {
   color-scheme: light;
 
@@ -14,12 +15,13 @@
   /* --- Marca --- */
   --green-900:#00552A;    /* primária: botões, links, header sólido */
   --green-700:#3A7D24;    /* hover, ícones, destaques secundários */
-  --lime-500:#9DC41F;     /* energia: chips ativos, marcadores, blocos (texto sobre ele: --ink) */
+  --lime-500:#9DC41F;     /* energia: chips ativos, marcadores, blocos (texto sobre ele: --on-accent) */
   --lime-100:#EEF6D3;
-  --orange-500:#EE8A14;   /* acento: CTA secundário, destaques (texto sobre ele: --ink) */
+  --orange-500:#EE8A14;   /* acento: CTA secundário, destaques (texto sobre ele: --on-accent) */
   --orange-700:#B86505;   /* laranja para TEXTO (AA em branco) */
   --orange-100:#FDEBD3;
   --on-dark:#FFFFFF;      /* só sobre green-900, green-700 ou foto com overlay */
+  --on-accent:#0F1F14;    /* texto sobre lime-500 ou orange-500: escuro em qualquer tema */
   --on-dark-line:rgba(255,255,255,.62);
 
   /* --- Semânticas --- */
@@ -31,7 +33,7 @@
   /* --- Nomes usados pelas áreas logadas (apontam para a paleta nova) --- */
   --surface:var(--bg); --surface-raised:#FFFFFF; --surface-sunken:var(--bg-alt);
   --mata:var(--green-900); --mata-deep:var(--green-700); --on-mata:var(--on-dark);
-  --broto:var(--lime-500); --broto-soft:var(--lime-100); --on-broto:var(--ink);
+  --broto:var(--lime-500); --broto-soft:var(--lime-100); --on-broto:var(--on-accent);
   --ipe:var(--orange-500); --ipe-soft:var(--orange-100);
   --scrim:rgba(0,40,20,.5);
 
@@ -52,6 +54,53 @@
   /* Área do relógio/Dynamic Island no app instalado (status bar translúcida); 0 no navegador. */
   --safe-top:env(safe-area-inset-top, 0px);
   --header-offset:calc(var(--header-height) + var(--safe-top)); /* altura real do header fixo */
+  --topbar-height:56px;   /* barra de cima das áreas logadas no celular (marca, avisos e perfil) */
   --bottom-nav-height:72px;
   --sidebar-width:248px;
 }
+
+/* --- Tema escuro ---
+   Verde quase preto (nunca preto puro). Nas ações, o verde da marca vira verde-claro com texto escuro,
+   para ler bem no escuro; as superfícies da marca (rodapé, faixas verdes) continuam no green-900.
+   Contraste conferido: texto ≥ 4,5:1 e bordas de campo ≥ 3:1 sobre o fundo e os cartões. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:#0F1712; --bg-alt:#131D16;
+  --ink:#E6EEE7; --ink-muted:#A6B5A9;
+  --line:#2B382F; --line-strong:#6E7F72;
+  --lime-100:#243219; --orange-700:#F0A24A; --orange-100:#3A2A12;
+  --success:#6FCF97; --success-soft:#173A27;
+  --warning:#E0B252;
+  --danger:#FF8A80; --danger-soft:#3D1A18;
+  --info:#8AB4F8; --info-soft:#17263D;
+  --surface-raised:#17221A; --surface-sunken:#0C130F;
+  --mata:#7CC98F; --mata-deep:#95D6A5; --on-mata:#0B1F10;
+  --scrim:rgba(0,0,0,.6);
+  --shadow-card:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3);
+  --shadow-float:0 18px 40px rgba(0,0,0,.5);
+  --focus-ring:0 0 0 2px var(--bg),0 0 0 5px var(--mata);
+}
+
+/* --- Alto contraste (modo de acessibilidade: sol forte, vista cansada) ---
+   Texto secundário quase preto, bordas escuras e sem sombras suaves: o contorno é que separa. */
+:root[data-contrast="high"] {
+  --ink:#04120A; --ink-muted:#26332B;
+  --line:#8C9A90; --line-strong:#2E3B33;
+  --bg-alt:#EEF4E4; --surface-sunken:#E6EEDA; --lime-100:#D7EBA6;
+  --mata-deep:#003D1E; --orange-700:#8F4C00;
+  --success:#1D5E38; --warning:#6B4500; --danger:#8E1B15; --info:#1A4A85;
+  --shadow-card:none;
+  --focus-ring:0 0 0 3px #FFFFFF,0 0 0 6px var(--ink);
+}
+:root[data-theme="dark"][data-contrast="high"] {
+  --bg:#060A07; --bg-alt:#0B110D; --surface-raised:#0E1611; --surface-sunken:#030504;
+  --ink:#FFFFFF; --ink-muted:#DCE6DE;
+  --line:#5C6E61; --line-strong:#C3D0C6;
+  --lime-100:#2A3A1C;
+  --mata:#A6E3B4; --mata-deep:#C0EDCA;
+  --orange-700:#F7B76A; --success:#8FE0B0; --warning:#F0C978; --danger:#FFA8A0; --info:#A9C8FA;
+  --focus-ring:0 0 0 2px #000000,0 0 0 5px #FFFFFF;
+}
+
+/* --- Letras maiores: todos os textos crescem 25% (os tamanhos de texto são em rem). --- */
+:root[data-text="large"] { font-size: 125%; }

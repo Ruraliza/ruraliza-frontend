@@ -14,6 +14,7 @@ import { Icon } from '@shared/ui/icon';
 import { SegmentOption, SegmentedControl } from '@shared/ui/segmented-control';
 import { ServiceCard } from '@shared/domain/ui/service-card';
 import { Skeleton } from '@shared/ui/skeleton';
+import { searchable } from '@shared/utils/search';
 
 type Tab = 'abertos' | 'andamento' | 'concluidos' | 'cancelados';
 type Sort = 'recentes' | 'candidatos' | 'valor' | 'prazo';
@@ -39,9 +40,6 @@ const SORTS: { value: Sort; label: string }[] = [
 ];
 const SEARCH_DELAY_MS = 300;
 
-function searchable(value: string): string {
-  return value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-}
 
 // Serviços do produtor com abas por situação (com contagem) e filtros.
 // Carrega todos os serviços dele uma vez e filtra na tela; a URL guarda aba e filtros.

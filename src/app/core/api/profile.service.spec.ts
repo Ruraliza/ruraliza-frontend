@@ -19,14 +19,14 @@ describe('ProfileService', () => {
   afterEach(() => http.verify());
 
   it('creates a farmer account and gets its session', () => {
-    const input = { name: 'Ana', email: 'ana@exemplo.com', phone: '24999990000', cpf: '52998224725', password: 'senha-forte-1' };
+    const input = { name: 'Ana', email: 'ana@exemplo.com', phone: '24999990000', cpf: '52998224725', password: 'senha-forte-1', accept_terms: true };
     const user = { account_id: 1, role: 'farmer' as const, id: 1, profiles: { farmer: 1, worker: null } };
     service.createFarmer(input).subscribe((res) => expect([res.farmer.id, res.user]).toEqual([1, user]));
 
     const req = http.expectOne(farmers);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(input);
-    const { password: _password, ...profile } = input;
+    const { password: _password, accept_terms: _accepted, ...profile } = input;
     req.flush({ message: 'ok', farmer: { ...profile, id: 1, farms: [], insertion_date: '2026-01-01' }, user });
   });
 

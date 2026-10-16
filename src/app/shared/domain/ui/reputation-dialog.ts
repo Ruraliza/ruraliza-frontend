@@ -79,13 +79,13 @@ type Page = WorkerReviewsPage | FarmReviewsPage;
     dialog::backdrop { background: var(--scrim); }
     dialog[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); }
     .head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-4) var(--space-6); border-bottom: 1px solid var(--line); }
-    h2 { margin: 0; font-size: 20px; line-height: 26px; overflow-wrap: anywhere; }
+    h2 { margin: 0; font-size: 1.25rem; line-height: 1.625rem; overflow-wrap: anywhere; }
     .body { display: grid; gap: var(--space-6); align-content: start; padding: var(--space-6); overflow-y: auto; }
     .summary { display: grid; gap: var(--space-1); }
     .summary p { margin: 0; }
     .bars { display: grid; gap: var(--space-2); margin: 0; }
     .bars > div { display: grid; grid-template-columns: minmax(120px, 40%) 1fr; align-items: center; gap: var(--space-3); }
-    dt { font-size: 14px; color: var(--ink-muted); }
+    dt { font-size: 0.875rem; color: var(--ink-muted); }
     dd { display: flex; align-items: center; gap: var(--space-2); margin: 0; }
     .track { flex: 1; height: 8px; border-radius: var(--radius-pill); background: var(--surface-sunken); overflow: hidden; }
     .fill { display: block; height: 100%; border-radius: inherit; background: var(--orange-500); }

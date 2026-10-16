@@ -46,11 +46,11 @@ import { whatsappLink } from '../utils/chat';
     .wa-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface-raised); color: var(--mata); }
     .wa-text { display: grid; gap: var(--space-1); min-width: 0; }
     h2, p { margin: 0; }
-    .phone { font: 700 22px/28px var(--font-display); font-variant-numeric: tabular-nums; }
+    .phone { font: 700 1.375rem/1.75rem var(--font-display); font-variant-numeric: tabular-nums; }
     .consent { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-1); }
     .consent > span {
       display: inline-flex; align-items: center; gap: var(--space-2); padding: 2px var(--space-3); border-radius: var(--radius-pill);
-      border: 1px solid var(--line-strong); background: var(--surface-raised); color: var(--ink-muted); font-size: 14px; font-weight: 600;
+      border: 1px solid var(--line-strong); background: var(--surface-raised); color: var(--ink-muted); font-size: 0.875rem; font-weight: 600;
     }
     .consent > span.on { border-color: var(--mata); color: var(--ink); }
     .dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--line-strong); }

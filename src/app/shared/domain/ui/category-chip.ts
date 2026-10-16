@@ -15,7 +15,7 @@ import { Component, input } from '@angular/core';
       display: inline-flex; align-items: center; min-height: 32px;
       padding: 4px var(--space-3); border-radius: var(--radius-pill);
       background: var(--broto-soft); color: var(--ink); border: 1px solid transparent;
-      font-size: 14px; line-height: 20px; font-weight: 600; white-space: nowrap;
+      font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; white-space: nowrap;
     }
     :host(button) { min-height: 44px; padding-inline: var(--space-4); border-color: var(--line); background: var(--surface-raised); }
     :host(button:hover) { background: var(--surface-sunken); }

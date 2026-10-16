@@ -53,8 +53,8 @@ const SEARCH_DELAY_MS = 350;
           @if (inProgress().length) {
             <section class="stack" aria-labelledby="em-andamento">
               <h2 id="em-andamento" class="t-h3">Continue estudando</h2>
-              <ul class="grid-cards" role="list">
-                @for (t of inProgress(); track t.id) { <li><app-track-card [track]="t" /></li> }
+              <ul class="resume-list" role="list">
+                @for (t of inProgress(); track t.id) { <li><app-track-card [track]="t" variant="resume" /></li> }
               </ul>
             </section>
           }
@@ -87,6 +87,7 @@ const SEARCH_DELAY_MS = 350;
     .chips { flex-wrap: nowrap; overflow-x: auto; padding: var(--space-1) 0 var(--space-2); scrollbar-width: thin; }
     @media (min-width: 768px) { .chips { flex-wrap: wrap; overflow-x: visible; } }
     .grid-cards > li { display: grid; }
+    .resume-list { display: grid; gap: var(--space-4); max-width: 880px; margin: 0; padding: 0; list-style: none; }
   `
 })
 export class TracksPage {

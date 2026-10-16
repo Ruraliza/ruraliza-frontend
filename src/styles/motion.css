@@ -13,3 +13,8 @@
   box-decoration-break: clone;
   padding-inline: .06em;
 }
+
+/* Tema escuro: o marca-texto vira um sublinhado grosso, para o texto claro não ficar sobre o lima. */
+:root[data-theme="dark"] .marker {
+  background: linear-gradient(transparent 84%, var(--lime-500) 84%, var(--lime-500) 96%, transparent 96%);
+}

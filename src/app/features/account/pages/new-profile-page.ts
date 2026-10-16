@@ -10,6 +10,7 @@ import { ToastService } from '@core/toast/toast.service';
 import { ProfileCreateInput } from '@core/models/auth.model';
 import { cpfValidator } from '@shared/utils/cpf';
 import { formatCpf, formatPhone } from '@shared/utils/format';
+import { noBlockedTerms } from '@shared/utils/moderation';
 import { ACCEPTED_RESUME, RESUME_MESSAGES, resumeValidator } from '@shared/domain/utils/resume';
 import { Button } from '@shared/ui/button';
 import { FormField } from '@shared/ui/form-field';
@@ -172,8 +173,8 @@ export class NewProfilePage implements OnInit {
     name: ['', Validators.required],
     phone: ['', [Validators.required, Validators.minLength(10)]],
     cpf: ['', [Validators.required, cpfValidator]],
-    experience: [''],
-    certificates: [''],
+    experience: ['', noBlockedTerms],
+    certificates: ['', noBlockedTerms],
     resume: this.fb.control<File | null>(null, resumeValidator) // só trabalhador; enviado depois do cadastro
   });
 

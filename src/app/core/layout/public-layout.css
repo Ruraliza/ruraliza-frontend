@@ -34,7 +34,7 @@ main.under-header { padding-top: var(--header-offset); }
   .nav a:hover { background: rgba(0,40,20,.06); }
   .header.is-transparent .nav a:hover { background: rgba(255,255,255,.14); }
   .actions { display: flex; align-items: center; gap: var(--space-2); }
-  .signin { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--space-3); color: var(--green-900); font-weight: 600; text-decoration: none; }
+  .signin { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--space-3); color: var(--mata); font-weight: 600; text-decoration: none; }
 }
 
 /* Menu mobile em tela cheia */
@@ -44,7 +44,7 @@ main.under-header { padding-top: var(--header-offset); }
   padding: var(--space-6) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom));
   background: var(--bg); color: var(--ink);
 }
-.menu-mobile > a { display: flex; align-items: center; min-height: 56px; font: 700 26px/1.2 var(--font-display); color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+.menu-mobile > a { display: flex; align-items: center; min-height: 56px; font: 700 1.625rem/1.2 var(--font-display); color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
 .menu-actions { display: grid; gap: var(--space-3); margin-top: auto; padding-top: var(--space-8); }
 
 /* --- Footer --- */
@@ -54,10 +54,8 @@ main.under-header { padding-top: var(--header-offset); }
 .footer-brand app-logo { color: var(--on-dark); }
 .footer-links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
 .footer-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--on-dark); font-weight: 600; text-underline-offset: 4px; }
-.test-note { display: flex; gap: var(--space-2); align-items: flex-start; padding-top: var(--space-6); border-top: 1px solid rgba(255,255,255,.2); font-size: 14px; line-height: 20px; }
 @media (min-width: 900px) {
   .footer-grid { grid-template-columns: 1fr 2fr; }
-  .test-note { grid-column: 1 / -1; }
 }
 
 .footer-install { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }

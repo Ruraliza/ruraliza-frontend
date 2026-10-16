@@ -26,7 +26,7 @@ import { FARM_CRITERIA, WORKER_CRITERIA } from '../utils/review-criteria';
     :host { display: grid; gap: var(--space-3); }
     dl { display: grid; gap: var(--space-1); margin: 0; }
     dl > div { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
-    dt { color: var(--ink-muted); font-size: 14px; }
+    dt { color: var(--ink-muted); font-size: 0.875rem; }
     dd { display: flex; gap: 1px; margin: 0; }
     svg { width: 16px; height: 16px; fill: transparent; stroke: var(--line-strong); stroke-width: 1.5; stroke-linejoin: round; }
     svg.on { fill: var(--orange-500); stroke: var(--orange-700); }

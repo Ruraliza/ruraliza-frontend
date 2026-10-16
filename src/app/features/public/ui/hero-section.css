@@ -18,12 +18,12 @@
 
 .hero-inner { display: grid; gap: var(--space-6); }
 .title {
-  font: 800 clamp(40px, 7.2vw, 88px)/0.98 var(--font-display);
+  font: 800 clamp(2.5rem, 7.2vw, 5.5rem)/0.98 var(--font-display);
   letter-spacing: -0.03em; max-width: 13ch; text-wrap: balance;
 }
 /* Sobre foto, o marca-texto cobre a palavra inteira (texto ink sobre lime). */
-.title .marker { background: var(--lime-500); color: var(--ink); padding: 0 .1em; border-radius: .08em; }
-.lead { font-size: 18px; line-height: 28px; max-width: 46ch; color: var(--on-dark); text-wrap: pretty; }
+.title .marker { background: var(--lime-500); color: var(--on-accent); padding: 0 .1em; border-radius: .08em; }
+.lead { font-size: 1.125rem; line-height: 1.75rem; max-width: 46ch; color: var(--on-dark); text-wrap: pretty; }
 .ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); }
 
 /* Palavra rotativa: todas ocupam a mesma célula; só a ativa aparece. */
@@ -42,11 +42,11 @@
   }
 }
 .job-top { display: flex; justify-content: space-between; align-items: center; }
-.new { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-size: 14px; font-weight: 600; }
-.job-name { font: 700 22px/28px var(--font-display); margin-top: var(--space-1); }
+.new { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--orange-500); color: var(--on-accent); font-size: 0.875rem; font-weight: 600; }
+.job-name { font: 700 1.375rem/1.75rem var(--font-display); margin-top: var(--space-1); }
 .job-meta { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); }
 .job-bottom { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); }
-.job-price { font: 700 22px/28px var(--font-display); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.job-price { font: 700 1.375rem/1.75rem var(--font-display); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* Momento de abertura: a foto assenta, o título sobe palavra por palavra, o card flutua. */
 @media (prefers-reduced-motion: no-preference) {

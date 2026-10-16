@@ -3,10 +3,13 @@ import { WorkerLayout } from './worker-layout';
 import { WorkerDashboardPage } from './pages/worker-dashboard-page';
 import { JobsPage } from './pages/jobs-page';
 import { JobDetailPage } from './pages/job-detail-page';
+import { RecommendedJobsPage } from './pages/recommended-jobs-page';
 import { WorkerApplicationsPage } from './pages/worker-applications-page';
 import { WorkerProfilePage } from './pages/worker-profile-page';
 import { ChatsPage } from './pages/chats-page';
 import { ChatPage } from './pages/chat-page';
+import { NotificationsPage } from './pages/notifications-page';
+import { HelpPage } from './pages/help-page';
 import { TracksPage } from './pages/tracks-page';
 import { TrackDetailPage } from './pages/track-detail-page';
 import { LessonPage } from './pages/lesson-page';
@@ -21,6 +24,7 @@ export const WORKER_ROUTES: Routes = [
     children: [
       { path: '', component: WorkerDashboardPage, title: 'Início · Ruraliza' },
       { path: 'vagas', component: JobsPage, title: 'Vagas · Ruraliza' },
+      { path: 'vagas/para-voce', component: RecommendedJobsPage, title: 'Vagas para você · Ruraliza' },
       { path: 'vagas/:id', component: JobDetailPage, title: 'Vaga · Ruraliza' },
       { path: 'candidaturas', component: WorkerApplicationsPage, title: 'Candidaturas · Ruraliza' },
       { path: 'conversas', component: ChatsPage, title: 'Conversas · Ruraliza' },
@@ -32,6 +36,8 @@ export const WORKER_ROUTES: Routes = [
       { path: 'trilhas/:id/aulas/:lessonId', component: LessonPage, title: 'Aula · Ruraliza' },
       { path: 'certificados', component: CertificatesPage, title: 'Certificados · Ruraliza' },
       { path: 'certificados/:code', component: CertificatePage, title: 'Certificado · Ruraliza' },
+      { path: 'notificacoes', component: NotificationsPage, title: 'Notificações · Ruraliza' },
+      { path: 'ajuda', component: HelpPage, title: 'Central de ajuda · Ruraliza' },
       { path: 'perfil', component: WorkerProfilePage, title: 'Perfil · Ruraliza' }
     ]
   }

@@ -9,7 +9,8 @@ const DEFAULT_MESSAGES: Record<string, string> = {
   min: 'O valor precisa ser maior que zero.',
   positive: 'Digite um número maior que zero.',
   minlength: 'Texto muito curto.',
-  phone: 'Digite o telefone com DDD.'
+  phone: 'Digite o telefone com DDD.',
+  blocked: 'Há palavras não permitidas aqui. Reescreva sem palavrões nem ofensas.'
 };
 
 // Rótulo sempre visível acima do campo, dica e erro ligados via aria-describedby.

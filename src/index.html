@@ -15,6 +15,21 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Ruraliza">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script>
+    // Tema e modo de leitura salvos neste aparelho (PreferencesService), aplicados antes do app carregar:
+    // quem usa o tema escuro não vê a tela piscar em branco.
+    (function () {
+      try {
+        var p = JSON.parse(localStorage.getItem('ruraliza.preferences') || 'null');
+        if (!p) return;
+        var root = document.documentElement;
+        var dark = p.theme === 'dark' || (p.theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        root.setAttribute('data-theme', dark ? 'dark' : 'light');
+        if (p.text_size === 'large') root.setAttribute('data-text', 'large');
+        if (p.high_contrast) root.setAttribute('data-contrast', 'high');
+      } catch (e) {}
+    })();
+  </script>
   <style>
     /* Símbolo enquanto o app carrega (sinal fraco no campo). O Angular troca o conteúdo de <app-root> ao iniciar;
        só aparece depois de 0,4 s, para não piscar em conexão boa. */

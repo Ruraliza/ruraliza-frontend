@@ -37,6 +37,25 @@ import { Icon } from '@shared/ui/icon';
               </div>
             </li>
           }
+          @if (session.can('moderation:manage')) {
+            <li class="card stack-sm">
+              <h2 class="t-h3">Moderação</h2>
+              <p class="muted">Analise as denúncias de vagas e perfis e confira os documentos de quem pediu o selo de verificado.</p>
+              <div><a appButton variant="secondary" routerLink="/sistema/moderacao">Abrir moderação</a></div>
+            </li>
+          }
+          @if (session.can('content:manage')) {
+            <li class="card stack-sm">
+              <h2 class="t-h3">Central de ajuda</h2>
+              <p class="muted">Crie, edite, ordene e despublique as perguntas frequentes que aparecem para todos em /ajuda.</p>
+              <div><a appButton variant="secondary" routerLink="/sistema/ajuda">Editar perguntas</a></div>
+            </li>
+            <li class="card stack-sm">
+              <h2 class="t-h3">Patrocínios</h2>
+              <p class="muted">Cadastre lojas e marcas do campo no cartão "Patrocinado" e acompanhe quantas vezes cada uma apareceu e foi aberta.</p>
+              <div><a appButton variant="secondary" routerLink="/sistema/patrocinios">Ver patrocínios</a></div>
+            </li>
+          }
           @if (session.canAny(['tracks:manage', 'tracks:oversee'])) {
             <li class="card stack-sm">
               <h2 class="t-h3">Trilhas de estudo</h2>

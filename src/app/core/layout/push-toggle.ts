@@ -27,7 +27,7 @@ import { Icon } from '@shared/ui/icon';
   `,
   styles: `
     :host { display: contents; }
-    .blocked { flex-basis: 100%; display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); font-size: 14px; }
+    .blocked { flex-basis: 100%; display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); font-size: 0.875rem; }
   `
 })
 export class PushToggle {

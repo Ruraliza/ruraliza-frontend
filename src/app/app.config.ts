@@ -6,6 +6,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { routes } from './app.routes';
 import { authInterceptor } from '@core/http/auth.interceptor';
 import { errorInterceptor } from '@core/http/error.interceptor';
+import { offlineCacheInterceptor } from '@core/offline/offline-cache.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,7 +18,8 @@ export const appConfig: ApplicationConfig = {
     ),
     provideClientHydration(withEventReplay(), withIncrementalHydration()),
     // errorInterceptor por fora: o authInterceptor ainda vê o HttpErrorResponse (e o cabeçalho do 401 de sessão).
-    provideHttpClient(withFetch(), withInterceptors([errorInterceptor, authInterceptor])),
+    // offlineCacheInterceptor por dentro: sem rede, devolve a cópia salva antes de o erro virar aviso.
+    provideHttpClient(withFetch(), withInterceptors([errorInterceptor, authInterceptor, offlineCacheInterceptor])),
     // PWA: cache do app (ngsw-config.json), aviso de versão nova e push. Só no build de produção.
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

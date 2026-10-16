@@ -11,6 +11,9 @@ import { SystemProfilePage } from './pages/system-profile-page';
 import { TracksAdminPage } from './pages/tracks-admin-page';
 import { TrackNewPage } from './pages/track-new-page';
 import { TrackEditorPage } from './pages/track-editor-page';
+import { HelpAdminPage } from './pages/help-admin-page';
+import { ModerationPage } from './pages/moderation-page';
+import { SponsorsAdminPage } from './pages/sponsors-admin-page';
 
 // Trilhas: os tutores (as próprias) e o administrador (todas).
 const TRACKS = ['tracks:manage', 'tracks:oversee'] as const;
@@ -30,6 +33,9 @@ export const SYSTEM_ROUTES: Routes = [
       { path: 'trilhas', component: TracksAdminPage, canActivate: [requireSystemPermission(TRACKS)], title: 'Trilhas · Ruraliza' },
       { path: 'trilhas/nova', component: TrackNewPage, canActivate: [requireSystemPermission(TRACKS)], title: 'Nova trilha · Ruraliza' },
       { path: 'trilhas/:id', component: TrackEditorPage, canActivate: [requireSystemPermission(TRACKS)], title: 'Trilha · Ruraliza' },
+      { path: 'moderacao', component: ModerationPage, canActivate: [requireSystemPermission('moderation:manage')], title: 'Moderação · Ruraliza' },
+      { path: 'patrocinios', component: SponsorsAdminPage, canActivate: [requireSystemPermission('content:manage')], title: 'Patrocínios · Ruraliza' },
+      { path: 'ajuda', component: HelpAdminPage, canActivate: [requireSystemPermission('content:manage')], title: 'Central de ajuda · Ruraliza' },
       { path: 'perfil', component: SystemProfilePage, title: 'Perfil · Ruraliza' }
     ]
   }

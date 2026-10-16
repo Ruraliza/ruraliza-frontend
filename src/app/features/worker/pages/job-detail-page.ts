@@ -21,13 +21,15 @@ import { Icon } from '@shared/ui/icon';
 import { PhotoStrip } from '@shared/ui/photo-strip';
 import { Skeleton } from '@shared/ui/skeleton';
 import { StatusBadge } from '@shared/domain/ui/status-badge';
+import { VerifiedBadge } from '@shared/domain/ui/verified-badge';
 import { RatingBadge } from '@shared/domain/ui/rating-badge';
+import { ReportDialog, ReportTarget } from '@shared/domain/ui/report-dialog';
 import { ReputationDialog, ReputationTarget } from '@shared/domain/ui/reputation-dialog';
 import { ServiceReviews } from '@shared/domain/ui/service-reviews';
 
 @Component({
   selector: 'app-job-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, RatingBadge, ReputationDialog, ServiceReviews, Skeleton, StatusBadge],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, RatingBadge, ReportDialog, ReputationDialog, ServiceReviews, Skeleton, StatusBadge, VerifiedBadge],
   template: `
     <div class="container page">
       <a class="back-link" routerLink="/trabalhador/vagas" (click)="goBack($event)">← Vagas</a>
@@ -68,6 +70,9 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
                       @if (rep.count > 0) { <button type="button" class="link" (click)="showFarmReviews()">Ver avaliações</button> }
                     </dd>
                   </div>
+                }
+                @if (j.farm.farmer_verified) {
+                  <div><dt>Produtor</dt><dd><app-verified-badge label="Identidade verificada" /></dd></div>
                 }
                 <div><dt>Duração</dt><dd>{{ hours() }}</dd></div>
                 <div><dt>Pagamento</dt><dd class="price">{{ price() }}</dd></div>
@@ -132,12 +137,19 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
             @if (j.status === 'Completed' && j.worker_id === workerId) {
               <app-service-reviews role="worker" [serviceId]="j.id" [workerId]="workerId" [refresh]="tick()" />
             }
+
+            @if (!ownService()) {
+              <button type="button" class="report t-body-sm" (click)="reporting.set({ type: 'service', id: j.id, name: j.name })">
+                <app-icon name="flag" [size]="16" />Denunciar vaga
+              </button>
+            }
           }
         }
       }
     </div>
 
     <app-reputation-dialog [target]="farmReviews()" (closed)="farmReviews.set(null)" />
+    <app-report-dialog role="worker" [target]="reporting()" (closed)="reporting.set(null)" />
 
     <app-confirm-dialog
       [open]="confirmingApply()"
@@ -164,7 +176,7 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
   `,
   styles: `
     .tags { margin-bottom: var(--space-2); }
-    .price { font: 700 24px/30px var(--font-display); font-variant-numeric: tabular-nums; }
+    .price { font: 700 1.5rem/1.875rem var(--font-display); font-variant-numeric: tabular-nums; }
     .with-icon { display: flex; align-items: center; gap: var(--space-2); }
     .description { display: grid; gap: var(--space-2); padding-bottom: var(--space-4); border-bottom: 1px solid var(--line); }
     .description p { white-space: pre-line; max-width: 68ch; }
@@ -174,7 +186,9 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
     .apply > div { display: grid; gap: var(--space-1); flex: 1; min-width: 220px; }
     .rating { flex-wrap: wrap; }
     .link { padding: 0; border: 0; background: none; color: var(--mata); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; cursor: pointer; }
-    .unread { min-width: 22px; height: 22px; padding: 0 6px; border-radius: var(--radius-pill); background: var(--orange-500); color: var(--ink); font-size: 13px; font-weight: 800; line-height: 22px; }
+    .report { justify-self: start; display: inline-flex; align-items: center; gap: var(--space-1); min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink-muted); font-weight: 600; }
+    .report:hover { color: var(--danger); }
+    .unread { min-width: 1.375rem; height: 1.375rem; padding: 0 0.375rem; border-radius: var(--radius-pill); background: var(--orange-500); color: var(--on-accent); font-size: 0.8125rem; font-weight: 800; line-height: 1.375rem; }
   `
 })
 export class JobDetailPage implements OnInit {
@@ -261,6 +275,8 @@ export class JobDetailPage implements OnInit {
 
   // Avaliações da fazenda abertas no diálogo.
   readonly farmReviews = signal<ReputationTarget | null>(null);
+  // Vaga sendo denunciada.
+  readonly reporting = signal<ReportTarget | null>(null);
   // Muda a cada aviso em tempo real: o painel de avaliações recarrega junto.
   readonly tick = signal(0);
 

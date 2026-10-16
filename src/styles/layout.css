@@ -27,7 +27,7 @@
 .form-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); padding-top: var(--space-2); }
 
 .details { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); }
-.details dt { font-size: 14px; line-height: 20px; font-weight: 600; color: var(--ink-muted); }
-.details dd { font-size: 16px; line-height: 24px; overflow-wrap: anywhere; }
+.details dt { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; color: var(--ink-muted); }
+.details dd { font-size: 1rem; line-height: 1.5rem; overflow-wrap: anywhere; }
 
 .back-link { display: inline-flex; align-items: center; gap: var(--space-1); font-weight: 600; text-decoration: none; min-height: 44px; }

@@ -15,11 +15,7 @@
 .video { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius-lg); overflow: hidden; background: #000; }
 .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
-.content { display: grid; gap: var(--space-4); font-size: 17px; line-height: 28px; overflow-wrap: anywhere; }
-.content :is(h2, h3) { font-family: var(--font-display); margin-top: var(--space-2); }
-.content h2 { font-size: 22px; line-height: 28px; }
-.content h3 { font-size: 19px; line-height: 26px; }
-.content :is(ul, ol) { display: grid; gap: var(--space-2); padding-left: var(--space-6); }
+/* O texto da aula usa .prose (src/styles/base.css): chega por innerHTML, fora do encapsulamento. */
 
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--line); }
 .done { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--success); margin-right: auto; }
@@ -54,8 +50,8 @@
   .lesson { margin-inline: auto; width: 100%; }
   .outline-toggle, .drawer { display: none !important; }
   .side {
-    display: block; position: sticky; top: calc(var(--banner-height, 0px) + var(--safe-top, 0px));
-    height: calc(100dvh - var(--banner-height, 0px) - var(--safe-top, 0px)); overflow-y: auto;
+    display: block; position: sticky; top: var(--shell-top, 0px);
+    height: calc(100dvh - var(--shell-top, 0px)); overflow-y: auto;
     padding: var(--space-6) var(--space-4); border-left: 1px solid var(--line); background: var(--surface-raised);
   }
 }

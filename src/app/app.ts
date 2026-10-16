@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { InstallPromptService } from '@core/pwa/install-prompt.service';
 import { PushService } from '@core/pwa/push.service';
+import { PreferencesService } from '@core/preferences/preferences.service';
 import { PwaBanners } from '@core/layout/pwa-banners';
 import { ToastContainer } from '@core/layout/toast-container';
 
@@ -13,9 +14,11 @@ import { ToastContainer } from '@core/layout/toast-container';
 })
 export class App {
   constructor() {
-    // Desde a abertura: o navegador oferece a instalação uma vez só (cedo), e a inscrição
-    // de push é reenviada ao backend assim que houver conta aberta.
+    // Desde a abertura: o navegador oferece a instalação uma vez só (cedo), a inscrição
+    // de push é reenviada ao backend assim que houver conta aberta, e o tema e o modo de
+    // leitura (letras maiores, alto contraste) valem em todas as telas.
     inject(InstallPromptService);
     inject(PushService);
+    inject(PreferencesService);
   }
 }

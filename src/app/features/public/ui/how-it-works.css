@@ -1,21 +1,21 @@
 .how { padding-block: var(--space-24); background: var(--bg); scroll-margin-top: var(--header-offset); }
 .head { display: grid; gap: var(--space-4); justify-items: start; margin-bottom: var(--space-12); }
-h2 { font: 800 clamp(34px, 5vw, 56px)/1.02 var(--font-display); letter-spacing: -0.03em; }
-.support { font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 48ch; text-wrap: pretty; }
+h2 { font: 800 clamp(2.125rem, 5vw, 3.5rem)/1.02 var(--font-display); letter-spacing: -0.03em; }
+.support { font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); max-width: 48ch; text-wrap: pretty; }
 
 .toggle { display: inline-flex; gap: var(--space-1); padding: var(--space-1); border-radius: var(--radius-pill); background: var(--bg-alt); border: 1px solid var(--line); }
 .toggle button {
   min-height: 48px; padding: 0 var(--space-6); border: 0; border-radius: var(--radius-pill);
-  background: transparent; color: var(--ink-muted); font: 600 16px/1 var(--font-sans);
+  background: transparent; color: var(--ink-muted); font: 600 1rem/1 var(--font-sans);
 }
-.toggle button.on { background: var(--lime-500); color: var(--ink); }
+.toggle button.on { background: var(--lime-500); color: var(--on-accent); }
 
 .num {
   display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
-  background: var(--lime-100); color: var(--ink); font: 700 18px/1 var(--font-display);
+  background: var(--lime-100); color: var(--ink); font: 700 1.125rem/1 var(--font-display);
 }
-h3 { font: 700 26px/1.15 var(--font-display); letter-spacing: -0.01em; }
-.step p, .slide-copy p { font-size: 18px; line-height: 28px; color: var(--ink-muted); max-width: 40ch; }
+h3 { font: 700 1.625rem/1.15 var(--font-display); letter-spacing: -0.01em; }
+.step p, .slide-copy p { font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); max-width: 40ch; }
 
 /* --- Desktop --- */
 .sticky-layout { display: none; }

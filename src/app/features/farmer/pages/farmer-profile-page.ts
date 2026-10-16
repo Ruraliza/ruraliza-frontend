@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FarmerService } from '../data-access/farmer.service';
 import { ProfileService } from '@core/api/profile.service';
+import { ProfileSummaryService } from '@core/api/profile-summary.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { RoleSwitchService } from '@core/session/role-switch.service';
 import { ToastService } from '@core/toast/toast.service';
@@ -10,6 +11,7 @@ import { Farmer } from '@core/models/farmer.model';
 import { RemoteData } from '@shared/utils/remote-data';
 import { formatCpf, formatDate, formatPhone } from '@shared/utils/format';
 import { AvatarEditor } from '@shared/domain/ui/avatar-editor';
+import { HelpLinks } from '@shared/domain/ui/help-links';
 import { Button } from '@shared/ui/button';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog';
 import { ErrorState } from '@shared/ui/error-state';
@@ -17,15 +19,17 @@ import { FormField } from '@shared/ui/form-field';
 import { Icon } from '@shared/ui/icon';
 import { MaskedInput } from '@shared/ui/masked-input';
 import { PasswordChange } from '@shared/domain/ui/password-change';
+import { DisplayPreferences } from '@core/layout/display-preferences';
 import { InstallAppButton } from '@core/layout/install-app-button';
 import { PushToggle } from '@core/layout/push-toggle';
 import { RoleSwitchButton } from '@core/layout/role-switch-button';
 import { Skeleton } from '@shared/ui/skeleton';
+import { VerificationCard } from '@shared/domain/ui/verification-card';
 
 // Perfil do produtor: leitura, edição (id e cpf fixos) e remoção da conta.
 @Component({
   selector: 'app-farmer-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, ErrorState, FormField, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, RoleSwitchButton, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, HelpLinks, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, RoleSwitchButton, Skeleton, VerificationCard],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -75,6 +79,8 @@ import { Skeleton } from '@shared/ui/skeleton';
                 </dl>
               </section>
 
+              <app-verification-card role="farmer" [profileId]="profileId" [name]="f.name" />
+
               <app-password-change [submit]="changePassword" />
 
               <div class="form-actions">
@@ -86,10 +92,14 @@ import { Skeleton } from '@shared/ui/skeleton';
         }
       }
 
+      <app-display-preferences />
+
       <div class="cluster">
         <app-push-toggle />
         <app-install-app-button />
       </div>
+
+      <app-help-links helpLink="/produtor/ajuda" />
 
       <div class="cluster">
         <app-role-switch-button area="farmer" />
@@ -117,6 +127,7 @@ export class FarmerProfilePage {
   private readonly toast = inject(ToastService);
   protected readonly switcher = inject(RoleSwitchService);
   private readonly farmerId = this.currentUser.requireId('farmer');
+  readonly profileId = this.farmerId;
   readonly hasWorkerProfile = this.currentUser.hasProfile('worker');
 
   readonly farmer = new RemoteData(() => this.profiles.getFarmer(this.farmerId));
@@ -143,6 +154,12 @@ export class FarmerProfilePage {
 
   constructor() {
     this.farmer.load();
+    // Nome ou foto mudaram: o avatar da barra de cima acompanha.
+    const summary = inject(ProfileSummaryService);
+    effect(() => {
+      const profile = this.farmer.data();
+      if (profile) summary.update('farmer', this.farmerId, profile);
+    });
   }
 
   startEdit(farmer: Farmer): void {

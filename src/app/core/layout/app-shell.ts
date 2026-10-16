@@ -1,11 +1,12 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { UserRole } from '../session/current-user.service';
+import { PreferencesService } from '../preferences/preferences.service';
 import { RoleSwitchService } from '../session/role-switch.service';
 import { SystemSessionService } from '../session/system-session.service';
 import { Icon, IconName } from '@shared/ui/icon';
 import { Logo } from '@shared/ui/logo';
-import { TestEnvBanner } from './test-env-banner';
+import { ShellTopbar } from './shell-topbar';
 
 export interface NavItem {
   label: string;
@@ -15,19 +16,43 @@ export interface NavItem {
   exact?: boolean;
   primary?: boolean; // ação central: botão flutuante no mobile, primeiro item destacado na sidebar
   badge?: number; // contador (ex.: mensagens não lidas); 0 ou ausente não aparece
-  shortLabel?: string; // rótulo no menu de baixo do celular, onde cada item tem ~60px
-  sidebarOnly?: boolean; // só na sidebar (no celular outro item já leva à mesma tela)
+  shortLabel?: string; // rótulo no menu de baixo do celular, onde cada item tem ~75px
+  sidebarOnly?: boolean; // só na sidebar (no celular outro caminho já leva à mesma tela)
 }
 
-// Casca das áreas logadas: banner de teste no topo, bottom nav (< 1024px)
-// ou sidebar (>= 1024px) com os mesmos itens. No fim da sidebar: trocar de painel e sair
-// (no mobile, os dois ficam na página de perfil). Na área de sistema não há troca de painel.
+// Quem está no painel: o avatar da barra de cima do celular leva ao perfil.
+export interface ShellProfile {
+  link: string;
+  name: string; // vazio enquanto carrega: aparece o ícone de perfil
+  photoUrl: string | null;
+}
+
+// Central de notificações do painel: o sino da barra de cima do celular (na sidebar, um item com o contador).
+export interface ShellNotifications {
+  link: string;
+  unread: number;
+}
+
+// Regra do menu de baixo (Material e iOS): de 3 a 5 destinos. Com número ímpar, a ação central
+// fica no meio de verdade. O que não cabe vai para a sidebar (sidebarOnly) e ganha outro caminho
+// no celular, como o perfil, que fica no avatar da barra de cima.
+export const MAX_BOTTOM_NAV_ITEMS = 5;
+
+export function bottomNavItems(items: readonly NavItem[]): NavItem[] {
+  return items.filter((item) => !item.sidebarOnly);
+}
+
+// Casca das áreas logadas. No celular (< 1024px): barra de cima com a marca e o avatar (perfil)
+// e menu de baixo com até 5 itens. No desktop: sidebar com todos os itens e, no fim, trocar de
+// painel e sair (no celular, os dois ficam na página de perfil). Na área de sistema não há troca de painel.
+// O primeiro item é sempre o Início: a marca da barra de cima leva a ele.
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, TestEnvBanner],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Icon, Logo, ShellTopbar],
   template: `
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
-    <app-test-env-banner class="banner" />
+
+    <app-shell-topbar [homeLink]="homeLink()" [areaLabel]="areaLabel()" [profile]="profile()" [notifications]="notifications()" />
 
     <div class="shell">
       <aside class="sidebar" [attr.aria-label]="areaLabel()">
@@ -49,6 +74,9 @@ export interface NavItem {
           }
         </nav>
         <div class="account-actions">
+          <button type="button" class="switch" [attr.aria-pressed]="prefs.easyReading()" (click)="prefs.toggleEasyReading()">
+            <app-icon name="text-size" />Letras maiores e contraste
+          </button>
           @if (accountArea(); as role) {
             <button type="button" class="switch" [disabled]="switcher.switching()" (click)="switcher.switchFrom(role)">
               <app-icon name="swap" />{{ switcher.labelFor(role) }}
@@ -83,8 +111,11 @@ export class AppShell {
   readonly items = input.required<NavItem[]>();
   readonly areaLabel = input.required<string>();
   readonly area = input.required<UserRole | 'system'>();
+  readonly profile = input<ShellProfile | null>(null);
+  readonly notifications = input<ShellNotifications | null>(null);
 
   protected readonly switcher = inject(RoleSwitchService);
+  protected readonly prefs = inject(PreferencesService);
   private readonly systemSession = inject(SystemSessionService);
   private readonly router = inject(Router);
 
@@ -93,6 +124,8 @@ export class AppShell {
     const area = this.area();
     return area === 'system' ? null : area;
   });
+
+  readonly homeLink = computed(() => this.items()[0]?.link ?? '/');
 
   signOut(): void {
     if (this.area() !== 'system') {
@@ -111,7 +144,7 @@ export class AppShell {
     return value === 1 ? '1 não lida' : `${value} não lidas`;
   }
 
-  readonly bottomItems = computed(() => this.items().filter((item) => !item.sidebarOnly));
+  readonly bottomItems = computed(() => bottomNavItems(this.items()));
 
   // Na sidebar a ação principal vem primeiro.
   readonly sidebarItems = computed(() => [

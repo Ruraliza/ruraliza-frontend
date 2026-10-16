@@ -7,6 +7,7 @@ import { CurrentUserService } from '@core/session/current-user.service';
 import { ToastService } from '@core/toast/toast.service';
 import { RemoteData, mergeStates } from '@shared/utils/remote-data';
 import { positiveNumberValidator } from '@shared/utils/validators';
+import { noBlockedTerms } from '@shared/utils/moderation';
 import { draftNumber, draftParams } from '@shared/domain/utils/service-draft';
 import { formatDay, isExpired, todayBr } from '@shared/domain/utils/expiry';
 
@@ -20,6 +21,8 @@ import { Skeleton } from '@shared/ui/skeleton';
 
 // Novo serviço em 2 passos: o quê (nome, categoria) → onde/quanto (fazenda, horas, valor).
 // Com :id na rota (/servicos/:id/editar), o mesmo formulário edita um serviço ainda Pending.
+// Com ?copiar=<id> ("Publicar de novo", issue #32), abre preenchido com os dados de um serviço antigo,
+// menos o prazo: é só ajustar o que mudou. A vaga nova nasce com id próprio e sem candidatos.
 @Component({
   selector: 'app-service-form-page',
   imports: [ReactiveFormsModule, RouterLink, Button, EmptyState, ErrorState, FormField, MaskedInput, Skeleton],
@@ -33,6 +36,7 @@ export class ServiceFormPage implements OnInit {
   readonly categoria = input<string>();
   readonly duracao = input<string>();
   readonly valor = input<string>();
+  readonly copiar = input<string>(); // id do serviço a copiar
   readonly farmLinkParams = computed(() => ({
     voltar: 'servico',
     ...draftParams({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor() })
@@ -52,10 +56,13 @@ export class ServiceFormPage implements OnInit {
   readonly serviceId = computed(() => (this.id() ? Number(this.id()) : null));
   readonly isEdit = computed(() => this.serviceId() !== null);
   readonly existing = new RemoteData(() => this.farmerService.getService(this.serviceId() as number));
-  readonly loadState = computed(() =>
-    this.isEdit() ? mergeStates(this.farms.state(), this.existing.state()) : this.farms.state()
-  );
-  readonly loadError = computed(() => this.farms.error() || this.existing.error());
+  readonly sourceId = computed(() => (!this.isEdit() && this.copiar() ? Number(this.copiar()) : null));
+  readonly source = new RemoteData(() => this.farmerService.getService(this.sourceId() as number));
+  readonly loadState = computed(() => {
+    if (this.isEdit()) return mergeStates(this.farms.state(), this.existing.state());
+    return this.sourceId() !== null ? mergeStates(this.farms.state(), this.source.state()) : this.farms.state();
+  });
+  readonly loadError = computed(() => this.farms.error() || this.existing.error() || this.source.error());
   // Motivo para não permitir a edição (serviço de outro produtor ou que já saiu de Pending).
   readonly editBlocked = computed(() => {
     const service = this.existing.data();
@@ -65,6 +72,7 @@ export class ServiceFormPage implements OnInit {
     return null;
   });
   private filledFromExisting = false;
+  private filledFromSource = false;
   // Validade atual do serviço em edição: só é reenviada se mudar (uma data já vencida seria recusada).
   private originalExpiry: string | null = null;
 
@@ -83,8 +91,8 @@ export class ServiceFormPage implements OnInit {
 
   readonly form = this.fb.group({
     what: this.fb.group({
-      name: ['', Validators.required],
-      description: ['', Validators.maxLength(MAX_DESCRIPTION)],
+      name: ['', [Validators.required, noBlockedTerms]],
+      description: ['', [Validators.maxLength(MAX_DESCRIPTION), noBlockedTerms]],
       category: ['', Validators.required]
     }),
     where: this.fb.group({
@@ -103,6 +111,10 @@ export class ServiceFormPage implements OnInit {
   ngOnInit(): void {
     if (this.isEdit()) {
       this.existing.load();
+      return;
+    }
+    if (this.sourceId() !== null) {
+      this.source.load();
       return;
     }
 
@@ -131,6 +143,23 @@ export class ServiceFormPage implements OnInit {
       });
     });
 
+    // Publicar de novo: copia tudo menos o prazo. A fazenda só vem se ainda estiver cadastrada.
+    effect(() => {
+      const service = this.source.data();
+      const farms = this.farms.data();
+      if (!service || !farms || this.filledFromSource || service.farmer_id !== this.farmerId) return;
+      this.filledFromSource = true;
+      this.form.setValue({
+        what: { name: service.name, description: service.description ?? '', category: service.category },
+        where: {
+          farm_id: farms.some((f) => f.id === service.farm_id) ? service.farm_id : null,
+          duration: service.duration,
+          price: service.price,
+          expires_at: ''
+        }
+      });
+    });
+
     // Com uma única fazenda, ela já vem escolhida.
     effect(() => {
       const farms = this.farms.data();
@@ -144,6 +173,7 @@ export class ServiceFormPage implements OnInit {
   reload(): void {
     this.farms.load();
     if (this.isEdit()) this.existing.load();
+    if (this.sourceId() !== null) this.source.load();
   }
 
   next(): void {

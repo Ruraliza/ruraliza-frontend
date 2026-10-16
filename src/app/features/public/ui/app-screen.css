@@ -14,7 +14,7 @@ small { display: flex; align-items: center; gap: 4px; color: var(--ink-muted); f
 .field { display: grid; gap: 2px; padding: 8px 10px; }
 .field span { color: var(--ink-muted); font-size: 11px; }
 .card { display: grid; gap: 6px; padding: 10px; }
-.card.hl { border-color: var(--green-900); }
+.card.hl { border-color: var(--mata); }
 .sim { color: var(--warning); font-weight: 600; }
 
 .btn {

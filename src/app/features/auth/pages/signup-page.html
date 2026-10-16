@@ -77,6 +77,19 @@
       </app-form-field>
     }
 
+    <div class="terms">
+      <label class="check">
+        <input type="checkbox" formControlName="acceptTerms"
+          [attr.aria-invalid]="form.controls.acceptTerms.touched && form.controls.acceptTerms.invalid ? 'true' : null"
+          [attr.aria-describedby]="form.controls.acceptTerms.touched && form.controls.acceptTerms.invalid ? 'terms-error' : null">
+        <span>Li e concordo com os <a routerLink="/termos" target="_blank" rel="noopener">Termos de Uso</a>
+          e a <a routerLink="/privacidade" target="_blank" rel="noopener">Política de Privacidade</a> do Ruraliza.</span>
+      </label>
+      @if (form.controls.acceptTerms.touched && form.controls.acceptTerms.invalid) {
+        <p id="terms-error" class="t-body-sm choice-error" role="alert">Para criar a conta, aceite os Termos de Uso e a Política de Privacidade.</p>
+      }
+    </div>
+
     <div class="form-actions">
       <button appButton type="submit" [loading]="saving()">Criar conta</button>
     </div>

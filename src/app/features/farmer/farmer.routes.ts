@@ -9,6 +9,8 @@ import { ServiceDetailPage } from './pages/service-detail-page';
 import { FarmerProfilePage } from './pages/farmer-profile-page';
 import { ChatsPage } from './pages/chats-page';
 import { ChatPage } from './pages/chat-page';
+import { NotificationsPage } from './pages/notifications-page';
+import { HelpPage } from './pages/help-page';
 
 // Área do produtor, carregada sob demanda a partir de /produtor.
 export const FARMER_ROUTES: Routes = [
@@ -26,6 +28,8 @@ export const FARMER_ROUTES: Routes = [
       { path: 'servicos/:id/editar', component: ServiceFormPage, title: 'Editar serviço · Ruraliza' },
       { path: 'conversas', component: ChatsPage, title: 'Conversas · Ruraliza' },
       { path: 'conversas/:id', component: ChatPage, title: 'Conversa · Ruraliza' },
+      { path: 'notificacoes', component: NotificationsPage, title: 'Notificações · Ruraliza' },
+      { path: 'ajuda', component: HelpPage, title: 'Central de ajuda · Ruraliza' },
       { path: 'perfil', component: FarmerProfilePage, title: 'Perfil · Ruraliza' }
     ]
   }

@@ -121,6 +121,10 @@
             </dl>
           </section>
 
+          <app-job-interests-card [workerId]="profileId" />
+
+          <app-verification-card role="worker" [profileId]="profileId" [name]="w.name" />
+
           <app-password-change [submit]="changePassword" />
 
           <div class="form-actions">
@@ -132,10 +136,16 @@
     }
   }
 
+  @if (worker.data(); as w) { <app-whatsapp-alerts [phone]="w.phone" /> }
+
+  <app-display-preferences />
+
   <div class="cluster">
     <app-push-toggle />
     <app-install-app-button />
   </div>
+
+  <app-help-links helpLink="/trabalhador/ajuda" />
 
   <div class="cluster">
     <app-role-switch-button area="worker" />

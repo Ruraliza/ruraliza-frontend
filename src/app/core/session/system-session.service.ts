@@ -8,10 +8,17 @@ export const SYSTEM_SESSION_STORAGE_KEY = 'ruraliza.systemSession';
 
 // O que cada cargo pode fazer no painel (espelha as permissões da API).
 // `tracks:manage`: o tutor cria trilhas e edita as dele. `tracks:oversee`: o administrador vê, cria e edita todas.
-export type SystemPermission = 'users:manage' | 'system-users:manage' | 'tracks:manage' | 'tracks:oversee';
+// `content:manage`: central de ajuda e patrocínios. `moderation:manage`: denúncias e verificação de perfis.
+export type SystemPermission =
+  | 'users:manage'
+  | 'system-users:manage'
+  | 'tracks:manage'
+  | 'tracks:oversee'
+  | 'content:manage'
+  | 'moderation:manage';
 
 const PERMISSIONS: Record<SystemRole, readonly SystemPermission[]> = {
-  admin: ['users:manage', 'system-users:manage', 'tracks:oversee'],
+  admin: ['users:manage', 'system-users:manage', 'tracks:oversee', 'content:manage', 'moderation:manage'],
   tutor: ['tracks:manage']
 };
 
