@@ -1,7 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WorkerService } from '../data-access/worker.service';
 import { ProfileService } from '@core/api/profile.service';
+import { ProfileSummaryService } from '@core/api/profile-summary.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { RoleSwitchService } from '@core/session/role-switch.service';
 import { ToastService } from '@core/toast/toast.service';
@@ -94,6 +95,12 @@ export class WorkerProfilePage {
 
   constructor() {
     this.worker.load();
+    // Nome ou foto mudaram: o avatar da barra de cima acompanha.
+    const summary = inject(ProfileSummaryService);
+    effect(() => {
+      const profile = this.worker.data();
+      if (profile) summary.update('worker', this.workerId, profile);
+    });
   }
 
   startEdit(worker: Worker): void {

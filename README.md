@@ -58,6 +58,19 @@ Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe pro
 - **Feita para o campo:** respostas rápidas ("Estou a caminho.", "Cheguei na fazenda."), campo de 16 px (o iPhone não dá zoom), Enter envia, e sem sinal a mensagem fica *Não enviada* com um toque para reenviar.
 - **Menu:** *Conversas* entrou no menu com o contador. No celular o trabalhador não tem mais *Vagas* e *Buscar* lado a lado (os dois abriam a mesma tela): fica *Buscar*, e *Vagas* continua na sidebar. O botão central do produtor aparece como *Novo* no menu de baixo.
 
+## Menu das áreas logadas
+
+O menu de baixo do celular segue a regra do Material e do iOS: **de 3 a 5 destinos**, com a ação principal no meio (com número ímpar, ela fica no centro de verdade). O `AppShell` (`core/layout/app-shell.ts`) exporta `MAX_BOTTOM_NAV_ITEMS` e `bottomNavItems()`, e cada layout tem o teste que confere a regra (`farmer-layout.spec.ts`, `worker-layout.spec.ts`, `system-layout.spec.ts`).
+
+| Área | Menu de baixo (celular) | Só na sidebar (desktop) |
+|---|---|---|
+| Produtor | Início · Serviços · **Novo** · Conversas · Fazendas | Perfil |
+| Trabalhador | Início · Candidaturas · **Buscar** · Conversas · Trilhas | Vagas (a mesma tela de Buscar), Perfil |
+| Administrador | Início · Usuários · Trilhas · Equipe | Perfil |
+| Tutor | Início · **Nova trilha** · Trilhas | Perfil |
+
+No celular, o **perfil** fica no avatar (foto ou emoji) da **barra de cima**, junto da marca, que leva ao Início. Nome e foto do avatar vêm do `ProfileSummaryService` (`core/api`), que a página de perfil atualiza quando a pessoa troca o nome ou a foto. *Trocar de painel* e *Sair* continuam na página de perfil (no desktop, no fim da sidebar). As páginas que têm algo grudado no topo usam `--shell-top` (altura da barra de cima no celular; só a área do relógio no desktop).
+
 ## Estrutura
 
 ```text
@@ -71,7 +84,7 @@ src/
                        CategoryService, LiveUpdatesService, ReviewService, ChatService, ChatInboxService
       http/            authInterceptor, errorInterceptor + ApiError
       session/         CurrentUserService, SystemSessionService, guards (não são segurança)
-      layout/          PublicLayout, AppShell (bottom nav < 1024px / sidebar ≥ 1024px) e a UI que
+      layout/          PublicLayout, AppShell (barra de cima + menu de baixo < 1024px / sidebar ≥ 1024px) e a UI que
                        depende de serviços do core (faixas do PWA, instalar, push, troca de painel, toasts)
       pwa/ maps/ toast/
     shared/            reaproveitável, sem saber de features

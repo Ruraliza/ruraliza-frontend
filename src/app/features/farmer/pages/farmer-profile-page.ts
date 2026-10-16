@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FarmerService } from '../data-access/farmer.service';
 import { ProfileService } from '@core/api/profile.service';
+import { ProfileSummaryService } from '@core/api/profile-summary.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { RoleSwitchService } from '@core/session/role-switch.service';
 import { ToastService } from '@core/toast/toast.service';
@@ -143,6 +144,12 @@ export class FarmerProfilePage {
 
   constructor() {
     this.farmer.load();
+    // Nome ou foto mudaram: o avatar da barra de cima acompanha.
+    const summary = inject(ProfileSummaryService);
+    effect(() => {
+      const profile = this.farmer.data();
+      if (profile) summary.update('farmer', this.farmerId, profile);
+    });
   }
 
   startEdit(farmer: Farmer): void {

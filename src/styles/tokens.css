@@ -52,6 +52,7 @@
   /* Área do relógio/Dynamic Island no app instalado (status bar translúcida); 0 no navegador. */
   --safe-top:env(safe-area-inset-top, 0px);
   --header-offset:calc(var(--header-height) + var(--safe-top)); /* altura real do header fixo */
+  --topbar-height:56px;   /* barra de cima das áreas logadas no celular (marca, avisos e perfil) */
   --bottom-nav-height:72px;
   --sidebar-width:248px;
 }

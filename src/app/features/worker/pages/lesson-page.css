@@ -54,8 +54,8 @@
   .lesson { margin-inline: auto; width: 100%; }
   .outline-toggle, .drawer { display: none !important; }
   .side {
-    display: block; position: sticky; top: calc(var(--banner-height, 0px) + var(--safe-top, 0px));
-    height: calc(100dvh - var(--banner-height, 0px) - var(--safe-top, 0px)); overflow-y: auto;
+    display: block; position: sticky; top: var(--shell-top, 0px);
+    height: calc(100dvh - var(--shell-top, 0px)); overflow-y: auto;
     padding: var(--space-6) var(--space-4); border-left: 1px solid var(--line); background: var(--surface-raised);
   }
 }

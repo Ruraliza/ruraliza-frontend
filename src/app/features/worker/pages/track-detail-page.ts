@@ -78,7 +78,7 @@ import { TrackOutline } from '../ui/track-outline';
     .layout { display: grid; gap: var(--space-6); align-items: start; }
     @media (min-width: 1024px) {
       .layout { grid-template-columns: minmax(0, 1fr) 320px; }
-      .cta { position: sticky; top: calc(var(--banner-height, 0px) + var(--space-6)); }
+      .cta { position: sticky; top: calc(var(--shell-top, 0px) + var(--space-6)); }
     }
     .done { display: flex; align-items: center; gap: var(--space-2); color: var(--success); }
   `
