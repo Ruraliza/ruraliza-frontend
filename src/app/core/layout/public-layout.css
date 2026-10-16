@@ -54,10 +54,8 @@ main.under-header { padding-top: var(--header-offset); }
 .footer-brand app-logo { color: var(--on-dark); }
 .footer-links { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
 .footer-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--on-dark); font-weight: 600; text-underline-offset: 4px; }
-.test-note { display: flex; gap: var(--space-2); align-items: flex-start; padding-top: var(--space-6); border-top: 1px solid rgba(255,255,255,.2); font-size: 14px; line-height: 20px; }
 @media (min-width: 900px) {
   .footer-grid { grid-template-columns: 1fr 2fr; }
-  .test-note { grid-column: 1 / -1; }
 }
 
 .footer-install { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }

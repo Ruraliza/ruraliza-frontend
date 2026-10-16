@@ -47,8 +47,8 @@ export class FaqSection {
     { q: 'Quem pode se cadastrar?', a: 'Produtores rurais que precisam de mão de obra e trabalhadores, prestadores de serviço e estudantes que querem trabalhar no campo. O cadastro pede nome, e-mail, telefone e CPF.' },
     { q: 'Quanto custa?', a: 'Nesta fase de testes não há cobrança para produtores nem para trabalhadores.' },
     { q: 'Como funciona o pagamento?', a: 'Hoje o pagamento é simulado: quando o serviço termina, o produtor libera o pagamento no app e ele fica registrado no serviço. Nenhum dinheiro é movimentado.' },
-    { q: 'Estudantes podem usar?', a: 'Sim. Estudantes se cadastram como trabalhadores e se candidatam às vagas. As trilhas de qualificação, pensadas também para estudantes, estão em desenvolvimento.' },
-    { q: 'Como sou avaliado?', a: 'Ainda não há avaliações. Hoje o produtor decide com base na experiência e nos certificados informados no seu perfil.' },
-    { q: 'Meus dados estão seguros?', a: 'Este é um ambiente de teste: os dados ficam só na memória do servidor e são apagados quando ele reinicia. Para outros usuários o CPF aparece mascarado. Evite usar dados reais por enquanto.' }
+    { q: 'Estudantes podem usar?', a: 'Sim. Estudantes se cadastram como trabalhadores, se candidatam às vagas e estudam nas trilhas de qualificação, que terminam com um certificado da Ruraliza que qualquer pessoa pode validar pelo código.' },
+    { q: 'Como sou avaliado?', a: 'Depois de cada serviço pago, o produtor avalia o trabalhador (pontualidade, empenho e qualidade) e o trabalhador avalia a fazenda. A nota só aparece quando os dois avaliam, ou 14 dias depois, para ninguém avaliar de troco.' },
+    { q: 'Meus dados estão seguros?', a: 'Esta é uma versão de testes: os dados ficam só na memória do servidor e são apagados quando ele reinicia, e nenhum pagamento é real. Para outros usuários o CPF aparece mascarado, e o telefone só é liberado na conversa quando os dois concordam. Evite usar dados reais por enquanto.' }
   ];
 }
