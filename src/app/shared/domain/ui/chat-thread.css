@@ -5,6 +5,9 @@
 /* --- Com quem --- */
 .who { display: flex; align-items: center; gap: var(--space-3); }
 .who h1 { margin: 0; font-size: 1.5rem; line-height: 1.875rem; overflow-wrap: anywhere; }
+.who > div { flex: 1; min-width: 0; }
+.report { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 44px; padding: 0 var(--space-1); border: 0; background: none; color: var(--ink-muted); font-weight: 600; }
+.report:hover { color: var(--danger); }
 .service { color: var(--ink-muted); font-weight: 600; }
 
 /* --- Mensagens --- */

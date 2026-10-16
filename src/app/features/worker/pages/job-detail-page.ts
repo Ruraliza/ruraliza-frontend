@@ -22,12 +22,13 @@ import { PhotoStrip } from '@shared/ui/photo-strip';
 import { Skeleton } from '@shared/ui/skeleton';
 import { StatusBadge } from '@shared/domain/ui/status-badge';
 import { RatingBadge } from '@shared/domain/ui/rating-badge';
+import { ReportDialog, ReportTarget } from '@shared/domain/ui/report-dialog';
 import { ReputationDialog, ReputationTarget } from '@shared/domain/ui/reputation-dialog';
 import { ServiceReviews } from '@shared/domain/ui/service-reviews';
 
 @Component({
   selector: 'app-job-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, RatingBadge, ReputationDialog, ServiceReviews, Skeleton, StatusBadge],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, RatingBadge, ReportDialog, ReputationDialog, ServiceReviews, Skeleton, StatusBadge],
   template: `
     <div class="container page">
       <a class="back-link" routerLink="/trabalhador/vagas" (click)="goBack($event)">← Vagas</a>
@@ -132,12 +133,19 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
             @if (j.status === 'Completed' && j.worker_id === workerId) {
               <app-service-reviews role="worker" [serviceId]="j.id" [workerId]="workerId" [refresh]="tick()" />
             }
+
+            @if (!ownService()) {
+              <button type="button" class="report t-body-sm" (click)="reporting.set({ type: 'service', id: j.id, name: j.name })">
+                <app-icon name="flag" [size]="16" />Denunciar vaga
+              </button>
+            }
           }
         }
       }
     </div>
 
     <app-reputation-dialog [target]="farmReviews()" (closed)="farmReviews.set(null)" />
+    <app-report-dialog role="worker" [target]="reporting()" (closed)="reporting.set(null)" />
 
     <app-confirm-dialog
       [open]="confirmingApply()"
@@ -174,6 +182,8 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
     .apply > div { display: grid; gap: var(--space-1); flex: 1; min-width: 220px; }
     .rating { flex-wrap: wrap; }
     .link { padding: 0; border: 0; background: none; color: var(--mata); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; cursor: pointer; }
+    .report { justify-self: start; display: inline-flex; align-items: center; gap: var(--space-1); min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink-muted); font-weight: 600; }
+    .report:hover { color: var(--danger); }
     .unread { min-width: 1.375rem; height: 1.375rem; padding: 0 0.375rem; border-radius: var(--radius-pill); background: var(--orange-500); color: var(--on-accent); font-size: 0.8125rem; font-weight: 800; line-height: 1.375rem; }
   `
 })
@@ -261,6 +271,8 @@ export class JobDetailPage implements OnInit {
 
   // Avaliações da fazenda abertas no diálogo.
   readonly farmReviews = signal<ReputationTarget | null>(null);
+  // Vaga sendo denunciada.
+  readonly reporting = signal<ReportTarget | null>(null);
   // Muda a cada aviso em tempo real: o painel de avaliações recarrega junto.
   readonly tick = signal(0);
 

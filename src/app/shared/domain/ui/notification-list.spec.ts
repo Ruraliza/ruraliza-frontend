@@ -16,6 +16,7 @@ describe('notification list helpers', () => {
     expect(notificationIcon('produtor/servicos/12')).toBe('list');
     expect(notificationIcon('trabalhador/candidaturas')).toBe('briefcase');
     expect(notificationIcon('trabalhador/vagas/3')).toBe('briefcase');
+    expect(notificationIcon('trabalhador/ajuda')).toBe('shield');
     expect(notificationIcon('qualquer/outra')).toBe('bell');
   });
 });

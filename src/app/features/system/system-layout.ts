@@ -10,6 +10,7 @@ const PROFILE_LINK = '/sistema/perfil';
 export function systemNavItems(can: (permission: SystemPermission) => boolean): NavItem[] {
   const items: NavItem[] = [{ label: 'Início', icon: 'home', link: '/sistema', exact: true }];
   if (can('users:manage')) items.push({ label: 'Usuários', icon: 'list', link: '/sistema/usuarios' });
+  if (can('moderation:manage')) items.push({ label: 'Moderação', icon: 'shield', link: '/sistema/moderacao' });
   if (can('tracks:manage')) {
     items.push({ label: 'Nova trilha', icon: 'plus', link: '/sistema/trilhas/nova', primary: true });
     items.push({ label: 'Trilhas', icon: 'book', link: '/sistema/trilhas' });

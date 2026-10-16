@@ -16,6 +16,7 @@ import { Icon } from '../../ui/icon';
 import { Skeleton } from '../../ui/skeleton';
 import { Avatar } from './avatar';
 import { ChatPhonePanel } from './chat-phone-panel';
+import { ReportDialog, ReportTarget } from './report-dialog';
 import { QUICK_REPLIES, dayKey, dayLabel, hasContact, messageTime } from '../utils/chat';
 
 // Mensagem ainda no caminho (ou que não saiu): aparece na hora, com o estado embaixo.
@@ -35,7 +36,7 @@ let nextKey = 0;
 // mensagem fica como "Não enviada" e um toque reenvia.
 @Component({
   selector: 'app-chat-thread',
-  imports: [RouterLink, Avatar, ChatPhonePanel, ConfirmDialog, ErrorState, Icon, Skeleton],
+  imports: [RouterLink, Avatar, ChatPhonePanel, ConfirmDialog, ErrorState, Icon, ReportDialog, Skeleton],
   template: `
     <div class="container thread">
       <a class="back-link" [routerLink]="listLink()">← Conversas</a>
@@ -51,6 +52,7 @@ let nextKey = 0;
                 <h1>{{ other().name }}</h1>
                 <a class="service t-body-sm" [routerLink]="serviceLink()">{{ c.service_name }}</a>
               </div>
+              <button type="button" class="report t-body-sm" (click)="reporting.set(reportTarget())"><app-icon name="flag" [size]="16" />Denunciar</button>
             </header>
 
             <app-chat-phone-panel [chat]="c" [role]="role()" [busy]="sharing()" (shareRequested)="confirmingShare.set(true)" (unshareRequested)="share(false)" />
@@ -119,6 +121,8 @@ let nextKey = 0;
       (confirmed)="share(true)"
       (cancelled)="confirmingShare.set(false)"
     />
+
+    <app-report-dialog [role]="role()" [target]="reporting()" (closed)="reporting.set(null)" />
   `,
   styleUrl: './chat-thread.css'
 })
@@ -147,6 +151,15 @@ export class ChatThread {
     return this.role() === 'farmer' ? c.worker : c.farmer;
   });
   readonly otherFirst = computed(() => this.other().name.split(' ')[0] ?? '');
+  // Denúncia da outra parte: o produtor denuncia o trabalhador; o trabalhador, o produtor.
+  readonly reporting = signal<ReportTarget | null>(null);
+  readonly reportTarget = computed<ReportTarget | null>(() => {
+    const c = this.chat.data();
+    if (!c) return null;
+    return this.role() === 'farmer'
+      ? { type: 'worker', id: c.worker_id, name: c.worker.name }
+      : { type: 'farmer', id: c.farmer_id, name: c.farmer.name };
+  });
   readonly bothShare = computed(() => {
     const c = this.chat.data();
     return !!c && c.farmer_shares_phone && c.worker_shares_phone;

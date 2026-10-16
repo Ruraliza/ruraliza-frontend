@@ -37,6 +37,13 @@ import { Icon } from '@shared/ui/icon';
               </div>
             </li>
           }
+          @if (session.can('moderation:manage')) {
+            <li class="card stack-sm">
+              <h2 class="t-h3">Moderação</h2>
+              <p class="muted">Analise as denúncias de vagas e perfis. Quem denunciou recebe um aviso com a decisão.</p>
+              <div><a appButton variant="secondary" routerLink="/sistema/moderacao">Ver denúncias</a></div>
+            </li>
+          }
           @if (session.can('content:manage')) {
             <li class="card stack-sm">
               <h2 class="t-h3">Central de ajuda</h2>

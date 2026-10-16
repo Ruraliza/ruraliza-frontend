@@ -18,6 +18,7 @@ export function notificationIcon(url: string): IconName {
   if (url.includes('/conversas/')) return 'chat';
   if (url.startsWith('produtor/servicos')) return 'list';
   if (url.startsWith('trabalhador/candidaturas') || url.startsWith('trabalhador/vagas')) return 'briefcase';
+  if (url.endsWith('/ajuda')) return 'shield'; // resultado de uma denúncia
   return 'bell';
 }
 
