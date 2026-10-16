@@ -19,7 +19,10 @@ export function systemNavItems(can: (permission: SystemPermission) => boolean): 
   }
   if (can('system-users:manage')) items.push({ label: 'Equipe', icon: 'briefcase', link: '/sistema/equipe' });
   // Conteúdo da plataforma: na sidebar; no celular, pelos cartões do Início.
-  if (can('content:manage')) items.push({ label: 'Central de ajuda', icon: 'help', link: '/sistema/ajuda', sidebarOnly: true });
+  if (can('content:manage')) {
+    items.push({ label: 'Central de ajuda', icon: 'help', link: '/sistema/ajuda', sidebarOnly: true });
+    items.push({ label: 'Patrocínios', icon: 'megaphone', link: '/sistema/patrocinios', sidebarOnly: true });
+  }
   items.push({ label: 'Perfil', icon: 'user', link: PROFILE_LINK, sidebarOnly: true });
   return items;
 }

@@ -50,6 +50,11 @@ import { Icon } from '@shared/ui/icon';
               <p class="muted">Crie, edite, ordene e despublique as perguntas frequentes que aparecem para todos em /ajuda.</p>
               <div><a appButton variant="secondary" routerLink="/sistema/ajuda">Editar perguntas</a></div>
             </li>
+            <li class="card stack-sm">
+              <h2 class="t-h3">Patrocínios</h2>
+              <p class="muted">Cadastre lojas e marcas do campo no cartão "Patrocinado" e acompanhe quantas vezes cada uma apareceu e foi aberta.</p>
+              <div><a appButton variant="secondary" routerLink="/sistema/patrocinios">Ver patrocínios</a></div>
+            </li>
           }
           @if (session.canAny(['tracks:manage', 'tracks:oversee'])) {
             <li class="card stack-sm">

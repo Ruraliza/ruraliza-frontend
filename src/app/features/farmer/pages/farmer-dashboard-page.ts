@@ -13,10 +13,11 @@ import { ServiceCard } from '@shared/domain/ui/service-card';
 import { Skeleton } from '@shared/ui/skeleton';
 import { PendingReviews } from '@shared/domain/ui/pending-reviews';
 import { FarmStatsPanel } from '../ui/farm-stats-panel';
+import { SponsorSlot } from '@shared/domain/ui/sponsor-slot';
 
 @Component({
   selector: 'app-farmer-dashboard-page',
-  imports: [RouterLink, Button, EmptyState, ErrorState, FarmStatsPanel, Icon, MetricCard, PendingReviews, ServiceCard, Skeleton],
+  imports: [RouterLink, Button, EmptyState, ErrorState, FarmStatsPanel, Icon, MetricCard, PendingReviews, ServiceCard, Skeleton, SponsorSlot],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -60,6 +61,8 @@ import { FarmStatsPanel } from '../ui/farm-stats-panel';
           </section>
 
           <app-farm-stats-panel [farmerId]="farmerId" />
+
+          @if (farms.state().status === 'success') { <app-sponsor-slot audience="farmer" [state]="farmState()" /> }
         }
       }
     </div>
@@ -72,6 +75,9 @@ export class FarmerDashboardPage {
 
   readonly farmer = new RemoteData(() => this.profiles.getFarmer(this.farmerId));
   readonly services = new RemoteData(() => this.farmerService.getFarmerServices(this.farmerId));
+  // UF das fazendas: o patrocínio da região (só a UF vai na URL).
+  readonly farms = new RemoteData(() => this.farmerService.getFarms(this.farmerId));
+  readonly farmState = computed(() => this.farms.data()?.find((f) => !f.deleted_at)?.state ?? null);
   readonly state = computed(() => mergeStates(this.farmer.state(), this.services.state()));
 
   readonly firstName = computed(() => this.farmer.data()?.name.split(' ')[0] ?? '');
@@ -96,5 +102,6 @@ export class FarmerDashboardPage {
   load(): void {
     this.farmer.load();
     this.services.load();
+    this.farms.load();
   }
 }

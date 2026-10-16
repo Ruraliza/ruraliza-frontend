@@ -14,10 +14,10 @@ describe('systemNavItems', () => {
     expect(bottom.map((item) => item.label)).toEqual(['Início', 'Usuários', 'Moderação', 'Trilhas', 'Equipe']);
   });
 
-  it('keeps the help center and the profile in the sidebar only', () => {
+  it('keeps the help center, the sponsors and the profile in the sidebar only', () => {
     const all = systemNavItems((p) => ADMIN.includes(p));
 
-    expect(all.filter((item) => item.sidebarOnly).map((item) => item.label)).toEqual(['Central de ajuda', 'Perfil']);
+    expect(all.filter((item) => item.sidebarOnly).map((item) => item.label)).toEqual(['Central de ajuda', 'Patrocínios', 'Perfil']);
   });
 
   it('centers "Nova trilha" for the tutor', () => {

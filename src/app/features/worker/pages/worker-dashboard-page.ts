@@ -13,10 +13,12 @@ import { ServiceCard } from '@shared/domain/ui/service-card';
 import { Skeleton } from '@shared/ui/skeleton';
 import { PendingReviews } from '@shared/domain/ui/pending-reviews';
 import { RecommendedJobs } from '../ui/recommended-jobs';
+import { MatchingService } from '../data-access/matching.service';
+import { SponsorSlot } from '@shared/domain/ui/sponsor-slot';
 
 @Component({
   selector: 'app-worker-dashboard-page',
-  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, PendingReviews, RecommendedJobs, ServiceCard, Skeleton],
+  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, PendingReviews, RecommendedJobs, ServiceCard, Skeleton, SponsorSlot],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -61,6 +63,8 @@ import { RecommendedJobs } from '../ui/recommended-jobs';
           @if (completedCount()) {
             <p class="muted">Você já concluiu {{ completedCount() }} {{ completedCount() === 1 ? 'serviço' : 'serviços' }} pelo Ruraliza.</p>
           }
+
+          @if (interests.state().status !== 'loading') { <app-sponsor-slot audience="worker" [categories]="interests.data()?.categories ?? []" /> }
         }
       }
     </div>
@@ -74,6 +78,9 @@ export class WorkerDashboardPage {
   readonly worker = new RemoteData(() => this.profiles.getWorker(this.workerId));
   readonly applications = new RemoteData(() => this.workerService.getWorkerApplications(this.workerId));
   readonly services = new RemoteData(() => this.workerService.getWorkerServices(this.workerId));
+  // Interesses: o patrocínio que combina (só as categorias vão na URL).
+  private readonly matching = inject(MatchingService);
+  readonly interests = new RemoteData(() => this.matching.preferences(this.workerId));
   readonly state = computed(() => mergeStates(this.worker.state(), this.applications.state(), this.services.state()));
 
   readonly firstName = computed(() => this.worker.data()?.name.split(' ')[0] ?? '');
@@ -100,5 +107,6 @@ export class WorkerDashboardPage {
     this.worker.load();
     this.applications.load();
     this.services.load();
+    this.interests.load();
   }
 }

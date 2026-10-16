@@ -7,7 +7,7 @@ export type IconName =
   | 'download' | 'bell' | 'wifi-off' | 'refresh' | 'share'
   | 'chat' | 'send' | 'lock' | 'phone' | 'star'
   | 'book' | 'award' | 'printer' | 'circle'
-  | 'text-size' | 'help' | 'flag' | 'shield' | 'shield-check';
+  | 'text-size' | 'help' | 'flag' | 'shield' | 'shield-check' | 'megaphone';
 
 // Conjunto pequeno de ícones SVG inline: 24px, traço 1.75px, cor do texto (currentColor).
 // Decorativo por padrão; passe `label` quando o ícone for o único conteúdo com significado.
@@ -65,6 +65,7 @@ export type IconName =
         @case ('text-size') { <path d="M3 19 8.5 5 14 19M5.2 14h6.6M15 19l3.2-8 3.3 8M16.1 16.3h4.3" /> }
         @case ('flag') { <path d="M5 21V4M5 4.5h12.5l-2.75 4 2.75 4H5" /> }
         @case ('shield-check') { <path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6z" /><path d="m8.75 12 2.25 2.25 4.25-4.5" /> }
+        @case ('megaphone') { <path d="M3 10.5v3a1 1 0 0 0 1 1h2.5L12 19V5L6.5 9.5H4a1 1 0 0 0-1 1zM15.5 8.5a4.5 4.5 0 0 1 0 7M18.5 5.5a8.5 8.5 0 0 1 0 13" /> }
         @case ('shield') { <path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6z" /> }
         @case ('sprout') { <path d="M12 21v-9M12 12C12 8 9 5 4 5c0 4 3 7 8 7zM12 14c0-3.5 2.5-6 7-6 0 3.5-2.5 6-7 6z" /> }
       }
