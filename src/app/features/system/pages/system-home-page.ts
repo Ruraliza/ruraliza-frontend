@@ -40,8 +40,8 @@ import { Icon } from '@shared/ui/icon';
           @if (session.can('moderation:manage')) {
             <li class="card stack-sm">
               <h2 class="t-h3">Moderação</h2>
-              <p class="muted">Analise as denúncias de vagas e perfis. Quem denunciou recebe um aviso com a decisão.</p>
-              <div><a appButton variant="secondary" routerLink="/sistema/moderacao">Ver denúncias</a></div>
+              <p class="muted">Analise as denúncias de vagas e perfis e confira os documentos de quem pediu o selo de verificado.</p>
+              <div><a appButton variant="secondary" routerLink="/sistema/moderacao">Abrir moderação</a></div>
             </li>
           }
           @if (session.can('content:manage')) {

@@ -26,7 +26,7 @@ export class PhotoPicker {
       return;
     }
     try {
-      this.photosPicked.emit(await Promise.all(files.map(preparePhoto)));
+      this.photosPicked.emit(await Promise.all(files.map((file) => preparePhoto(file))));
     } catch (error) {
       this.toast.error(error instanceof PhotoError ? error.message : 'Não foi possível ler a foto. Tente outra imagem.');
     }

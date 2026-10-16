@@ -37,12 +37,12 @@ export async function loadPhoto(file: File): Promise<ImageBitmap | null> {
   }
 }
 
-// Reduz e converte para WebP no navegador.
-export async function preparePhoto(file: File): Promise<Blob> {
+// Reduz e converte para WebP no navegador (`maxSide`: maior lado; o documento da verificação usa 1600px).
+export async function preparePhoto(file: File, maxSide = MAX_PHOTO_SIDE): Promise<Blob> {
   const bitmap = await loadPhoto(file);
   if (!bitmap) return file;
 
-  const { width, height } = fitInside(bitmap.width, bitmap.height);
+  const { width, height } = fitInside(bitmap.width, bitmap.height, maxSide);
   return drawToWebp(bitmap, { x: 0, y: 0, width: bitmap.width, height: bitmap.height }, width, height);
 }
 

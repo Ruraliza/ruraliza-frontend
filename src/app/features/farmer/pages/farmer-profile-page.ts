@@ -24,11 +24,12 @@ import { InstallAppButton } from '@core/layout/install-app-button';
 import { PushToggle } from '@core/layout/push-toggle';
 import { RoleSwitchButton } from '@core/layout/role-switch-button';
 import { Skeleton } from '@shared/ui/skeleton';
+import { VerificationCard } from '@shared/domain/ui/verification-card';
 
 // Perfil do produtor: leitura, edição (id e cpf fixos) e remoção da conta.
 @Component({
   selector: 'app-farmer-profile-page',
-  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, HelpLinks, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, RoleSwitchButton, Skeleton],
+  imports: [ReactiveFormsModule, AvatarEditor, Button, ConfirmDialog, DisplayPreferences, ErrorState, FormField, HelpLinks, Icon, InstallAppButton, MaskedInput, PasswordChange, PushToggle, RoleSwitchButton, Skeleton, VerificationCard],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -78,6 +79,8 @@ import { Skeleton } from '@shared/ui/skeleton';
                 </dl>
               </section>
 
+              <app-verification-card role="farmer" [profileId]="profileId" [name]="f.name" />
+
               <app-password-change [submit]="changePassword" />
 
               <div class="form-actions">
@@ -124,6 +127,7 @@ export class FarmerProfilePage {
   private readonly toast = inject(ToastService);
   protected readonly switcher = inject(RoleSwitchService);
   private readonly farmerId = this.currentUser.requireId('farmer');
+  readonly profileId = this.farmerId;
   readonly hasWorkerProfile = this.currentUser.hasProfile('worker');
 
   readonly farmer = new RemoteData(() => this.profiles.getFarmer(this.farmerId));

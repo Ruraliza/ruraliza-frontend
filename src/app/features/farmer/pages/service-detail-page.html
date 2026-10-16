@@ -116,7 +116,7 @@
             @if (applications.data()?.length) {
               <div class="grid-cards">
                 @for (application of sortedApplications(); track application.id) {
-                  <app-worker-card [worker]="application.worker" [status]="application.status" [reputation]="application.reputation" [reportable]="true"
+                  <app-worker-card [worker]="application.worker" [status]="application.status" [reputation]="application.reputation" [verified]="application.verified" [reportable]="true"
                     (viewReviews)="showReviews(application)" (report)="reportWorker(application)">
                     @if (s.status === 'Pending' && application.status === 'Pending') {
                       <button appButton type="button" (click)="ask({ kind: 'accept', application: application })">Aceitar trabalhador</button>

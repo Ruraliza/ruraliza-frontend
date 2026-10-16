@@ -21,6 +21,7 @@ import { Icon } from '@shared/ui/icon';
 import { PhotoStrip } from '@shared/ui/photo-strip';
 import { Skeleton } from '@shared/ui/skeleton';
 import { StatusBadge } from '@shared/domain/ui/status-badge';
+import { VerifiedBadge } from '@shared/domain/ui/verified-badge';
 import { RatingBadge } from '@shared/domain/ui/rating-badge';
 import { ReportDialog, ReportTarget } from '@shared/domain/ui/report-dialog';
 import { ReputationDialog, ReputationTarget } from '@shared/domain/ui/reputation-dialog';
@@ -28,7 +29,7 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
 
 @Component({
   selector: 'app-job-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, RatingBadge, ReportDialog, ReputationDialog, ServiceReviews, Skeleton, StatusBadge],
+  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, RatingBadge, ReportDialog, ReputationDialog, ServiceReviews, Skeleton, StatusBadge, VerifiedBadge],
   template: `
     <div class="container page">
       <a class="back-link" routerLink="/trabalhador/vagas" (click)="goBack($event)">← Vagas</a>
@@ -69,6 +70,9 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
                       @if (rep.count > 0) { <button type="button" class="link" (click)="showFarmReviews()">Ver avaliações</button> }
                     </dd>
                   </div>
+                }
+                @if (j.farm.farmer_verified) {
+                  <div><dt>Produtor</dt><dd><app-verified-badge label="Identidade verificada" /></dd></div>
                 }
                 <div><dt>Duração</dt><dd>{{ hours() }}</dd></div>
                 <div><dt>Pagamento</dt><dd class="price">{{ price() }}</dd></div>
