@@ -2,15 +2,21 @@
 
 Angular 22 (standalone, signals, SSR) para o RURALIZA: conecta produtores rurais a trabalhadores e prestadores de serviço no campo.
 
+## Documentos do projeto
+
+[Produto e escopo](PRODUCT.md) · [Arquitetura](docs/architecture.md) · [Design e acessibilidade](docs/design.md) · [Primeira execução](docs/onboarding.md) · [Qualidade e revisão](docs/quality.md) · [Ferramentas de agente](docs/setup.md) · [Instruções para agentes de IA](AGENTS.md)
+
 ## Como rodar
 
-Pré-requisitos: Node.js 20+ e o [backend](https://github.com/Ruraliza/ruraliza-backend) rodando em `http://localhost:3000/api`.
+Pré-requisitos: Node.js 22.22+ ou 24.15+ (o mínimo do Angular CLI 22) e o [backend](https://github.com/Ruraliza/ruraliza-backend) rodando em `http://localhost:3000/api`.
 
 ```bash
 npm install
 npm start        # ng serve → http://localhost:4200
 npm test         # ng test (Vitest)
 npm run build    # ng build
+npm run lint     # ESLint + angular-eslint (inclui acessibilidade dos templates)
+npm run verify   # lint, regras, tipos, testes e build (o mesmo que o CI roda)
 ```
 
 Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe produtor ou trabalhador e informa e-mail e senha; os perfis de teste do backend são `produtor@exemplo.com` e `trabalhador@exemplo.com`, senha `ruraliza123`. Quem entrou fica em `sessionStorage`, junto com o **token de sessão** da API: o `authInterceptor` (`core/http/auth.interceptor.ts`) envia `Authorization: Bearer <token>` em toda chamada, e o token também vai em `?access_token=` nas atualizações ao vivo (o `EventSource` não manda cabeçalhos). Quando a API responde 401 com `WWW-Authenticate: Bearer` (sessão vencida ou inválida), a sessão é limpa e a pessoa volta ao login. Os guards só evitam abrir telas sem sessão: quem protege os dados é a API. Os dados vivem em memória no backend e somem quando ele reinicia.
