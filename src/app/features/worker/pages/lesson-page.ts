@@ -101,6 +101,8 @@ interface Position {
             <aside class="side" aria-label="Conteúdo da trilha">
               <ng-container *ngTemplateOutlet="outline" />
             </aside>
+            <!-- O clique só fecha pelo fundo escurecido; no teclado, o Esc nativo do <dialog> faz o mesmo. -->
+            <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
             <dialog #drawer id="conteudo-trilha" class="drawer" aria-label="Conteúdo da trilha" (close)="drawerOpen.set(false)" (click)="onBackdrop($event)">
               <div class="drawer-head">
                 <span class="t-h3">Conteúdo da trilha</span>

@@ -91,7 +91,7 @@ export class ResetPasswordPage {
         this.toast.success('Senha redefinida. Entre com a nova senha.');
         const state: AuthPrefill = { email: this.reset?.email ?? '' };
         // replaceUrl: voltar no navegador não reabre esta tela com o token já usado.
-        this.router.navigateByUrl('/entrar', { state, replaceUrl: true });
+        void this.router.navigateByUrl('/entrar', { state, replaceUrl: true });
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
     });

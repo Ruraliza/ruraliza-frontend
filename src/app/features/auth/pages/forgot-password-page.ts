@@ -65,7 +65,7 @@ export class ForgotPasswordPage {
       next: ({ reset_token }) => {
         // TODO(email): quando o código for por e-mail, esta tela passa a pedir o código digitado.
         const state: ResetState = { email, token: reset_token };
-        this.router.navigateByUrl('/entrar/nova-senha', { state });
+        void this.router.navigateByUrl('/entrar/nova-senha', { state });
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
     });

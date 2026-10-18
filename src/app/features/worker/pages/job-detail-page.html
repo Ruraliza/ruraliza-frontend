@@ -1,0 +1,142 @@
+<div class="container page">
+  <a class="back-link" routerLink="/trabalhador/vagas" (click)="goBack($event)">← Vagas</a>
+
+  @switch (state().status) {
+    @case ('loading') { <app-skeleton [count]="1" [height]="280" /> }
+    @case ('error') { <app-error-state [message]="job.error() || applications.error()" (retry)="load()" /> }
+    @case ('success') {
+      @if (job.data(); as j) {
+        <header class="page-header">
+          <div>
+            <div class="cluster tags">
+              <span appCategoryChip>{{ j.category }}</span>
+              @if (j.status !== 'Pending') { <app-status-badge [status]="j.status" /> }
+            </div>
+            <h1>{{ j.name }}</h1>
+          </div>
+        </header>
+
+        @if (j.farm.photos.length) {
+          <app-photo-strip [urls]="j.farm.photos" [label]="'Fotos da fazenda em ' + j.farm.city" />
+        }
+
+        <section class="card stack">
+          @if (j.description) {
+            <div class="description">
+              <h2 class="t-h3">Sobre o serviço</h2>
+              <p>{{ j.description }}</p>
+            </div>
+          }
+          <dl class="details">
+            <div><dt>Local</dt><dd class="with-icon"><app-icon name="map-pin" [size]="20" />{{ j.farm.city }}, {{ j.farm.state }}</dd></div>
+            @if (j.farm.reputation; as rep) {
+              <div>
+                <dt>Avaliação da fazenda</dt>
+                <dd class="with-icon rating">
+                  <app-rating-badge [reputation]="rep" />
+                  @if (rep.count > 0) { <button type="button" class="link" (click)="showFarmReviews()">Ver avaliações</button> }
+                </dd>
+              </div>
+            }
+            @if (j.farm.farmer_verified) {
+              <div><dt>Produtor</dt><dd><app-verified-badge label="Identidade verificada" /></dd></div>
+            }
+            <div><dt>Duração</dt><dd>{{ hours() }}</dd></div>
+            <div><dt>Pagamento</dt><dd class="price">{{ price() }}</dd></div>
+            <div><dt>Publicada em</dt><dd>{{ publishedAt() }}</dd></div>
+            @if (deadline(); as text) {
+              <div><dt>Prazo</dt><dd [class.deadline]="!expired()">{{ text }}</dd></div>
+            }
+          </dl>
+          <!-- O ponto só vem da API para o trabalhador aceito no serviço. -->
+          @if (farmPoint(); as point) {
+            <div class="route">
+              <h2 class="t-h3">Como chegar</h2>
+              <app-farm-map [point]="point" [label]="'Fazenda em ' + j.farm.city" />
+            </div>
+          }
+        </section>
+
+        <section class="apply card" aria-live="polite">
+          @if (myApplication(); as application) {
+            <div>
+              <h2 class="t-h3">{{ applicationTitle() }}</h2>
+              <p class="muted">Situação da sua candidatura:</p>
+              <app-status-badge [status]="application.status" />
+            </div>
+            @if (application.status === 'Accepted' && chat(); as c) {
+              <a appButton [variant]="c.unread ? 'primary' : 'secondary'" [routerLink]="['/trabalhador/conversas', c.id]">
+                <app-icon name="chat" [size]="20" />{{ c.open ? 'Conversar com o produtor' : 'Ver conversa' }}@if (c.unread) { <span class="unread">{{ c.unread }}</span> }
+              </a>
+            }
+            @switch (withdrawKind()) {
+              @case ('application') {
+                <button appButton variant="secondary" type="button" (click)="confirmingWithdraw.set(true)">Cancelar candidatura</button>
+              }
+              @case ('service') {
+                <button appButton variant="danger" type="button" (click)="confirmingWithdraw.set(true)">Desistir do serviço</button>
+              }
+            }
+          } @else if (ownService()) {
+            <div>
+              <h2 class="t-h3">Esta vaga é sua</h2>
+              <p class="muted">Você publicou este serviço com o seu perfil de produtor, então não pode se candidatar a ele.</p>
+            </div>
+            <div class="cluster">
+              <button appButton type="button" [disabled]="true">Candidatar-me</button>
+              <button appButton variant="secondary" type="button" [loading]="switcher.switching()" (click)="switcher.switchTo('farmer')">Ver na área do produtor</button>
+            </div>
+          } @else if (j.status !== 'Pending' || expired()) {
+            <div>
+              <h2 class="t-h3">Vaga encerrada</h2>
+              <p class="muted">{{ expired() ? 'O prazo para se candidatar terminou.' : 'Esta vaga não está mais recebendo candidaturas.' }}</p>
+            </div>
+            <button appButton type="button" [disabled]="true">Candidatar-me</button>
+          } @else {
+            <div>
+              <h2 class="t-h3">Tem interesse?</h2>
+              <p class="muted">O produtor vê seu perfil e decide quem vai fazer o serviço.</p>
+            </div>
+            <button appButton type="button" (click)="confirmingApply.set(true)">Candidatar-me</button>
+          }
+        </section>
+
+        @if (j.status === 'Completed' && j.worker_id === workerId) {
+          <app-service-reviews role="worker" [serviceId]="j.id" [workerId]="workerId" [refresh]="tick()" />
+        }
+
+        @if (!ownService()) {
+          <button type="button" class="report t-body-sm" (click)="reporting.set({ type: 'service', id: j.id, name: j.name })">
+            <app-icon name="flag" [size]="16" />Denunciar vaga
+          </button>
+        }
+      }
+    }
+  }
+</div>
+
+<app-reputation-dialog [target]="farmReviews()" (closed)="farmReviews.set(null)" />
+<app-report-dialog role="worker" [target]="reporting()" (closed)="reporting.set(null)" />
+
+<app-confirm-dialog
+  [open]="confirmingApply()"
+  title="Confirmar candidatura?"
+  [message]="applyMessage()"
+  confirmLabel="Confirmar candidatura"
+  [loading]="applying()"
+  (confirmed)="apply()"
+  (cancelled)="confirmingApply.set(false)"
+/>
+
+<app-confirm-dialog
+  [open]="confirmingWithdraw()"
+  [title]="withdrawKind() === 'service' ? 'Desistir do serviço?' : 'Cancelar candidatura?'"
+  [message]="withdrawKind() === 'service'
+    ? 'O serviço volta a ficar aberto e o produtor poderá escolher outra pessoa entre os candidatos.'
+    : 'Sua candidatura será retirada. Se a vaga continuar aberta, você pode se candidatar de novo.'"
+  [confirmLabel]="withdrawKind() === 'service' ? 'Desistir do serviço' : 'Cancelar candidatura'"
+  confirmVariant="danger"
+  [loading]="withdrawing()"
+  (confirmed)="withdraw()"
+  (cancelled)="confirmingWithdraw.set(false)"
+/>

@@ -33,7 +33,7 @@ export class RoleSwitchService {
     const user = this.currentUser.user();
     if (!user || this.switching()) return;
     if (!this.currentUser.hasProfile(role)) {
-      this.router.navigateByUrl(newProfileUrl(role));
+      void this.router.navigateByUrl(newProfileUrl(role));
       return;
     }
 
@@ -42,7 +42,7 @@ export class RoleSwitchService {
       next: ({ user: session }) => {
         this.currentUser.set(session);
         this.switching.set(false);
-        this.router.navigateByUrl(ROLE_HOME[role]);
+        void this.router.navigateByUrl(ROLE_HOME[role]);
       },
       error: () => this.switching.set(false) // a mensagem já saiu no toast
     });
@@ -58,13 +58,13 @@ export class RoleSwitchService {
       return;
     }
     this.currentUser.set({ ...user, role: other, id: otherId, profiles: { ...user.profiles, [role]: null } });
-    this.router.navigateByUrl(ROLE_HOME[other]);
+    void this.router.navigateByUrl(ROLE_HOME[other]);
   }
 
   // Quem sai também para de receber as notificações da conta neste aparelho.
   signOut(): void {
     void this.push.disable();
     this.currentUser.clear();
-    this.router.navigateByUrl('/entrar');
+    void this.router.navigateByUrl('/entrar');
   }
 }

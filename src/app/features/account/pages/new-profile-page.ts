@@ -198,12 +198,12 @@ export class NewProfilePage implements OnInit {
     const target = this.target();
     const user = this.currentUser.user();
     if (!target || !user) {
-      this.router.navigateByUrl('/', { replaceUrl: true });
+      void this.router.navigateByUrl('/', { replaceUrl: true });
       return;
     }
     // A conta já tem esse perfil: não há o que criar, abre o painel dele.
     if (this.currentUser.hasProfile(target)) {
-      this.router.navigateByUrl(ROLE_HOME[target], { replaceUrl: true });
+      void this.router.navigateByUrl(ROLE_HOME[target], { replaceUrl: true });
       return;
     }
     this.prefill(user.role, user.id);
@@ -242,7 +242,7 @@ export class NewProfilePage implements OnInit {
           return;
         }
         this.toast.success(`Perfil de ${ROLE_LABEL[role]} criado. Você já está na nova área.`);
-        this.router.navigateByUrl(ROLE_HOME[role], { replaceUrl: true });
+        void this.router.navigateByUrl(ROLE_HOME[role], { replaceUrl: true });
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
     });
@@ -273,12 +273,12 @@ export class NewProfilePage implements OnInit {
     this.profiles.uploadResume(workerId, resume).subscribe({
       next: () => {
         this.toast.success('Perfil de trabalhador criado com o currículo. Você já está na nova área.');
-        this.router.navigateByUrl(ROLE_HOME.worker, { replaceUrl: true });
+        void this.router.navigateByUrl(ROLE_HOME.worker, { replaceUrl: true });
       },
       error: () => {
         // O perfil já existe: leva ao perfil, onde dá para reenviar o currículo.
         this.toast.info('Perfil criado, mas o currículo não foi enviado. Tente de novo aqui no seu perfil.');
-        this.router.navigateByUrl('/trabalhador/perfil', { replaceUrl: true });
+        void this.router.navigateByUrl('/trabalhador/perfil', { replaceUrl: true });
       }
     });
   }

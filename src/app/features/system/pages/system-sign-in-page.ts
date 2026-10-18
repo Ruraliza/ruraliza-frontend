@@ -67,7 +67,7 @@ export class SystemSignInPage {
     this.auth.login({ email: email.trim(), password }).subscribe({
       next: ({ user, token }) => {
         this.session.signIn(user, token);
-        this.router.navigateByUrl('/sistema');
+        void this.router.navigateByUrl('/sistema');
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
     });

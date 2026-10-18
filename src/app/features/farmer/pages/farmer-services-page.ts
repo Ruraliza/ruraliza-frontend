@@ -154,6 +154,6 @@ export class FarmerServicesPage {
   }
 
   private setParams(params: Params): void {
-    this.router.navigate([], { relativeTo: this.route, queryParams: params, queryParamsHandling: 'merge', replaceUrl: true });
+    void this.router.navigate([], { relativeTo: this.route, queryParams: params, queryParamsHandling: 'merge', replaceUrl: true });
   }
 }

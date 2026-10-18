@@ -149,9 +149,9 @@ export class SignupPage implements OnInit {
         }
         this.toast.success('Cadastro concluído. Boas-vindas ao Ruraliza!');
         if (this.hasDraft()) {
-          this.router.navigate(['/produtor/servicos/novo'], { queryParams: draftParams(this.draft()) });
+          void this.router.navigate(['/produtor/servicos/novo'], { queryParams: draftParams(this.draft()) });
         } else {
-          this.router.navigateByUrl(ROLE_HOME[role]);
+          void this.router.navigateByUrl(ROLE_HOME[role]);
         }
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
@@ -163,12 +163,12 @@ export class SignupPage implements OnInit {
     this.profiles.uploadResume(workerId, resume).subscribe({
       next: () => {
         this.toast.success('Cadastro concluído com o currículo. Boas-vindas ao Ruraliza!');
-        this.router.navigateByUrl(ROLE_HOME.worker);
+        void this.router.navigateByUrl(ROLE_HOME.worker);
       },
       error: () => {
         // A conta já existe: leva ao perfil, onde dá para reenviar o currículo.
         this.toast.info('Conta criada, mas o currículo não foi enviado. Tente de novo aqui no seu perfil.');
-        this.router.navigateByUrl('/trabalhador/perfil');
+        void this.router.navigateByUrl('/trabalhador/perfil');
       }
     });
   }

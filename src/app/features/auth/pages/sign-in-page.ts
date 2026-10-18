@@ -82,7 +82,7 @@ export class SignInPage {
     this.auth.login({ email: email.trim(), password }).subscribe({
       next: ({ user, token }) => {
         this.currentUser.signIn(user, token);
-        this.router.navigateByUrl(ROLE_HOME[user.role]);
+        void this.router.navigateByUrl(ROLE_HOME[user.role]);
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
     });

@@ -76,7 +76,7 @@ export class OfflineCacheService {
 
   // A cópia é de uma conta só: saiu (null) ou entrou outra, apaga.
   private async claim(accountId: number | null): Promise<void> {
-    let owner: string | null = null;
+    let owner: string | null;
     try {
       owner = localStorage.getItem(OWNER_KEY);
     } catch {
