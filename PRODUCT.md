@@ -33,7 +33,7 @@ Fatos observados:
 - **Tudo em português do Brasil** (rotas, textos, datas no horário de Brasília). Nomes de componentes em inglês.
 - **Backend com dados em memória, por decisão da equipe** (sem banco por ora): tudo some quando ele reinicia.
 - **Sessão em `sessionStorage`:** vale enquanto a aba está aberta. Reabrir o app sem sinal pede para entrar de novo.
-- **Pagamento é simulado** e **e-mail não existe**: a redefinição de senha segue direto para a nova senha (`TODO(email)`).
+- **Pagamento é simulado** e **e-mail não existe**: a API nunca devolve o código de redefinição, então em produção o "esqueci a senha" não tem como concluir (`TODO(email)`); em desenvolvimento, o código sai no terminal da API.
 - Os guards só evitam abrir telas sem sessão; quem protege os dados é a API.
 
 ## Fora do escopo (hoje)

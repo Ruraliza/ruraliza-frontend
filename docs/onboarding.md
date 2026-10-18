@@ -16,7 +16,7 @@ npm ci            # usa o package-lock.json
 npm start         # ng serve (configuração development) → http://localhost:4200
 ```
 
-Perfis de teste (senha `ruraliza123`, criados pelo seed do backend): `produtor@exemplo.com`, `trabalhador@exemplo.com`; da equipe, `admin@exemplo.com` e `tutor@exemplo.com` em `/sistema/entrar`. O passo a passo completo está no README, seção [Fluxo de teste](../README.md#fluxo-de-teste).
+Perfis de teste (senha `ruraliza123`, criados pelo seed do backend só no `npm run dev` dele): `produtor@exemplo.com`, `trabalhador@exemplo.com`; da equipe, `admin@exemplo.com` e `tutor@exemplo.com` em `/sistema/entrar`. As notas com essas contas só aparecem no build de desenvolvimento. No "esqueci a senha", o código sai no terminal da API. O passo a passo completo está no README, seção [Fluxo de teste](../README.md#fluxo-de-teste).
 
 ## Backend
 

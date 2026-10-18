@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Location } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { environment } from '@env/environment';
 import { AuthService } from '../data-access/auth.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { ROLE_HOME } from '@core/session/roles';
@@ -41,10 +42,12 @@ import { AuthPrefill, readAuthPrefill } from '../models/auth-prefill';
         </div>
       </form>
 
-      <p class="t-body-sm muted test-note">
-        Ambiente de teste: entre com <b>produtor&#64;exemplo.com</b>, <b>trabalhador&#64;exemplo.com</b>
-        ou <b>ambos&#64;exemplo.com</b> (tem os dois perfis), senha <b>ruraliza123</b>.
-      </p>
+      @if (devBuild) {
+        <p class="t-body-sm muted test-note">
+          Ambiente de teste: entre com <b>produtor&#64;exemplo.com</b>, <b>trabalhador&#64;exemplo.com</b>
+          ou <b>ambos&#64;exemplo.com</b> (tem os dois perfis), senha <b>ruraliza123</b>.
+        </p>
+      }
 
       <p class="muted">Ainda não tem conta? <a routerLink="/cadastro">Criar conta</a></p>
     </div>
@@ -61,6 +64,8 @@ export class SignInPage {
   // Vindo da redefinição de senha (ou de volta do "esqueci a senha"): já preenche o e-mail.
   private readonly initial = readAuthPrefill(inject(Location));
 
+  // As contas de teste só existem no seed do `npm run dev` da API: o build publicado não as mostra.
+  readonly devBuild = !environment.production;
   readonly saving = signal(false);
 
   readonly form = this.fb.group({
