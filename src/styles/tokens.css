@@ -1,4 +1,5 @@
-/* RURALIZA design tokens (landing v2). Único lugar com valores de cor.
+/* RURALIZA design tokens (redesign "campo em fotos", out/2026). Único lugar com valores de cor.
+   Branco, verde-floresta e dourado só no dinheiro; fotos reais e muito respiro.
    Tema claro (padrão: o app é usado ao ar livre), tema escuro, alto contraste e letras maiores,
    aplicados no <html> pelo PreferencesService (core/preferences) a partir das preferências da conta. */
 :root {
@@ -6,15 +7,19 @@
 
   /* --- Base --- */
   --bg:#FFFFFF;           /* fundo de página */
-  --bg-alt:#F4F8EC;       /* seções alternadas, levemente verde */
-  --ink:#0F1F14;          /* texto principal */
-  --ink-muted:#4F5E53;    /* texto secundário */
-  --line:#E3E8DC;
-  --line-strong:#7D8A80;  /* bordas de campos (≥3:1 no branco) */
+  --bg-alt:#F5F7F6;       /* seções alternadas e fundos afundados */
+  --ink:#13201A;          /* texto principal */
+  --ink-muted:#56625B;    /* texto secundário (≥4,5:1 no branco) */
+  --line:#E6EAE7;
+  --line-strong:#7E8A83;  /* bordas de campos (≥3:1 no branco) */
 
   /* --- Marca --- */
-  --green-900:#00552A;    /* primária: botões, links, header sólido */
-  --green-700:#3A7D24;    /* hover, ícones, destaques secundários */
+  --green-900:#0B5D3B;    /* primária: botões, links, aba ativa */
+  --green-700:#157347;    /* hover, ícones, destaques secundários */
+  --gold-500:#F2B705;     /* dourado: só para dinheiro e destaques pequenos (texto sobre ele: --on-accent) */
+  --gold-700:#8A6400;     /* dourado para TEXTO de valor (AA em branco) */
+  --gold-100:#FDF3D2;
+  --mint-100:#E8F3EC;     /* fundo suave dos cartões em destaque e itens ativos */
   --lime-500:#9DC41F;     /* energia: chips ativos, marcadores, blocos (texto sobre ele: --on-accent) */
   --lime-100:#EEF6D3;
   --orange-500:#EE8A14;   /* acento: CTA secundário, destaques (texto sobre ele: --on-accent) */
@@ -32,21 +37,22 @@
 
   /* --- Nomes usados pelas áreas logadas (apontam para a paleta nova) --- */
   --surface:var(--bg); --surface-raised:#FFFFFF; --surface-sunken:var(--bg-alt);
-  --mata:var(--green-900); --mata-deep:var(--green-700); --on-mata:var(--on-dark);
-  --broto:var(--lime-500); --broto-soft:var(--lime-100); --on-broto:var(--on-accent);
-  --ipe:var(--orange-500); --ipe-soft:var(--orange-100);
-  --scrim:rgba(0,40,20,.5);
+  --mata:var(--green-900); --mata-deep:#084A2F; --on-mata:var(--on-dark);
+  --broto:#1F7A4D; --broto-soft:var(--mint-100); --on-broto:var(--on-dark);
+  --ipe:var(--gold-500); --ipe-soft:var(--gold-100);
+  --money:var(--gold-700);  /* valores em reais */
+  --scrim:rgba(8,24,16,.5);
 
-  /* --- Tipografia --- */
-  --font-display:"Bricolage Grotesque","Figtree",system-ui,sans-serif;
+  /* --- Tipografia: uma família só, do título à legenda --- */
+  --font-display:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-sans:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
 
   /* --- Espaço, forma, profundidade --- */
   --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
   --space-6:24px; --space-8:32px; --space-12:48px; --space-16:64px; --space-24:96px;
-  --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-photo:28px; --radius-pill:999px;
-  --shadow-card:0 1px 2px rgba(0,40,20,.06),0 6px 20px rgba(0,40,20,.07);
-  --shadow-float:0 18px 40px rgba(0,40,20,.22);
+  --radius-sm:10px; --radius-md:14px; --radius-lg:20px; --radius-photo:24px; --radius-pill:999px;
+  --shadow-card:0 1px 2px rgba(16,32,24,.04),0 8px 24px rgba(16,32,24,.07);
+  --shadow-float:0 12px 32px rgba(16,32,24,.18);
   --focus-ring:0 0 0 2px #FFFFFF,0 0 0 5px var(--green-900);
   --ease-out:cubic-bezier(.2,.7,.2,1);
 
@@ -69,6 +75,8 @@
   --ink:#E6EEE7; --ink-muted:#A6B5A9;
   --line:#2B382F; --line-strong:#6E7F72;
   --lime-100:#243219; --orange-700:#F0A24A; --orange-100:#3A2A12;
+  --gold-700:#F2C94C; --gold-100:#3A3012; --mint-100:#18281E;
+  --broto:#7CC98F; --on-broto:#0B1F10;
   --success:#6FCF97; --success-soft:#173A27;
   --warning:#E0B252;
   --danger:#FF8A80; --danger-soft:#3D1A18;
@@ -87,7 +95,7 @@
   --ink:#04120A; --ink-muted:#26332B;
   --line:#8C9A90; --line-strong:#2E3B33;
   --bg-alt:#EEF4E4; --surface-sunken:#E6EEDA; --lime-100:#D7EBA6;
-  --mata-deep:#003D1E; --orange-700:#8F4C00;
+  --mata-deep:#003D1E; --orange-700:#8F4C00; --gold-700:#6B4E00; --mint-100:#D9EBDF; --broto:#0F5A36;
   --success:#1D5E38; --warning:#6B4500; --danger:#8E1B15; --info:#1A4A85;
   --shadow-card:none;
   --focus-ring:0 0 0 3px #FFFFFF,0 0 0 6px var(--ink);
@@ -96,7 +104,7 @@
   --bg:#060A07; --bg-alt:#0B110D; --surface-raised:#0E1611; --surface-sunken:#030504;
   --ink:#FFFFFF; --ink-muted:#DCE6DE;
   --line:#5C6E61; --line-strong:#C3D0C6;
-  --lime-100:#2A3A1C;
+  --lime-100:#2A3A1C; --gold-700:#FFD970; --mint-100:#1C2E22; --broto:#A6E3B4;
   --mata:#A6E3B4; --mata-deep:#C0EDCA;
   --orange-700:#F7B76A; --success:#8FE0B0; --warning:#F0C978; --danger:#FFA8A0; --info:#A9C8FA;
   --focus-ring:0 0 0 2px #000000,0 0 0 5px #FFFFFF;

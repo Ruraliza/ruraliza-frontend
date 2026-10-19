@@ -18,13 +18,13 @@
 .msg.mine { justify-self: end; justify-items: end; }
 .msg.theirs { justify-self: start; justify-items: start; }
 .msg.system { justify-self: center; max-width: min(92%, 520px); }
-.bubble { margin: 0; padding: var(--space-2) var(--space-3); white-space: pre-line; overflow-wrap: anywhere; line-height: 1.375rem; }
+.bubble { margin: 0; padding: var(--space-3) var(--space-4); white-space: pre-line; overflow-wrap: anywhere; font-size: 1.0625rem; line-height: 1.5rem; }
 .mine .bubble { border-radius: 18px 18px 4px 18px; background: var(--mata); color: var(--on-mata); }
-.theirs .bubble { border-radius: 18px 18px 18px 4px; background: var(--surface-raised); border: 1px solid var(--line-strong); }
+.theirs .bubble { border-radius: 18px 18px 18px 4px; background: var(--surface-sunken); }
 .bubble.failed { background: var(--danger-soft); color: var(--ink); border: 1px solid var(--danger); }
 .system {
   margin: 0; padding: var(--space-2) var(--space-4); border-radius: var(--radius-md);
-  background: var(--lime-100); color: var(--ink); font-size: 0.875rem; line-height: 1.25rem; text-align: center;
+  background: var(--mint-100); color: var(--ink); font-size: 0.875rem; line-height: 1.25rem; text-align: center;
 }
 time, .state { color: var(--ink-muted); font-size: 0.75rem; line-height: 1rem; font-variant-numeric: tabular-nums; }
 .retry {
@@ -43,9 +43,9 @@ time, .state { color: var(--ink-muted); font-size: 0.75rem; line-height: 1rem; f
 .quick::-webkit-scrollbar { display: none; }
 .quick button {
   flex: none; min-height: 36px; padding: 0 var(--space-3); border-radius: var(--radius-pill);
-  border: 1px solid var(--line-strong); background: var(--surface-raised); color: var(--ink); font: 600 0.875rem/1.25rem var(--font-sans); cursor: pointer;
+  border: 1px solid var(--mata); background: var(--surface-raised); color: var(--mata); font: 600 0.9375rem/1.25rem var(--font-sans); cursor: pointer;
 }
-.quick button:hover { border-color: var(--mata); }
+.quick button:hover { background: var(--mint-100); }
 .warn { display: flex; align-items: center; gap: var(--space-2); margin: 0; color: var(--orange-700); font-weight: 600; }
 .write { display: flex; align-items: flex-end; gap: var(--space-2); }
 textarea {

@@ -24,4 +24,4 @@ h2:focus { outline: none; }
 
 .expired-note { padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--orange-100); color: var(--ink); font-weight: 600; }
 .field-error { color: var(--danger); font-weight: 600; }
-.copy-note { max-width: 560px; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--lime-100); }
+.copy-note { max-width: 560px; padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--mint-100); }

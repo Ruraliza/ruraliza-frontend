@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 
-// accent: laranja com texto escuro (CTA secundário). inverse: contornado, sobre foto ou verde.
+// accent: dourado com texto escuro (CTA secundário). inverse: contornado, sobre foto ou verde.
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'accent' | 'inverse';
 
 // Uso: <button appButton variant="primary" [loading]="saving()">Publicar serviço</button>
@@ -32,9 +32,9 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'acce
   styles: `
     :host {
       display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
-      min-height: 48px; padding: 0 var(--space-6);
-      border: 1px solid transparent; border-radius: var(--radius-pill);
-      font: 600 1rem/1.5rem var(--font-sans); text-decoration: none; white-space: nowrap;
+      min-height: 52px; padding: 0 var(--space-6);
+      border: 1px solid transparent; border-radius: var(--radius-md);
+      font: 700 1rem/1.5rem var(--font-sans); text-decoration: none; white-space: nowrap;
       transition: background-color .15s ease, border-color .15s ease;
     }
     :host(.btn--primary) { background: var(--mata); color: var(--on-mata); }
@@ -44,7 +44,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'acce
     :host(.btn--danger) { background: var(--danger); color: var(--surface); }
     :host(.btn--ghost) { background: transparent; color: var(--mata); padding-inline: var(--space-3); }
     :host(.btn--ghost:hover:not([disabled])) { background: var(--surface-sunken); }
-    :host(.btn--accent) { background: var(--orange-500); color: var(--on-accent); }
+    :host(.btn--accent) { background: var(--gold-500); color: var(--on-accent); }
     :host(.btn--accent:hover:not([disabled])) { box-shadow: inset 0 0 0 999px rgba(255,255,255,.16); }
     :host(.btn--inverse) { background: transparent; color: var(--on-dark); border-color: var(--on-dark-line); }
     :host(.btn--inverse:hover:not([disabled])) { background: rgba(255,255,255,.12); }

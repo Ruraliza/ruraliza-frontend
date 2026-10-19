@@ -63,5 +63,5 @@
 }
 .congrats::backdrop { background: var(--scrim); }
 .congrats[open] { display: grid; justify-items: center; gap: var(--space-4); }
-.congrats app-icon { color: var(--orange-500); }
+.congrats app-icon { color: var(--gold-500); }
 .congrats-actions { display: flex; flex-wrap: wrap-reverse; justify-content: center; gap: var(--space-3); }

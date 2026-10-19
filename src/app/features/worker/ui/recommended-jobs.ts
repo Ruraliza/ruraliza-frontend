@@ -18,11 +18,8 @@ const SHOWN = 3;
   template: `
     <section class="stack" aria-labelledby="recommended-title">
       <div class="head">
-        <div class="stack-sm">
-          <h2 id="recommended-title">Vagas para você</h2>
-          <p class="t-body-sm muted">Pelo que você escolheu em seus interesses, pelas trilhas que faz e pelas vagas em que se candidatou.</p>
-        </div>
-        <a class="adjust t-body-sm" routerLink="/trabalhador/perfil" fragment="interesses">Ajustar interesses</a>
+        <h2 id="recommended-title">Vagas para você</h2>
+        <a class="adjust" routerLink="/trabalhador/vagas/para-voce">Ver todas<app-icon name="arrow-right" [size]="18" /></a>
       </div>
 
       @switch (data.state().status) {
@@ -30,14 +27,11 @@ const SHOWN = 3;
         @case ('error') { <p class="t-body-sm muted">Não foi possível carregar as sugestões agora.</p> }
         @case ('success') {
           @if (jobs().length) {
-            <div class="grid-cards">
+            <div class="row">
               @for (job of jobs(); track job.id) {
-                <app-service-card [service]="job" [link]="['/trabalhador/vagas', job.id]" [showStatus]="false" [reasons]="job.reasons" />
+                <app-service-card [service]="job" [link]="['/trabalhador/vagas', job.id]" [showStatus]="false" [reasons]="job.reasons.slice(0, 1)" />
               }
             </div>
-            @if (more()) {
-              <div><a appButton variant="secondary" routerLink="/trabalhador/vagas/para-voce">Ver todas as vagas para você</a></div>
-            }
           } @else if (hasInterests()) {
             <p class="note">Nenhuma vaga aberta combina com você agora. Quando abrir uma, ela aparece aqui{{ alerts() ? ' e você recebe um aviso' : '' }}.</p>
           } @else {
@@ -54,9 +48,13 @@ const SHOWN = 3;
     </section>
   `,
   styles: `
-    .head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-2) var(--space-4); }
+    .head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2) var(--space-4); }
     h2, p { margin: 0; }
-    .adjust { color: var(--mata); font-weight: 600; text-underline-offset: 3px; }
+    .adjust { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; color: var(--mata); font-weight: 700; text-decoration: none; }
+    /* Celular: fileira que rola para o lado, com a próxima vaga aparecendo na borda. Desktop: grade. */
+    .row { display: grid; grid-auto-flow: column; grid-auto-columns: min(82%, 320px); gap: var(--space-4); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--space-2); margin-inline: calc(-1 * var(--space-4)); padding-inline: var(--space-4); scroll-padding-inline: var(--space-4); }
+    .row > * { scroll-snap-align: start; }
+    @media (min-width: 768px) { .row { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); overflow: visible; margin-inline: 0; padding-inline: 0; } }
     .note { padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--surface-sunken); font-size: 0.875rem; }
     .invite {
       display: flex; gap: var(--space-4); align-items: flex-start; padding: var(--space-6);
@@ -70,11 +68,10 @@ export class RecommendedJobs implements OnInit {
 
   private readonly matching = inject(MatchingService);
   readonly data = new RemoteData(() =>
-    forkJoin({ preferences: this.matching.preferences(this.workerId()), jobs: this.matching.recommended(this.workerId(), SHOWN + 1) })
+    forkJoin({ preferences: this.matching.preferences(this.workerId()), jobs: this.matching.recommended(this.workerId(), SHOWN) })
   );
 
-  readonly jobs = computed(() => (this.data.data()?.jobs ?? []).slice(0, SHOWN));
-  readonly more = computed(() => (this.data.data()?.jobs.length ?? 0) > SHOWN);
+  readonly jobs = computed(() => this.data.data()?.jobs ?? []);
   readonly hasInterests = computed(() => {
     const prefs = this.data.data()?.preferences;
     return !!prefs && (prefs.categories.length > 0 || prefs.near !== null);

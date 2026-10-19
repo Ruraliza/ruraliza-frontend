@@ -18,7 +18,7 @@ import { formatRating, ratingLabel } from '../utils/review-criteria';
   styles: `
     :host { display: inline-flex; align-items: center; gap: var(--space-1); font-size: 0.9375rem; line-height: 1.25rem; color: var(--ink); white-space: nowrap; }
     :host(.empty) { color: var(--ink-muted); font-size: 0.875rem; }
-    svg { width: 18px; height: 18px; fill: var(--orange-500); stroke: var(--orange-700); stroke-width: 1; stroke-linejoin: round; }
+    svg { width: 18px; height: 18px; fill: var(--gold-500); stroke: var(--gold-700); stroke-width: 1; stroke-linejoin: round; }
     strong { font-weight: 700; font-variant-numeric: tabular-nums; }
     .count { color: var(--ink-muted); font-variant-numeric: tabular-nums; }
     :host(.large) { font-size: 1.125rem; line-height: 1.5rem; }

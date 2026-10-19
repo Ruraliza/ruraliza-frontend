@@ -69,7 +69,7 @@
           <button appButton variant="secondary" type="button" (click)="clearFilters()">Limpar filtros</button>
         </app-empty-state>
       } @else {
-        <app-empty-state [title]="emptyCopy().title" [message]="emptyCopy().message">
+        <app-empty-state [art]="true" [title]="emptyCopy().title" [message]="emptyCopy().message">
           @if (tab() === 'abertos') { <a appButton routerLink="/produtor/servicos/novo">Publicar serviço</a> }
         </app-empty-state>
       }

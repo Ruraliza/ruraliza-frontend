@@ -29,7 +29,7 @@ import { FARM_CRITERIA, WORKER_CRITERIA } from '../utils/review-criteria';
     dt { color: var(--ink-muted); font-size: 0.875rem; }
     dd { display: flex; gap: 1px; margin: 0; }
     svg { width: 16px; height: 16px; fill: transparent; stroke: var(--line-strong); stroke-width: 1.5; stroke-linejoin: round; }
-    svg.on { fill: var(--orange-500); stroke: var(--orange-700); }
+    svg.on { fill: var(--gold-500); stroke: var(--gold-700); }
     blockquote { margin: 0; padding-left: var(--space-3); border-left: 3px solid var(--broto); white-space: pre-line; overflow-wrap: anywhere; }
   `
 })

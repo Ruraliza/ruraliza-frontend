@@ -4,17 +4,24 @@ O CSS é a fonte da verdade dos valores. Este documento aponta onde estão e res
 
 ## Direção
 
-Público: produtores e trabalhadores do campo, no celular, muitas vezes ao ar livre e com sinal fraco. Por isso o tema padrão é o claro, o contraste é alto e os alvos de toque são grandes. Idioma: pt-BR, texto simples e direto. A marca é verde, lima e laranja, com o "R" em grade de 3×4 módulos (README, seção [Marca](../README.md#marca)).
+Público: produtores e trabalhadores do campo, no celular, muitas vezes ao ar livre e com sinal fraco. Por isso o tema padrão é o claro, o contraste é alto e os alvos de toque são grandes. Idioma: pt-BR, texto simples e direto. O "R" em grade de 3×4 módulos continua sendo o logo (README, seção [Marca](../README.md#marca)).
+
+**Redesign das áreas logadas (out/2026), "campo em fotos":** fundo branco, verde-floresta nos botões e na aba ativa, e dourado só no dinheiro. As vagas usam fotos reais e as ilustrações calorosas ficam só nos estados vazios. Cada tela tem **uma ação principal** e pouca informação, porque o público precisa de praticidade. As referências aprovadas e a decisão estão em `.impeccable/` (fora do git) e em `Pictures/Kie.ai/ruraliza-*.png`. A landing ainda usa o verde, o lima e o laranja de antes.
 
 ## Sistema existente
 
 - **Tokens:** [`src/styles/tokens.css`](../src/styles/tokens.css) é o único lugar com valores de cor. Importado por `src/styles.css`, junto de `base.css`, `layout.css` e `motion.css`.
-  - **Cores:** base (fundo, texto, linhas), marca (verde, lima, laranja e versões suaves), semânticas (sucesso, aviso, erro, informação) e aliases usados pelas áreas logadas (`--surface*`, `--mata*`, `--broto*`, `--ipe*`). Texto sobre lima ou laranja usa `--on-accent`.
+  - **Cores:**
+    - Base: fundo, texto e linhas.
+    - Marca: verde-floresta `--green-900`, `--gold-500` e `--gold-700` (o dourado do dinheiro; `.money` aplica a cor nos valores) e `--mint-100` para fundos suaves.
+    - Semânticas: sucesso, aviso, erro e informação.
+    - Aliases das áreas logadas: `--surface*`, `--mata*`, `--broto*`, `--ipe*` e `--money`.
+    - O lima e o laranja ficam só na landing. Texto sobre dourado, lima ou laranja usa `--on-accent`.
   - **Temas por atributo no `<html>`** (aplicados pelo `PreferencesService`): `data-theme="dark"`, `data-contrast="high"` (também combinado com o escuro) e `data-text="large"`, que só muda o `font-size` da raiz.
-  - **Tipografia:** duas famílias (display e sans, via Google Fonts em `index.html`) e uma escala em `rem` nas classes `.t-*` e nos títulos de `base.css`. Letras maiores funcionam porque tudo é `rem`.
+  - **Tipografia:** uma família só, a Figtree, de 400 a 800 (Google Fonts em `index.html`), com títulos em 750/800. A escala é em `rem`, nas classes `.t-*` e nos títulos de `base.css`; por isso as letras maiores funcionam.
   - **Espaço e forma:** escala de espaços (`--space-*`), raios (`--radius-*`), sombras, anel de foco, curva de movimento, alturas da barra de cima, do menu de baixo e da sidebar.
 - **Utilitários de layout** em `src/styles/layout.css`: `.container`, `.page`, `.stack*`, `.cluster`, `.card`, `.grid-cards`, `.grid-metrics`, `.form`, `.details`. `.prose` (markdown das aulas) fica em `base.css`.
-- **Movimento:** `src/styles/motion.css` (revelação ao rolar, marca-texto lima). `base.css` zera animações com `prefers-reduced-motion: reduce`.
+- **Movimento:** `src/styles/motion.css` (revelação ao rolar, marca-texto lima da landing). `base.css` zera animações com `prefers-reduced-motion: reduce`.
 - **Componentes sem domínio** (`src/app/shared/ui/`): `button`, `confirm-dialog`, `empty-state`, `error-state`, `form-field`, `icon`, `logo`, `masked-input`, `metric-card`, `password-reveal`, `photo-crop-dialog`, `photo-picker`, `photo-strip`, `progress-bar`, `qr-code`, `segmented-control`, `skeleton`, `switch-field`.
 - **UI de domínio** (`src/app/shared/domain/ui/`): `service-card`, `status-badge`, `avatar`, `avatar-editor`, `category-chip`, `farm-map`, `star-input`, `rating-badge`, `review-form`, `service-reviews`, `reputation-dialog`, `pending-reviews`, `chat-list`, `chat-thread`, `chat-phone-panel`, `notification-list`, `help-center`, `certificate-view`, `verification-card`, `report-dialog`, `sponsor-card`, entre outros.
 - **Cascas** (`src/app/core/layout/`): `public-layout`, `app-shell` (barra de cima, menu de baixo, sidebar), `shell-topbar`, `pwa-banners`, `install-app-button`, `push-toggle`, `role-switch-button`, `display-preferences`, `toast-container`.
@@ -43,9 +50,18 @@ Público: produtores e trabalhadores do campo, no celular, muitas vezes ao ar li
 - **Revisões feitas:** não há registro de revisão de interface no repositório.
 - Suposição: os pontos de virada abaixo de 1024px foram escolhidos caso a caso; nenhum token os define.
 
-## Redesign planejado
+## Padrões do redesign
 
-Direção apenas, **nada implementado**: um redesign visual está em planejamento. Até lá, mudanças de interface seguem os tokens e componentes acima. Quando houver redesign, os tokens continuam sendo o ponto único de troca; registre aqui a decisão e atualize o `tokens.css`.
+- **Próxima ação** (`shared/domain/ui/next-step.ts`): o primeiro cartão do Início mostra uma coisa só para fazer agora, com um botão de largura total.
+  - Trabalhador: o serviço em andamento ou as candidaturas enviadas.
+  - Produtor: o serviço com mais candidatos.
+  - Os blocos de números do Início saíram.
+- **Foto da vaga:** é a foto da fazenda; sem ela, uma foto da categoria (`serviceCover` e `categoryPhoto` em `shared/domain/utils/farm-emoji.ts`). As fotos são do Unsplash, com créditos em `src/assets/images/landing/credits.json`. Há duas por categoria, quando existem, para vagas vizinhas não repetirem.
+- **Ilustração dos estados vazios:** `<app-empty-state [art]="true">` mostra `src/assets/images/ilustracao-sede.webp` (gerada; prompt e origem em `ilustracao-sede.json`). Use só nas listas vazias principais.
+- **Menu de baixo:** o item ativo fica em verde, com um traço curto embaixo. A ação central é um círculo verde de 60px.
+- **Botões:** cantos de 14px e altura de 52px.
+
+Ainda no visual anterior, a revisar depois: a landing e telas menos usadas (formulários longos, área da equipe). Elas já herdam as cores e a fonte novas pelos tokens.
 
 ## Skills de design para agentes
 

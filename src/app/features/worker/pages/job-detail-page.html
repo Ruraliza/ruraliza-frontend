@@ -6,56 +6,50 @@
     @case ('error') { <app-error-state [message]="job.error() || applications.error()" (retry)="load()" /> }
     @case ('success') {
       @if (job.data(); as j) {
-        <header class="page-header">
-          <div>
-            <div class="cluster tags">
-              <span appCategoryChip>{{ j.category }}</span>
-              @if (j.status !== 'Pending') { <app-status-badge [status]="j.status" /> }
-            </div>
-            <h1>{{ j.name }}</h1>
-          </div>
-        </header>
-
         @if (j.farm.photos.length) {
           <app-photo-strip [urls]="j.farm.photos" [label]="'Fotos da fazenda em ' + j.farm.city" />
+        } @else {
+          <img class="hero" [src]="cover(j)" alt="" decoding="async" />
         }
 
-        <section class="card stack">
-          @if (j.description) {
-            <div class="description">
-              <h2 class="t-h3">Sobre o serviço</h2>
-              <p>{{ j.description }}</p>
-            </div>
+        <header class="title">
+          <div class="cluster">
+            <span appCategoryChip>{{ j.category }}</span>
+            @if (j.status !== 'Pending') { <app-status-badge [status]="j.status" /> }
+          </div>
+          <h1>{{ j.name }}</h1>
+          <p class="muted">{{ j.farm.city }}, {{ j.farm.state }}</p>
+        </header>
+
+        <!-- O que a pessoa decide primeiro: quanto paga, quantas horas e até quando. -->
+        <dl class="facts">
+          <div><app-icon name="money" [size]="24" /><dd class="money">{{ price() }}</dd><dt>Pagamento</dt></div>
+          <div><app-icon name="clock" [size]="24" /><dd>{{ hours() }}</dd><dt>Duração</dt></div>
+          @if (deadlineDay(); as day) {
+            <div><app-icon name="alert" [size]="24" /><dd [class.deadline]="!expired()">{{ day }}</dd><dt>{{ expired() ? 'Prazo encerrado' : 'Inscrições até' }}</dt></div>
           }
-          <dl class="details">
-            <div><dt>Local</dt><dd class="with-icon"><app-icon name="map-pin" [size]="20" />{{ j.farm.city }}, {{ j.farm.state }}</dd></div>
+        </dl>
+
+        @if (j.description) { <p class="description">{{ j.description }}</p> }
+
+        @if (j.farm.reputation || j.farm.farmer_verified) {
+          <div class="farm">
+            @if (j.farm.farmer_verified) { <app-verified-badge label="Identidade verificada" /> }
             @if (j.farm.reputation; as rep) {
-              <div>
-                <dt>Avaliação da fazenda</dt>
-                <dd class="with-icon rating">
-                  <app-rating-badge [reputation]="rep" />
-                  @if (rep.count > 0) { <button type="button" class="link" (click)="showFarmReviews()">Ver avaliações</button> }
-                </dd>
-              </div>
+              <app-rating-badge [reputation]="rep" />
+              @if (rep.count > 0) { <button type="button" class="link" (click)="showFarmReviews()">Ver avaliações</button> }
             }
-            @if (j.farm.farmer_verified) {
-              <div><dt>Produtor</dt><dd><app-verified-badge label="Identidade verificada" /></dd></div>
-            }
-            <div><dt>Duração</dt><dd>{{ hours() }}</dd></div>
-            <div><dt>Pagamento</dt><dd class="price">{{ price() }}</dd></div>
-            <div><dt>Publicada em</dt><dd>{{ publishedAt() }}</dd></div>
-            @if (deadline(); as text) {
-              <div><dt>Prazo</dt><dd [class.deadline]="!expired()">{{ text }}</dd></div>
-            }
-          </dl>
-          <!-- O ponto só vem da API para o trabalhador aceito no serviço. -->
-          @if (farmPoint(); as point) {
-            <div class="route">
-              <h2 class="t-h3">Como chegar</h2>
-              <app-farm-map [point]="point" [label]="'Fazenda em ' + j.farm.city" />
-            </div>
-          }
-        </section>
+          </div>
+        }
+        <p class="t-body-sm muted">Publicada em {{ publishedAt() }}</p>
+
+        <!-- O ponto só vem da API para o trabalhador aceito no serviço. -->
+        @if (farmPoint(); as point) {
+          <section class="route">
+            <h2 class="t-h3">Como chegar</h2>
+            <app-farm-map [point]="point" [label]="'Fazenda em ' + j.farm.city" />
+          </section>
+        }
 
         <section class="apply card" aria-live="polite">
           @if (myApplication(); as application) {

@@ -8,8 +8,9 @@ import { Button } from '@shared/ui/button';
 import { EmptyState } from '@shared/ui/empty-state';
 import { ErrorState } from '@shared/ui/error-state';
 import { Icon } from '@shared/ui/icon';
-import { MetricCard } from '@shared/ui/metric-card';
-import { ServiceCard } from '@shared/domain/ui/service-card';
+import { NextStep } from '@shared/domain/ui/next-step';
+import { StatusBadge } from '@shared/domain/ui/status-badge';
+import { serviceCover } from '@shared/domain/utils/farm-emoji';
 import { Skeleton } from '@shared/ui/skeleton';
 import { PendingReviews } from '@shared/domain/ui/pending-reviews';
 import { FarmStatsPanel } from '../ui/farm-stats-panel';
@@ -17,48 +18,59 @@ import { SponsorSlot } from '@shared/domain/ui/sponsor-slot';
 
 @Component({
   selector: 'app-farmer-dashboard-page',
-  imports: [RouterLink, Button, EmptyState, ErrorState, FarmStatsPanel, Icon, MetricCard, PendingReviews, ServiceCard, Skeleton, SponsorSlot],
+  imports: [RouterLink, Button, EmptyState, ErrorState, FarmStatsPanel, Icon, NextStep, PendingReviews, Skeleton, SponsorSlot, StatusBadge],
   template: `
     <div class="container page">
-      <div class="page-header">
-        <div>
-          <h1>Olá{{ firstName() ? ', ' + firstName() : '' }}</h1>
-        </div>
-        <a appButton routerLink="/produtor/servicos/novo"><app-icon name="plus" [size]="20" />Publicar serviço</a>
-      </div>
+      <h1>Olá{{ firstName() ? ', ' + firstName() : '' }}</h1>
 
       @switch (state().status) {
         @case ('loading') { <app-skeleton [count]="2" [height]="140" /> }
         @case ('error') { <app-error-state [message]="services.error() || farmer.error()" (retry)="load()" /> }
         @case ('success') {
-          @if (metrics(); as m) {
-            <section class="grid-metrics" aria-label="Resumo">
-              <app-metric-card variant="hero" label="Candidaturas para analisar" [value]="m.pendingApplications" />
-              <app-metric-card label="Abertos" [value]="m.open" />
-              <app-metric-card label="Em andamento" [value]="m.inProgress" />
-              <app-metric-card label="Concluídos" [value]="m.completed" />
-            </section>
+          <!-- Uma ação por vez: o serviço com mais candidatos esperando resposta. -->
+          @if (needsYou(); as s) {
+            <app-next-step
+              status="Precisa de você"
+              [title]="'Escolha quem faz: ' + s.name"
+              [place]="s.applications_pending === 1 ? '1 candidato' : s.applications_pending + ' candidatos'"
+              [photo]="cover(s)"
+            >
+              <a appButton [routerLink]="['/produtor/servicos', s.id]"><app-icon name="user" [size]="20" />Ver candidatos</a>
+            </app-next-step>
           }
 
-          <app-pending-reviews role="farmer" [profileId]="farmerId" />
-
           <section class="stack">
-            <div class="page-header">
-              <h2>Serviços recentes</h2>
-              @if (recent().length) { <a appButton variant="ghost" routerLink="/produtor/servicos">Ver todos</a> }
+            <div class="head">
+              <h2>Seus serviços</h2>
+              @if (recent().length) { <a class="more" routerLink="/produtor/servicos">Ver todos<app-icon name="arrow-right" [size]="18" /></a> }
             </div>
             @if (recent().length) {
-              <div class="grid-cards">
+              <ul class="list" role="list">
                 @for (service of recent(); track service.id) {
-                  <app-service-card [service]="service" [link]="['/produtor/servicos', service.id]" />
+                  <li>
+                    <a [routerLink]="['/produtor/servicos', service.id]">
+                      <img [src]="cover(service)" alt="" loading="lazy" decoding="async" />
+                      <span class="info">
+                        <b>{{ service.name }}</b>
+                        @if (service.applications_pending) {
+                          <span class="t-body-sm muted">{{ service.applications_pending === 1 ? '1 candidato para analisar' : service.applications_pending + ' candidatos para analisar' }}</span>
+                        } @else {
+                          <app-status-badge [status]="service.status" />
+                        }
+                      </span>
+                      <app-icon name="arrow-right" [size]="20" />
+                    </a>
+                  </li>
                 }
-              </div>
+              </ul>
             } @else {
-              <app-empty-state title="Você ainda não publicou serviços" message="Publique o primeiro e receba candidaturas de quem sabe fazer.">
+              <app-empty-state [art]="true" title="Você ainda não publicou serviços" message="Publique o primeiro e receba candidaturas de quem sabe fazer.">
                 <a appButton routerLink="/produtor/servicos/novo">Publicar serviço</a>
               </app-empty-state>
             }
           </section>
+
+          <app-pending-reviews role="farmer" [profileId]="farmerId" />
 
           <app-farm-stats-panel [farmerId]="farmerId" />
 
@@ -66,6 +78,18 @@ import { SponsorSlot } from '@shared/domain/ui/sponsor-slot';
         }
       }
     </div>
+  `,
+  styles: `
+    .head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); }
+    .more { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; color: var(--mata); font-weight: 700; text-decoration: none; }
+    .list { display: grid; border-radius: var(--radius-lg); background: var(--surface-raised); box-shadow: var(--shadow-card); border: 1px solid var(--line); overflow: hidden; }
+    .list li + li { border-top: 1px solid var(--line); }
+    .list a { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); color: var(--ink); text-decoration: none; }
+    .list a:hover { background: var(--surface-sunken); }
+    .list img { flex: none; width: 64px; height: 64px; border-radius: var(--radius-md); object-fit: cover; background: var(--bg-alt); }
+    .info { flex: 1; min-width: 0; display: grid; gap: var(--space-1); justify-items: start; }
+    .info b { font-weight: 700; overflow-wrap: anywhere; }
+    .list a > app-icon { flex: none; color: var(--ink-muted); }
   `
 })
 export class FarmerDashboardPage {
@@ -82,16 +106,10 @@ export class FarmerDashboardPage {
 
   readonly firstName = computed(() => this.farmer.data()?.name.split(' ')[0] ?? '');
 
-  readonly metrics = computed(() => {
-    const list = this.services.data();
-    if (!list) return null;
-    return {
-      open: list.filter((s) => s.status === 'Pending').length,
-      inProgress: list.filter((s) => s.status === 'In Progress').length,
-      completed: list.filter((s) => s.status === 'Completed').length,
-      pendingApplications: list.reduce((sum, s) => sum + s.applications_pending, 0)
-    };
-  });
+  readonly needsYou = computed(() =>
+    [...(this.services.data() ?? [])].filter((s) => s.applications_pending > 0).sort((a, b) => b.applications_pending - a.applications_pending)[0] ?? null
+  );
+  protected readonly cover = serviceCover;
 
   readonly recent = computed(() => [...(this.services.data() ?? [])].sort((a, b) => b.id - a.id).slice(0, 3));
 

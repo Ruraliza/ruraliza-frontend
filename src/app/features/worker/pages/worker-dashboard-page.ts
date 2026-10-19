@@ -5,11 +5,11 @@ import { ProfileService } from '@core/api/profile.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { RemoteData, mergeStates } from '@shared/utils/remote-data';
 import { Button } from '@shared/ui/button';
-import { EmptyState } from '@shared/ui/empty-state';
 import { ErrorState } from '@shared/ui/error-state';
 import { Icon } from '@shared/ui/icon';
-import { MetricCard } from '@shared/ui/metric-card';
+import { NextStep } from '@shared/domain/ui/next-step';
 import { ServiceCard } from '@shared/domain/ui/service-card';
+import { serviceCover } from '@shared/domain/utils/farm-emoji';
 import { Skeleton } from '@shared/ui/skeleton';
 import { PendingReviews } from '@shared/domain/ui/pending-reviews';
 import { RecommendedJobs } from '../ui/recommended-jobs';
@@ -18,47 +18,49 @@ import { SponsorSlot } from '@shared/domain/ui/sponsor-slot';
 
 @Component({
   selector: 'app-worker-dashboard-page',
-  imports: [RouterLink, Button, EmptyState, ErrorState, Icon, MetricCard, PendingReviews, RecommendedJobs, ServiceCard, Skeleton, SponsorSlot],
+  imports: [RouterLink, Button, ErrorState, Icon, NextStep, PendingReviews, RecommendedJobs, ServiceCard, Skeleton, SponsorSlot],
   template: `
     <div class="container page">
-      <div class="page-header">
-        <div>
-          <h1>Olá{{ firstName() ? ', ' + firstName() : '' }}</h1>
-        </div>
-        <a appButton routerLink="/trabalhador/vagas"><app-icon name="search" [size]="20" />Buscar vagas</a>
-      </div>
+      <h1>Olá{{ firstName() ? ', ' + firstName() : '' }}</h1>
 
       @switch (state().status) {
         @case ('loading') { <app-skeleton [count]="2" [height]="140" /> }
         @case ('error') { <app-error-state [message]="worker.error() || applications.error() || services.error()" (retry)="load()" /> }
         @case ('success') {
-          @if (metrics(); as m) {
-            <section class="grid-metrics" aria-label="Resumo">
-              <app-metric-card variant="hero" label="Serviços em andamento" [value]="m.inProgress" />
-              <app-metric-card label="Candidaturas aguardando" [value]="m.pending" />
-              <app-metric-card label="Candidaturas aceitas" [value]="m.accepted" />
-              <app-metric-card label="Candidaturas recusadas" [value]="m.rejected" />
-            </section>
+          <!-- Uma ação por vez: o serviço em andamento, ou as candidaturas que esperam resposta. -->
+          @if (inProgress()[0]; as current) {
+            <app-next-step
+              status="Em andamento"
+              [title]="current.name"
+              [place]="current.farm.city + ', ' + current.farm.state"
+              [photo]="cover(current)"
+            >
+              <a appButton [routerLink]="['/trabalhador/vagas', current.id]"><app-icon name="chat" [size]="20" />Abrir serviço e conversa</a>
+            </app-next-step>
+          } @else if (pendingCount()) {
+            <app-next-step
+              status="Aguardando resposta"
+              [title]="pendingCount() === 1 ? '1 candidatura enviada' : pendingCount() + ' candidaturas enviadas'"
+              place="O produtor vê seu perfil e decide quem faz o serviço."
+            >
+              <a appButton variant="secondary" routerLink="/trabalhador/candidaturas">Ver candidaturas</a>
+            </app-next-step>
           }
-
-          <app-pending-reviews role="worker" [profileId]="workerId" />
 
           <app-recommended-jobs [workerId]="workerId" />
 
-          <section class="stack">
-            <h2>Em andamento</h2>
-            @if (inProgress().length) {
+          <app-pending-reviews role="worker" [profileId]="workerId" />
+
+          @if (inProgress().length > 1) {
+            <section class="stack">
+              <h2>Outros serviços em andamento</h2>
               <div class="grid-cards">
-                @for (service of inProgress(); track service.id) {
+                @for (service of inProgress().slice(1); track service.id) {
                   <app-service-card [service]="service" [link]="['/trabalhador/vagas', service.id]" />
                 }
               </div>
-            } @else {
-              <app-empty-state icon="briefcase" title="Nenhum serviço em andamento" message="Quando um produtor aceitar sua candidatura, o serviço aparece aqui.">
-                <a appButton routerLink="/trabalhador/vagas">Ver vagas abertas</a>
-              </app-empty-state>
-            }
-          </section>
+            </section>
+          }
 
           @if (completedCount()) {
             <p class="muted">Você já concluiu {{ completedCount() }} {{ completedCount() === 1 ? 'serviço' : 'serviços' }} pelo Ruraliza.</p>
@@ -88,16 +90,8 @@ export class WorkerDashboardPage {
   readonly inProgress = computed(() => (this.services.data() ?? []).filter((s) => s.status === 'In Progress'));
   readonly completedCount = computed(() => (this.services.data() ?? []).filter((s) => s.status === 'Completed').length);
 
-  readonly metrics = computed(() => {
-    const apps = this.applications.data();
-    if (!apps) return null;
-    return {
-      inProgress: this.inProgress().length,
-      pending: apps.filter((a) => a.status === 'Pending').length,
-      accepted: apps.filter((a) => a.status === 'Accepted').length,
-      rejected: apps.filter((a) => a.status === 'Rejected').length
-    };
-  });
+  readonly pendingCount = computed(() => (this.applications.data() ?? []).filter((a) => a.status === 'Pending').length);
+  protected readonly cover = serviceCover;
 
   constructor() {
     this.load();

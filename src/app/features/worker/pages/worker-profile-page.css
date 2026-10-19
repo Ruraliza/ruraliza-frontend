@@ -4,7 +4,7 @@
 
 .nudge {
   display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4);
-  padding: var(--space-4) var(--space-6); border-radius: var(--radius-lg); background: var(--lime-100);
+  padding: var(--space-4) var(--space-6); border-radius: var(--radius-lg); background: var(--mint-100);
 }
 .nudge > div { flex: 1; min-width: 200px; display: grid; gap: var(--space-1); }
 .nudge app-icon { color: var(--green-700); }

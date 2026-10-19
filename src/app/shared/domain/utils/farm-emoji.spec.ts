@@ -1,4 +1,4 @@
-import { FARM_EMOJIS, PROFILE_EMOJIS, categoryEmoji, emojiSrc, pickEmoji } from './farm-emoji';
+import { FARM_EMOJIS, PROFILE_EMOJIS, categoryEmoji, categoryPhoto, emojiSrc, pickEmoji } from './farm-emoji';
 
 describe('farm-emoji', () => {
   it('always picks the same emoji for the same person', () => {
@@ -16,6 +16,13 @@ describe('farm-emoji', () => {
     expect(categoryEmoji('Manejo de gado')).toBe('🐄');
     expect(categoryEmoji('Operação de máquinas')).toBe('🚜');
     expect(FARM_EMOJIS).toContain(categoryEmoji('Categoria nova'));
+  });
+
+  it('uses the photo of the category when the farm has none', () => {
+    expect(categoryPhoto('Pulverização')).toBe('assets/images/landing/cat-pulverizacao-800.webp');
+    expect(categoryPhoto('Pulverização', 1)).toBe('assets/images/landing/trilha-defensivos-800.webp');
+    expect(categoryPhoto('Manutenção', 7)).toBe('assets/images/landing/cat-manutencao-800.webp');
+    expect(categoryPhoto('Categoria nova')).toBe('assets/images/landing/cat-outros-800.webp');
   });
 });
 
