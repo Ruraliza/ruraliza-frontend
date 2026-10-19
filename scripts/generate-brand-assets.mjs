@@ -90,8 +90,9 @@ for (const size of [72, 96, 128, 144, 152, 192, 384, 512]) {
   await writeFile(new URL(`icon-${size}.png`, ICONS_DIR), await png(favicon, size));
 }
 
-// Zona segura: círculo de raio 0,4 do ícone. Meia-diagonal do símbolo = 25 módulos → escala 0,76.
-const fullBleed = appIconSvg({ radius: 0, scale: 0.76 });
+// Android recorta o ícone (círculo, gota etc.). Escala 0,9: o "R" fica quase do tamanho do favicon
+// e ainda inteiro num círculo do tamanho do ícone (a 0,76 ele ficava pequeno; a 1 encosta na borda).
+const fullBleed = appIconSvg({ radius: 0, scale: 0.9 });
 await writeFile(new URL('icon-maskable-512.png', ICONS_DIR), await png(fullBleed, 512));
 // O iPhone arredonda os cantos sozinho e não aceita transparência.
 await writeFile(new URL('apple-touch-icon.png', PUBLIC), await png(appIconSvg({ radius: 0 }), 180));
