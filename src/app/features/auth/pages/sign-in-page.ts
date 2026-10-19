@@ -2,20 +2,20 @@ import { Component, inject, signal } from '@angular/core';
 import { Location } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { environment } from '@env/environment';
 import { AuthService } from '../data-access/auth.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { ROLE_HOME } from '@core/session/roles';
 import { Button } from '@shared/ui/button';
 import { FormField } from '@shared/ui/form-field';
 import { PasswordReveal } from '@shared/ui/password-reveal';
+import { APP_TEST_ACCOUNTS, TEST_PASSWORD, TestAccount, TestAccounts } from '@shared/domain/ui/test-accounts';
 import { AuthPrefill, readAuthPrefill } from '../models/auth-prefill';
 
 // Login com e-mail e senha. Uma conta por pessoa: entra no último painel usado
 // (produtor ou trabalhador) e troca pelo menu, acima de "Sair".
 @Component({
   selector: 'app-sign-in-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, FormField, PasswordReveal],
+  imports: [ReactiveFormsModule, RouterLink, Button, FormField, PasswordReveal, TestAccounts],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -42,18 +42,12 @@ import { AuthPrefill, readAuthPrefill } from '../models/auth-prefill';
         </div>
       </form>
 
-      @if (devBuild) {
-        <p class="t-body-sm muted test-note">
-          Ambiente de teste: entre com <b>produtor&#64;exemplo.com</b>, <b>trabalhador&#64;exemplo.com</b>
-          ou <b>ambos&#64;exemplo.com</b> (tem os dois perfis), senha <b>ruraliza123</b>.
-        </p>
-      }
+      <app-test-accounts [accounts]="testAccounts" (pick)="useTestAccount($event)">
+        <p class="t-body-sm">Administrador: entre pelo <a routerLink="/sistema/entrar">acesso da equipe</a> com <b>admin&#64;exemplo.com</b>.</p>
+      </app-test-accounts>
 
       <p class="muted">Ainda não tem conta? <a routerLink="/cadastro">Criar conta</a></p>
     </div>
-  `,
-  styles: `
-    .test-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--surface-sunken); }
   `
 })
 export class SignInPage {
@@ -64,8 +58,8 @@ export class SignInPage {
   // Vindo da redefinição de senha (ou de volta do "esqueci a senha"): já preenche o e-mail.
   private readonly initial = readAuthPrefill(inject(Location));
 
-  // As contas de teste só existem no seed do `npm run dev` da API: o build publicado não as mostra.
-  readonly devBuild = !environment.production;
+  // Contas de teste do seed da API, que sobe também em produção enquanto o app é só de demonstração.
+  readonly testAccounts = APP_TEST_ACCOUNTS;
   readonly saving = signal(false);
 
   readonly form = this.fb.group({
@@ -76,6 +70,11 @@ export class SignInPage {
   // Leva o e-mail digitado para a tela de "esqueci a senha".
   prefill(): AuthPrefill {
     return { email: this.form.controls.email.value.trim() };
+  }
+
+  useTestAccount(account: TestAccount): void {
+    this.form.setValue({ email: account.email, password: TEST_PASSWORD });
+    this.submit();
   }
 
   submit(): void {

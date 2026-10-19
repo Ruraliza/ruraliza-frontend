@@ -1,17 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { environment } from '@env/environment';
 import { SystemAuthService } from '../data-access/system-auth.service';
 import { SystemSessionService } from '@core/session/system-session.service';
 import { Button } from '@shared/ui/button';
 import { FormField } from '@shared/ui/form-field';
 import { PasswordReveal } from '@shared/ui/password-reveal';
+import { SYSTEM_TEST_ACCOUNTS, TEST_PASSWORD, TestAccount, TestAccounts } from '@shared/domain/ui/test-accounts';
 
 // Login da equipe do Ruraliza. Não há cadastro: quem cria usuários de sistema é um administrador.
 @Component({
   selector: 'app-system-sign-in-page',
-  imports: [ReactiveFormsModule, Button, FormField, PasswordReveal],
+  imports: [ReactiveFormsModule, Button, FormField, PasswordReveal, TestAccounts],
   template: `
     <div class="container page">
       <div class="page-header">
@@ -37,15 +37,8 @@ import { PasswordReveal } from '@shared/ui/password-reveal';
         </div>
       </form>
 
-      @if (devBuild) {
-        <p class="t-body-sm muted test-note">
-          Ambiente de teste: entre com <b>admin&#64;exemplo.com</b>, senha <b>ruraliza123</b>.
-        </p>
-      }
+      <app-test-accounts [accounts]="testAccounts" (pick)="useTestAccount($event)" />
     </div>
-  `,
-  styles: `
-    .test-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--surface-sunken); }
   `
 })
 export class SystemSignInPage {
@@ -54,14 +47,19 @@ export class SystemSignInPage {
   private readonly session = inject(SystemSessionService);
   private readonly router = inject(Router);
 
-  // O administrador de teste só existe no seed do `npm run dev` da API: o build publicado não o mostra.
-  readonly devBuild = !environment.production;
+  // Administrador de teste do seed da API, que sobe também em produção enquanto o app é só de demonstração.
+  readonly testAccounts = SYSTEM_TEST_ACCOUNTS;
   readonly saving = signal(false);
 
   readonly form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
+
+  useTestAccount(account: TestAccount): void {
+    this.form.setValue({ email: account.email, password: TEST_PASSWORD });
+    this.submit();
+  }
 
   submit(): void {
     this.form.markAllAsTouched();
