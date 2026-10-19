@@ -50,7 +50,7 @@ export class JobBuilder {
 
   publish(): void {
     const { name, category, duration, price } = this.form.getRawValue();
-    this.router.navigate(['/cadastro'], {
+    void this.router.navigate(['/cadastro'], {
       queryParams: {
         papel: 'produtor',
         ...draftParams({

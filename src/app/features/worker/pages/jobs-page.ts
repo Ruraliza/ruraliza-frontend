@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, afterRenderEffect, computed, effect, inject, input, linkedSignal, signal, untracked, viewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, afterRenderEffect, computed, effect, inject, input, linkedSignal, untracked, viewChild } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { CategoryService } from '@core/api/category.service';
 import { WorkerService } from '../data-access/worker.service';
@@ -189,6 +189,6 @@ export class JobsPage {
   }
 
   private setParams(params: Params): void {
-    this.router.navigate([], { relativeTo: this.route, queryParams: { ...params, buscar: null }, queryParamsHandling: 'merge', replaceUrl: true });
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { ...params, buscar: null }, queryParamsHandling: 'merge', replaceUrl: true });
   }
 }

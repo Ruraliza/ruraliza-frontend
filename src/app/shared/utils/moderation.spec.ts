@@ -8,6 +8,12 @@ describe('filtro de palavrões', () => {
     expect(hasBlockedTerm('filho-da-puta')).toBe(true);
   });
 
+  it('acha as frases ofensivas escritas com espaço, como a API', () => {
+    expect(hasBlockedTerm('Seu preto sujo')).toBe(true);
+    expect(hasBlockedTerm('negro   imundo')).toBe(true);
+    expect(hasBlockedTerm('pretos sujos')).toBe(false);
+  });
+
   it('deixa passar as palavras do campo', () => {
     for (const ok of ['Limpeza do curral', 'Adubação com bosta de vaca', 'Micronutrientes: B, Cu e Zn', 'Milho crioulo', 'Ninho de pica-pau']) {
       expect(hasBlockedTerm(ok)).toBe(false);

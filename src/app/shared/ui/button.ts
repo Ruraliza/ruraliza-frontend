@@ -6,6 +6,8 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'acce
 // Uso: <button appButton variant="primary" [loading]="saving()">Publicar serviço</button>
 // Também serve para links: <a appButton routerLink="/cadastro">Criar conta</a>
 @Component({
+  // Componente de atributo de propósito: mantém o <button>/<a> nativo (foco, teclado, formulário).
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'button[appButton], a[appButton]',
   host: {
     class: 'btn',

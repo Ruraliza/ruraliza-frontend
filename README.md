@@ -2,27 +2,33 @@
 
 Angular 22 (standalone, signals, SSR) para o RURALIZA: conecta produtores rurais a trabalhadores e prestadores de serviço no campo.
 
+## Documentos do projeto
+
+[Produto e escopo](PRODUCT.md) · [Arquitetura](docs/architecture.md) · [Design e acessibilidade](docs/design.md) · [Primeira execução](docs/onboarding.md) · [Qualidade e revisão](docs/quality.md) · [Ferramentas de agente](docs/setup.md) · [Instruções para agentes de IA](AGENTS.md)
+
 ## Como rodar
 
-Pré-requisitos: Node.js 20+ e o [backend](https://github.com/Ruraliza/ruraliza-backend) rodando em `http://localhost:3000/api`.
+Pré-requisitos: Node.js 22.22+ ou 24.15+ (o mínimo do Angular CLI 22) e o [backend](https://github.com/Ruraliza/ruraliza-backend) rodando em `http://localhost:3000/api`.
 
 ```bash
 npm install
 npm start        # ng serve → http://localhost:4200
 npm test         # ng test (Vitest)
 npm run build    # ng build
+npm run lint     # ESLint + angular-eslint (inclui acessibilidade dos templates)
+npm run verify   # lint, regras, tipos, testes e build (o mesmo que o CI roda)
 ```
 
-Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe produtor ou trabalhador e informa e-mail e senha; os perfis de teste do backend são `produtor@exemplo.com` e `trabalhador@exemplo.com`, senha `ruraliza123`. Quem entrou fica em `sessionStorage`, junto com o **token de sessão** da API: o `authInterceptor` (`core/http/auth.interceptor.ts`) envia `Authorization: Bearer <token>` em toda chamada, e o token também vai em `?access_token=` nas atualizações ao vivo (o `EventSource` não manda cabeçalhos). Quando a API responde 401 com `WWW-Authenticate: Bearer` (sessão vencida ou inválida), a sessão é limpa e a pessoa volta ao login. Os guards só evitam abrir telas sem sessão: quem protege os dados é a API. Os dados vivem em memória no backend e somem quando ele reinicia.
+Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe produtor ou trabalhador e informa e-mail e senha; os perfis de teste do backend são `produtor@exemplo.com` e `trabalhador@exemplo.com`, senha `ruraliza123`. Eles só existem com a API em `npm run dev` (o seed não roda em produção), e a nota com essas contas só aparece no build de desenvolvimento (`!environment.production`). Quem entrou fica em `sessionStorage`, junto com o **token de sessão** da API: o `authInterceptor` (`core/http/auth.interceptor.ts`) envia `Authorization: Bearer <token>` em toda chamada, e o token também vai em `?access_token=` nas atualizações ao vivo (o `EventSource` não manda cabeçalhos). Quando a API responde 401 com `WWW-Authenticate: Bearer` (sessão vencida ou inválida), a sessão é limpa e a pessoa volta ao login. Os guards só evitam abrir telas sem sessão: quem protege os dados é a API. Os dados vivem em memória no backend e somem quando ele reinicia.
 
 **Trilhas de estudo** (`/trabalhador/trilhas`): o trabalhador filtra as trilhas pelas categorias dos serviços, vê descrição, carga horária e tutores antes de começar e estuda no player (`/trabalhador/trilhas/:id/aulas/:aula`): vídeo do YouTube/Vimeo e texto em Markdown simples (`shared/utils/markdown.ts`, que escapa todo HTML), com módulos e aulas numa barra lateral à direita (no celular, um painel retrátil). Ao concluir a última aula sai o certificado (`shared/domain/ui/certificate-view.ts`, A4 deitado; "Baixar PDF" usa a impressão do navegador). Qualquer pessoa valida um certificado em `/certificados/:código`, sem login.
 
-**Área de sistema** (`/sistema`): para a equipe do Ruraliza (usuários de sistema), com login próprio em `/sistema/entrar` e sem cadastro público nem link no site. O cargo define o menu: **Administrador** vê e edita os usuários do app, remove fotos de perfil, perfis ou contas e cadastra e edita os membros da equipe (nome, e-mail e cargo, menos o próprio cargo) e supervisiona as trilhas de estudo (vê, edita e descontinua qualquer uma, e cria escolhendo os tutores); **Tutor** cria e edita as trilhas de estudo em `/sistema/trilhas` (dados gerais, tutores, módulos e aulas; publicar, descontinuar e reativar: trilha não se exclui), e só edita as trilhas de que é tutor (as dos colegas ficam em modo leitura). Todo usuário de sistema edita o próprio nome e e-mail em `/sistema/perfil`. Teste com `admin@exemplo.com` ou `tutor@exemplo.com`, senha `ruraliza123`. A sessão de sistema é separada da conta do app (`core/session/system-session.service.ts`).
+**Área de sistema** (`/sistema`): para a equipe do Ruraliza (usuários de sistema), com login próprio em `/sistema/entrar` e sem cadastro público nem link no site. O cargo define o menu: **Administrador** vê e edita os usuários do app, remove fotos de perfil, perfis ou contas e cadastra e edita os membros da equipe (nome, e-mail e cargo, menos o próprio cargo) e supervisiona as trilhas de estudo (vê, edita e descontinua qualquer uma, e cria escolhendo os tutores); **Tutor** cria e edita as trilhas de estudo em `/sistema/trilhas` (dados gerais, tutores, módulos e aulas; publicar, descontinuar e reativar: trilha não se exclui), e só edita as trilhas de que é tutor (as dos colegas ficam em modo leitura). Todo usuário de sistema edita o próprio nome e e-mail em `/sistema/perfil`. Teste com `admin@exemplo.com` ou `tutor@exemplo.com`, senha `ruraliza123` (só com a API em `npm run dev`; a nota com a credencial não aparece no build de produção). Em produção, o primeiro administrador vem de `ADMIN_EMAIL`/`ADMIN_PASSWORD` na API. A sessão de sistema é separada da conta do app (`core/session/system-session.service.ts`).
 
 ## Senha
 
 - **Cadastro:** senha (8 a 128 caracteres) e confirmação, com botão *Mostrar* (`shared/ui/password-reveal.ts`, regras em `shared/utils/password.ts`).
-- **Esqueci minha senha** (`/entrar/esqueci-senha` → `/entrar/nova-senha`): a pessoa informa o e-mail e cria a nova senha. O envio do código por e-mail **ainda não existe**: a API devolve o token na resposta e a tela segue direto para a nova senha. O token vai pelo `state` da navegação (`features/auth/models/auth-prefill.ts`), não pela URL. Quando o e-mail existir, a segunda tela passa a pedir o código (ver `TODO(email)`).
+- **Esqueci minha senha** (`/entrar/esqueci-senha` → `/entrar/nova-senha`): a pessoa informa o e-mail, recebe a mesma resposta com e sem conta, digita o código recebido e cria a nova senha. A API nunca devolve o código. O envio por e-mail **ainda não existe**: em produção nenhum código é criado (a tela orienta a falar com a equipe pela central de ajuda); com a API em `npm run dev`, o código aparece no terminal dela. O código vai pelo `state` da navegação (`features/auth/models/auth-prefill.ts`), não pela URL.
 - **Alterar senha com a conta aberta:** cartão *Senha* no Perfil (produtor e trabalhador), pedindo a senha atual, sem código por e-mail (`shared/domain/ui/password-change.ts`).
 
 ## Fluxo de teste

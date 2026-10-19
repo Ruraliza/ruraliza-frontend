@@ -14,7 +14,7 @@ function normalize(text: string): string {
 
 // Cada letra pode se repetir ("porraaa"); o espaço das frases aceita ponto, hífen e sublinhado.
 function termPattern(term: string): string {
-  return term.replace(/[a-z]/g, '$&+').replace(/ /g, '[\s._-]+');
+  return term.replace(/[a-z]/g, '$&+').replace(/ /g, '[\\s._-]+');
 }
 
 // Só a palavra inteira: "curral", "disputa" e "deputado" passam.

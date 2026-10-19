@@ -298,19 +298,19 @@ export class FarmFormPage implements OnInit {
         const queued = this.queued();
         if (farmId !== null || queued.length === 0) {
           this.toast.success(farmId !== null ? 'Fazenda atualizada.' : 'Fazenda cadastrada.');
-          this.router.navigate([this.returnUrl()], { queryParams: this.returnParams() });
+          void this.router.navigate([this.returnUrl()], { queryParams: this.returnParams() });
           return;
         }
         // Cadastro com fotos na fila: sobe as fotos agora que a fazenda existe.
         this.uploadAll(farm.id, queued.map((q) => q.blob)).subscribe({
           next: () => {
             this.toast.success('Fazenda cadastrada com as fotos.');
-            this.router.navigate([this.returnUrl()], { queryParams: this.returnParams() });
+            void this.router.navigate([this.returnUrl()], { queryParams: this.returnParams() });
           },
           error: () => {
             // A fazenda já existe: leva para a edição, onde dá para reenviar as fotos.
             this.toast.info('Fazenda cadastrada, mas algumas fotos não foram enviadas. Tente de novo aqui.');
-            this.router.navigate(['/produtor/fazendas', farm.id, 'editar']);
+            void this.router.navigate(['/produtor/fazendas', farm.id, 'editar']);
           }
         });
       },

@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { environment } from '@env/environment';
 import { SystemAuthService } from '../data-access/system-auth.service';
 import { SystemSessionService } from '@core/session/system-session.service';
 import { Button } from '@shared/ui/button';
@@ -36,9 +37,11 @@ import { PasswordReveal } from '@shared/ui/password-reveal';
         </div>
       </form>
 
-      <p class="t-body-sm muted test-note">
-        Ambiente de teste: entre com <b>admin&#64;exemplo.com</b>, senha <b>ruraliza123</b>.
-      </p>
+      @if (devBuild) {
+        <p class="t-body-sm muted test-note">
+          Ambiente de teste: entre com <b>admin&#64;exemplo.com</b>, senha <b>ruraliza123</b>.
+        </p>
+      }
     </div>
   `,
   styles: `
@@ -51,6 +54,8 @@ export class SystemSignInPage {
   private readonly session = inject(SystemSessionService);
   private readonly router = inject(Router);
 
+  // O administrador de teste só existe no seed do `npm run dev` da API: o build publicado não o mostra.
+  readonly devBuild = !environment.production;
   readonly saving = signal(false);
 
   readonly form = this.fb.group({
@@ -67,7 +72,7 @@ export class SystemSignInPage {
     this.auth.login({ email: email.trim(), password }).subscribe({
       next: ({ user, token }) => {
         this.session.signIn(user, token);
-        this.router.navigateByUrl('/sistema');
+        void this.router.navigateByUrl('/sistema');
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
     });

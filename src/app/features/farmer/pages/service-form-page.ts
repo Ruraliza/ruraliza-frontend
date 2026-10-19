@@ -211,7 +211,7 @@ export class ServiceFormPage implements OnInit {
       this.farmerService.updateService(serviceId, fields).subscribe({
         next: () => {
           this.toast.success('Serviço atualizado.');
-          this.router.navigate(['/produtor/servicos', serviceId]);
+          void this.router.navigate(['/produtor/servicos', serviceId]);
         },
         error: () => this.saving.set(false)
       });
@@ -223,7 +223,7 @@ export class ServiceFormPage implements OnInit {
       .subscribe({
         next: ({ service }) => {
           this.toast.success('Serviço publicado. Agora é aguardar as candidaturas.');
-          this.router.navigate(['/produtor/servicos', service.id]);
+          void this.router.navigate(['/produtor/servicos', service.id]);
         },
         error: () => this.saving.set(false)
       });

@@ -2,6 +2,8 @@ import { Component, input } from '@angular/core';
 
 // Chip de categoria. Em <span> é só rótulo; em <button> vira filtro (aria-pressed).
 @Component({
+  // Componente de atributo de propósito: o chip continua sendo o <span> ou o <button> nativo.
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'span[appCategoryChip], button[appCategoryChip]',
   host: {
     class: 'chip',

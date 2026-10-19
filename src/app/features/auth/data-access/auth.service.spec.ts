@@ -28,11 +28,11 @@ describe('AuthService', () => {
     req.flush({ message: 'ok', user });
   });
 
-  it('requests a password reset and then sets the new password with the token', () => {
-    service.requestPasswordReset({ email: 'ana@exemplo.com' }).subscribe((res) => expect(res.reset_token).toBe('tok'));
+  it('requests a password reset and then sets the new password with the code from the e-mail', () => {
+    service.requestPasswordReset({ email: 'ana@exemplo.com' }).subscribe((res) => expect(res).toEqual({ message: 'ok' }));
     const request = http.expectOne(`${base}/password-reset`);
     expect(request.request.body).toEqual({ email: 'ana@exemplo.com' });
-    request.flush({ message: 'ok', reset_token: 'tok' });
+    request.flush({ message: 'ok' });
 
     service.resetPassword({ token: 'tok', password: 'senha-nova-1' }).subscribe();
     const confirm = http.expectOne(`${base}/password-reset/confirm`);
