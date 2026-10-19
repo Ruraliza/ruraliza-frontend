@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { environment } from '@env/environment';
 import { SystemSignInPage } from './system-sign-in-page';
@@ -9,25 +9,26 @@ describe('SystemSignInPage', () => {
   const production = environment.production;
   afterEach(() => { environment.production = production; });
 
-  function render(): string {
+  function setup(): HTMLElement {
     TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
     const fixture = TestBed.createComponent(SystemSignInPage);
     fixture.detectChanges();
-    return (fixture.nativeElement as HTMLElement).textContent ?? '';
+    return fixture.nativeElement as HTMLElement;
   }
 
-  // O administrador de teste só existe no seed do `npm run dev` da API; o build publicado não o mostra.
-  it('não mostra a credencial de administrador no build de produção', () => {
+  // Enquanto o app é só de demonstração, a API cria o administrador de teste também em produção.
+  it('mostra o administrador de teste também no build de produção', () => {
     environment.production = true;
-    const text = render();
+    const text = setup().textContent ?? '';
 
-    expect(text).not.toContain('admin@exemplo.com');
-    expect(text).not.toContain('ruraliza123');
+    expect(text).toContain('admin@exemplo.com');
+    expect(text).toContain('ruraliza123');
   });
 
-  it('mostra a credencial de teste em desenvolvimento', () => {
-    environment.production = false;
+  it('entra com o administrador de teste', () => {
+    setup().querySelector<HTMLButtonElement>('button[aria-label="Entrar como Administrador"]')?.click();
 
-    expect(render()).toContain('admin@exemplo.com');
+    const req = TestBed.inject(HttpTestingController).expectOne((r) => r.url.endsWith('/login'));
+    expect(req.request.body).toEqual({ email: 'admin@exemplo.com', password: 'ruraliza123' });
   });
 });
