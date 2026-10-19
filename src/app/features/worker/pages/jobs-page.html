@@ -121,7 +121,7 @@
           <button appButton variant="secondary" type="button" (click)="clearFilters()">Limpar filtros</button>
         </app-empty-state>
       } @else {
-        <app-empty-state icon="briefcase" title="Nenhuma vaga aberta agora" message="Os produtores publicam serviços o tempo todo. Volte mais tarde." />
+        <app-empty-state [art]="true" title="Nenhuma vaga aberta agora" message="Os produtores publicam serviços o tempo todo. Volte mais tarde." />
       }
     }
   }

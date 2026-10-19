@@ -42,7 +42,7 @@ import { whatsappLink } from '../utils/chat';
       display: grid; grid-template-columns: auto 1fr; gap: var(--space-3) var(--space-4); align-items: start;
       padding: var(--space-4); border-radius: var(--radius-lg); border: 1px solid var(--line); background: var(--bg-alt);
     }
-    :host(.both) { border-color: var(--broto); background: var(--lime-100); }
+    :host(.both) { border-color: var(--broto); background: var(--mint-100); }
     .wa-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface-raised); color: var(--mata); }
     .wa-text { display: grid; gap: var(--space-1); min-width: 0; }
     h2, p { margin: 0; }

@@ -39,7 +39,7 @@ export const ROLE_CHOICES: RoleChoice[] = [
   imports: [ReactiveFormsModule, RouterLink, Button, FormField, Icon, MaskedInput, PasswordReveal],
   templateUrl: './signup-page.html',
   styles: `
-    .draft-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--lime-100); }
+    .draft-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--mint-100); }
     /* Seletor de arquivo com cara de botão secundário (mesmo padrão do envio de foto de perfil). */
     .pick {
       display: inline-flex; align-items: center; gap: var(--space-2); min-height: 48px; padding: 0 var(--space-6);

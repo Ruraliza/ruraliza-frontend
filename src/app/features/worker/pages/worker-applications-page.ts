@@ -46,7 +46,7 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
               }
             </ul>
           } @else {
-            <app-empty-state icon="list" title="Você ainda não se candidatou" message="Veja as vagas abertas e candidate-se às que combinam com você.">
+            <app-empty-state [art]="true" title="Você ainda não se candidatou" message="Veja as vagas abertas e candidate-se às que combinam com você.">
               <a appButton routerLink="/trabalhador/vagas">Ver vagas</a>
             </app-empty-state>
           }

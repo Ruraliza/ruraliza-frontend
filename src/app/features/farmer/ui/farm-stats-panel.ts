@@ -124,7 +124,7 @@ interface Bar extends FarmerStatsMonth {
     dt { color: var(--ink-muted); font-size: 0.875rem; font-weight: 600; }
     dd { color: var(--ink-muted); font-size: 0.875rem; }
     .value { display: inline-flex; align-items: center; gap: 2px; margin-right: var(--space-1); color: var(--ink); font: 700 1.75rem/2.25rem var(--font-display); font-variant-numeric: tabular-nums; }
-    .value app-icon { color: var(--orange-500); }
+    .value app-icon { color: var(--gold-500); }
     .chart { display: grid; gap: var(--space-4); }
     figcaption { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-1) var(--space-3); }
     .bars, .months { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-3); }

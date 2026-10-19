@@ -107,7 +107,7 @@ export function groupByDay(items: readonly AppNotification[], now = new Date()):
     .unread .body { color: var(--ink); }
     .count {
       flex: none; min-width: 1.5rem; height: 1.5rem; padding: 0 0.4375rem; border-radius: var(--radius-pill);
-      background: var(--orange-500); color: var(--on-accent); font-size: 0.8125rem; font-weight: 800; line-height: 1.5rem; text-align: center;
+      background: var(--gold-500); color: var(--on-accent); font-size: 0.8125rem; font-weight: 800; line-height: 1.5rem; text-align: center;
     }
   `
 })

@@ -3,11 +3,9 @@ import { RouterLink } from '@angular/router';
 import { FarmPhoto } from '@core/models/farm.model';
 import { Service } from '@core/models/service.model';
 import { expiryLabel, isExpired } from '../utils/expiry';
-import { categoryEmoji } from '../utils/farm-emoji';
+import { serviceCover } from '../utils/farm-emoji';
 import { formatBRL, formatHours } from '../../utils/format';
-import { apiAsset } from '../../utils/images';
 import { CategoryChip } from './category-chip';
-import { FarmEmoji } from './farm-emoji';
 import { Icon } from '../../ui/icon';
 import { StatusBadge } from './status-badge';
 import { RatingBadge } from './rating-badge';
@@ -20,40 +18,45 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
 // Card de serviço/vaga. O card inteiro é um link para o detalhe.
 @Component({
   selector: 'app-service-card',
-  imports: [RouterLink, CategoryChip, FarmEmoji, Icon, RatingBadge, StatusBadge, VerifiedBadge],
+  imports: [RouterLink, CategoryChip, Icon, RatingBadge, StatusBadge, VerifiedBadge],
   template: `
     <a class="card-link" [routerLink]="link()">
       @if (cover(); as src) {
-        <img class="cover" [src]="src" alt="" loading="lazy" decoding="async" />
-      } @else if (showCover()) {
-        <span class="cover placeholder"><app-farm-emoji [emoji]="emoji()" [size]="48" /></span>
+        <span class="photo">
+          <img class="cover" [src]="src" alt="" loading="lazy" decoding="async" />
+          <span appCategoryChip class="on-photo">{{ service().category }}</span>
+        </span>
       }
       <div class="body">
-        <div class="top">
-          <span appCategoryChip>{{ service().category }}</span>
-          @if (own()) {
-            <span class="own">Sua vaga</span>
-          } @else if (expired()) {
-            <span class="expired">Prazo encerrado</span>
-          } @else if (showStatus()) {
-            <app-status-badge [status]="service().status" />
-          }
-        </div>
+        @if (own() || expired() || showStatus() || !cover()) {
+          <div class="top">
+            @if (!cover()) { <span appCategoryChip>{{ service().category }}</span> }
+            @if (own()) {
+              <span class="own">Sua vaga</span>
+            } @else if (expired()) {
+              <span class="expired">Prazo encerrado</span>
+            } @else if (showStatus()) {
+              <app-status-badge [status]="service().status" />
+            }
+          </div>
+        }
         <h3>{{ service().name }}</h3>
+        <p class="price">{{ price() }}</p>
+        <p class="facts t-body-sm">
+          @if (service().farm; as farm) { <span><app-icon name="map-pin" [size]="16" />{{ farm.city }}, {{ farm.state }}</span> }
+          <span><app-icon name="clock" [size]="16" />{{ hours() }}</span>
+          @if (deadline(); as text) {
+            @if (!expired()) { <span class="deadline"><app-icon name="alert" [size]="16" />{{ text }}</span> }
+          }
+        </p>
         @if (service().farm; as farm) {
-          <p class="meta t-body-sm"><app-icon name="map-pin" [size]="18" />{{ farm.city }}, {{ farm.state }}</p>
           @if (farm.reputation || farm.farmer_verified) {
-            <p class="meta t-body-sm">
+            <p class="facts t-body-sm">
               @if (farm.reputation; as rep) { <app-rating-badge [reputation]="rep" /> }
               @if (farm.farmer_verified) { <app-verified-badge /> }
             </p>
           }
         }
-        <p class="meta t-body-sm"><app-icon name="clock" [size]="18" />{{ hours() }}</p>
-        @if (deadline(); as text) {
-          @if (!expired()) { <p class="meta t-body-sm deadline"><app-icon name="alert" [size]="18" />{{ text }}</p> }
-        }
-        <p class="price">{{ price() }}</p>
         @if (reasons().length) {
           <ul class="reasons t-body-sm" role="list" aria-label="Por que combina com você">
             @for (reason of reasons().slice(0, 2); track reason) { <li><app-icon name="check" [size]="16" />{{ reason }}</li> }
@@ -76,16 +79,17 @@ type CardService = Service & { farm?: CardFarm; applications_pending?: number };
       color: var(--ink); text-decoration: none;
     }
     .card-link:hover { border-color: var(--line-strong); }
-    .cover { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--bg-alt); }
-    /* Sem foto: faixa mais baixa que a foto, para não alongar a lista no celular. */
-    .placeholder { display: grid; place-items: center; aspect-ratio: 3 / 1; background: var(--broto-soft); }
-    .body { display: grid; gap: var(--space-2); align-content: start; padding: var(--space-6); }
+    .photo { position: relative; display: block; }
+    .cover { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: var(--bg-alt); }
+    .on-photo { position: absolute; left: var(--space-3); top: var(--space-3); background: var(--surface-raised); box-shadow: var(--shadow-card); }
+    .body { display: grid; gap: var(--space-1); align-content: start; padding: var(--space-4) var(--space-4) var(--space-6); }
     .top { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: space-between; align-items: center; margin-bottom: var(--space-1); }
-    .meta { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-muted); }
+    .facts { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); color: var(--ink-muted); margin-top: var(--space-1); }
+    .facts > span { display: inline-flex; align-items: center; gap: var(--space-1); }
     .deadline { color: var(--orange-700); font-weight: 600; }
     .expired { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--surface-sunken); color: var(--ink-muted); font-size: 0.875rem; font-weight: 600; }
     .own { padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-size: 0.875rem; font-weight: 600; }
-    .price { font: 700 1.5rem/1.875rem var(--font-display); font-variant-numeric: tabular-nums; margin-top: var(--space-1); }
+    .price { font: 800 1.375rem/1.75rem var(--font-display); font-variant-numeric: tabular-nums; color: var(--money); }
     .reasons { display: grid; gap: 2px; margin: 0; padding: var(--space-2) 0 0; border-top: 1px solid var(--line); list-style: none; color: var(--mata-deep); }
     .reasons li { display: flex; align-items: center; gap: var(--space-1); }
     .pending { justify-self: start; padding: 2px var(--space-3); border-radius: var(--radius-pill); background: var(--ipe-soft); font-weight: 600; }
@@ -105,11 +109,5 @@ export class ServiceCard {
   readonly hours = computed(() => formatHours(this.service().duration));
   readonly expired = computed(() => isExpired(this.service()));
   readonly deadline = computed(() => expiryLabel(this.service()));
-  // Sem foto da fazenda: emoji da categoria do serviço.
-  readonly emoji = computed(() => categoryEmoji(this.service().category));
-  readonly cover = computed(() => {
-    const first = this.showCover() ? this.service().farm?.photos[0] : undefined;
-    if (first === undefined) return null;
-    return apiAsset(typeof first === 'string' ? first : first.url);
-  });
+  readonly cover = computed(() => (this.showCover() ? serviceCover(this.service()) : null));
 }

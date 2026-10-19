@@ -88,7 +88,7 @@ type Page = WorkerReviewsPage | FarmReviewsPage;
     dt { font-size: 0.875rem; color: var(--ink-muted); }
     dd { display: flex; align-items: center; gap: var(--space-2); margin: 0; }
     .track { flex: 1; height: 8px; border-radius: var(--radius-pill); background: var(--surface-sunken); overflow: hidden; }
-    .fill { display: block; height: 100%; border-radius: inherit; background: var(--orange-500); }
+    .fill { display: block; height: 100%; border-radius: inherit; background: var(--gold-500); }
     .value { min-width: 2.5em; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
     .list { display: grid; gap: var(--space-4); }
     .list li { display: grid; gap: var(--space-2); padding-top: var(--space-4); border-top: 1px solid var(--line); }

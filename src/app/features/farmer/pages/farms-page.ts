@@ -59,7 +59,7 @@ import { ReputationSummary } from '@shared/domain/ui/reputation-summary';
               }
             </ul>
           } @else {
-            <app-empty-state icon="farm" title="Nenhuma fazenda cadastrada" message="Cadastre sua fazenda para publicar serviços nela.">
+            <app-empty-state [art]="true" title="Nenhuma fazenda cadastrada" message="Cadastre sua fazenda para publicar serviços nela.">
               <a appButton routerLink="/produtor/fazendas/nova">Cadastrar fazenda</a>
             </app-empty-state>
           }

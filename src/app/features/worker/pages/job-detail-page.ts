@@ -9,7 +9,8 @@ import { CurrentUserService } from '@core/session/current-user.service';
 import { RoleSwitchService } from '@core/session/role-switch.service';
 import { ToastService } from '@core/toast/toast.service';
 import { RemoteData, mergeStates } from '@shared/utils/remote-data';
-import { expiryLabel, isExpired } from '@shared/domain/utils/expiry';
+import { expiryLabel, formatDay, isExpired } from '@shared/domain/utils/expiry';
+import { serviceCover } from '@shared/domain/utils/farm-emoji';
 import { formatBRL, formatDate, formatHours } from '@shared/utils/format';
 import { Button } from '@shared/ui/button';
 import { CategoryChip } from '@shared/domain/ui/category-chip';
@@ -67,6 +68,7 @@ export class JobDetailPage implements OnInit {
     return job ? pointOf(job.farm) : null;
   });
   readonly price = computed(() => formatBRL(this.job.data()?.price ?? 0));
+  protected readonly cover = serviceCover;
   readonly hours = computed(() => formatHours(this.job.data()?.duration ?? 0));
   readonly publishedAt = computed(() => {
     const job = this.job.data();
@@ -80,6 +82,11 @@ export class JobDetailPage implements OnInit {
   readonly deadline = computed(() => {
     const job = this.job.data();
     return job ? expiryLabel(job) : null;
+  });
+  // "28/10": cabe na coluna de fatos do topo.
+  readonly deadlineDay = computed(() => {
+    const job = this.job.data();
+    return job?.expires_at && job.status === 'Pending' ? formatDay(job.expires_at).slice(0, 5) : null;
   });
 
   // Resumo do que a pessoa está confirmando.

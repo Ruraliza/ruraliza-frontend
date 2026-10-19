@@ -34,7 +34,7 @@ let nextId = 0;
     label { position: relative; display: grid; place-items: center; width: 44px; height: 44px; cursor: pointer; border-radius: var(--radius-sm); }
     input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
     svg { width: 32px; height: 32px; fill: transparent; stroke: var(--line-strong); stroke-width: 1.5; stroke-linejoin: round; transition: fill .12s var(--ease-out), stroke .12s var(--ease-out), transform .12s var(--ease-out); }
-    label.on svg { fill: var(--orange-500); stroke: var(--orange-700); }
+    label.on svg { fill: var(--gold-500); stroke: var(--gold-700); }
     label:has(input:focus-visible) { box-shadow: var(--focus-ring); }
     label:active svg { transform: scale(.9); }
     .word { margin-left: var(--space-2); min-width: 64px; color: var(--orange-700); font-weight: 700; }

@@ -47,7 +47,7 @@ import type { ShellNotifications, ShellProfile } from './app-shell';
       position: sticky; top: 0; z-index: 30;
       display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
       height: calc(var(--topbar-height) + var(--safe-top)); padding: var(--safe-top) var(--space-2) 0 var(--space-4);
-      background: var(--surface-raised); border-bottom: 1px solid var(--line);
+      background: var(--surface-raised);
     }
     .home {
       display: inline-flex; align-items: center; min-height: 44px; padding-inline: var(--space-1);
@@ -63,7 +63,7 @@ import type { ShellNotifications, ShellProfile } from './app-shell';
     .bell { position: relative; }
     .count {
       position: absolute; top: 4px; right: 2px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: var(--radius-pill);
-      background: var(--orange-500); color: var(--on-accent); box-shadow: 0 0 0 2px var(--surface-raised);
+      background: var(--gold-500); color: var(--on-accent); box-shadow: 0 0 0 2px var(--surface-raised);
       font-size: 12px; font-weight: 800; line-height: 20px; text-align: center;
     }
     .me { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; color: var(--ink); }
