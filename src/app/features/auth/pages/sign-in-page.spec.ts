@@ -16,17 +16,25 @@ describe('SignInPage', () => {
     return fixture.nativeElement as HTMLElement;
   }
 
-  // Enquanto o app é só de demonstração, a API cria as contas de teste também em produção.
-  it('mostra as contas de teste também no build de produção', () => {
+  const NOTES = ['trabalhador@exemplo.com', 'produtor@exemplo.com', 'ambos@exemplo.com', 'admin@exemplo.com', 'ruraliza123'];
+
+  it('mostra as contas de teste no build de desenvolvimento', () => {
+    environment.production = false;
+    const text = setup().textContent ?? '';
+
+    for (const note of NOTES) expect(text).toContain(note);
+  });
+
+  it('não mostra as contas de teste no build de produção', () => {
     environment.production = true;
     const text = setup().textContent ?? '';
 
-    for (const email of ['trabalhador@exemplo.com', 'produtor@exemplo.com', 'ambos@exemplo.com', 'admin@exemplo.com', 'ruraliza123']) {
-      expect(text).toContain(email);
-    }
+    expect(text).not.toContain('Contas de teste');
+    for (const note of NOTES) expect(text).not.toContain(note);
   });
 
   it('entra com a conta de teste escolhida', () => {
+    environment.production = false;
     const el = setup();
     el.querySelector<HTMLButtonElement>('button[aria-label="Entrar como Produtor"]')?.click();
 
