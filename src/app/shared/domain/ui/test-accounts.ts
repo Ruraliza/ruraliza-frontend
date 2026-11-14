@@ -16,7 +16,7 @@ export const APP_TEST_ACCOUNTS: readonly TestAccount[] = [
 
 export const SYSTEM_TEST_ACCOUNTS: readonly TestAccount[] = [{ label: 'Administrador', email: 'admin@exemplo.com' }];
 
-// Contas de teste na tela de entrar, enquanto o app é só de demonstração (sem banco de dados).
+// Contas de teste na tela de entrar, só no build de desenvolvimento.
 // "Entrar" emite a conta; a página preenche o formulário e entra.
 @Component({
   selector: 'app-test-accounts',

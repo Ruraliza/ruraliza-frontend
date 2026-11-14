@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Location } from '@angular/common';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { environment } from '@env/environment';
 import { AuthService } from '../data-access/auth.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { ROLE_HOME } from '@core/session/roles';
@@ -42,9 +43,11 @@ import { AuthPrefill, readAuthPrefill } from '../models/auth-prefill';
         </div>
       </form>
 
-      <app-test-accounts [accounts]="testAccounts" (pick)="useTestAccount($event)">
-        <p class="t-body-sm">Administrador: entre pelo <a routerLink="/sistema/entrar">acesso da equipe</a> com <b>admin&#64;exemplo.com</b>.</p>
-      </app-test-accounts>
+      @if (devBuild) {
+        <app-test-accounts [accounts]="testAccounts" (pick)="useTestAccount($event)">
+          <p class="t-body-sm">Administrador: entre pelo <a routerLink="/sistema/entrar">acesso da equipe</a> com <b>admin&#64;exemplo.com</b>.</p>
+        </app-test-accounts>
+      }
 
       <p class="muted">Ainda não tem conta? <a routerLink="/cadastro">Criar conta</a></p>
     </div>
@@ -58,7 +61,8 @@ export class SignInPage {
   // Vindo da redefinição de senha (ou de volta do "esqueci a senha"): já preenche o e-mail.
   private readonly initial = readAuthPrefill(inject(Location));
 
-  // Contas de teste do seed da API, que sobe também em produção enquanto o app é só de demonstração.
+  // Contas de teste do seed da API: a nota só aparece no build de desenvolvimento.
+  readonly devBuild = !environment.production;
   readonly testAccounts = APP_TEST_ACCOUNTS;
   readonly saving = signal(false);
 

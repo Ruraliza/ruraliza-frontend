@@ -16,16 +16,24 @@ describe('SystemSignInPage', () => {
     return fixture.nativeElement as HTMLElement;
   }
 
-  // Enquanto o app é só de demonstração, a API cria o administrador de teste também em produção.
-  it('mostra o administrador de teste também no build de produção', () => {
-    environment.production = true;
+  it('mostra o administrador de teste no build de desenvolvimento', () => {
+    environment.production = false;
     const text = setup().textContent ?? '';
 
     expect(text).toContain('admin@exemplo.com');
     expect(text).toContain('ruraliza123');
   });
 
+  it('não mostra o administrador de teste no build de produção', () => {
+    environment.production = true;
+    const text = setup().textContent ?? '';
+
+    expect(text).not.toContain('admin@exemplo.com');
+    expect(text).not.toContain('ruraliza123');
+  });
+
   it('entra com o administrador de teste', () => {
+    environment.production = false;
     setup().querySelector<HTMLButtonElement>('button[aria-label="Entrar como Administrador"]')?.click();
 
     const req = TestBed.inject(HttpTestingController).expectOne((r) => r.url.endsWith('/login'));

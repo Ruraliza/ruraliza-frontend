@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { environment } from '@env/environment';
 import { SystemAuthService } from '../data-access/system-auth.service';
 import { SystemSessionService } from '@core/session/system-session.service';
 import { Button } from '@shared/ui/button';
@@ -37,7 +38,9 @@ import { SYSTEM_TEST_ACCOUNTS, TEST_PASSWORD, TestAccount, TestAccounts } from '
         </div>
       </form>
 
-      <app-test-accounts [accounts]="testAccounts" (pick)="useTestAccount($event)" />
+      @if (devBuild) {
+        <app-test-accounts [accounts]="testAccounts" (pick)="useTestAccount($event)" />
+      }
     </div>
   `
 })
@@ -47,7 +50,8 @@ export class SystemSignInPage {
   private readonly session = inject(SystemSessionService);
   private readonly router = inject(Router);
 
-  // Administrador de teste do seed da API, que sobe também em produção enquanto o app é só de demonstração.
+  // Administrador de teste do seed da API: a nota só aparece no build de desenvolvimento.
+  readonly devBuild = !environment.production;
   readonly testAccounts = SYSTEM_TEST_ACCOUNTS;
   readonly saving = signal(false);
 
