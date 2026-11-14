@@ -13,8 +13,12 @@
     </nav>
 
     <div class="actions">
-      <a class="signin" routerLink="/entrar">Entrar</a>
-      <a appButton routerLink="/cadastro">Criar conta</a>
+      @if (dashboardUrl(); as url) {
+        <a appButton [routerLink]="url">Dashboard</a>
+      } @else {
+        <a class="signin" routerLink="/entrar">Entrar</a>
+        <a appButton routerLink="/cadastro">Criar conta</a>
+      }
     </div>
 
     <button
@@ -35,8 +39,12 @@
         <a routerLink="/" [fragment]="link.fragment" (click)="closeMenu()">{{ link.label }}</a>
       }
       <div class="menu-actions">
-        <a appButton [block]="true" routerLink="/cadastro" (click)="closeMenu()">Criar conta</a>
-        <a appButton variant="secondary" [block]="true" routerLink="/entrar" (click)="closeMenu()">Entrar</a>
+        @if (dashboardUrl(); as url) {
+          <a appButton [block]="true" [routerLink]="url" (click)="closeMenu()">Dashboard</a>
+        } @else {
+          <a appButton [block]="true" routerLink="/cadastro" (click)="closeMenu()">Criar conta</a>
+          <a appButton variant="secondary" [block]="true" routerLink="/entrar" (click)="closeMenu()">Entrar</a>
+        }
         <app-install-app-button variant="ghost" [block]="true" />
       </div>
     </nav>
@@ -56,12 +64,17 @@
       <a routerLink="/" fragment="como-funciona">Como funciona</a>
       <a routerLink="/" fragment="categorias">Categorias</a>
       <a routerLink="/" fragment="duvidas">Dúvidas</a>
-      <a routerLink="/cadastro">Criar conta</a>
-      <a routerLink="/entrar">Entrar</a>
+      @if (dashboardUrl(); as url) {
+        <a [routerLink]="url">Dashboard</a>
+      } @else {
+        <a routerLink="/cadastro">Criar conta</a>
+        <a routerLink="/entrar">Entrar</a>
+      }
       <a routerLink="/ajuda">Central de ajuda</a>
       <a routerLink="/termos">Termos de Uso</a>
       <a routerLink="/privacidade">Privacidade</a>
       <a routerLink="/creditos">Créditos das fotos</a>
+      <a routerLink="/sistema/entrar">Acesso da equipe</a>
     </nav>
   </div>
 </footer>

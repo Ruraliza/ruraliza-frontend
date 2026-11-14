@@ -32,7 +32,7 @@ export const routes: Routes = [
         loadComponent: () => import('@features/account/pages/new-profile-page').then((m) => m.NewProfilePage),
         title: 'Novo perfil · Ruraliza'
       },
-      // Equipe do Ruraliza: sem link no site nem no cadastro (usuários de sistema não se cadastram).
+      // Equipe do Ruraliza: o link fica no rodapé; não há cadastro (usuários de sistema não se cadastram).
       {
         path: 'sistema/entrar',
         loadComponent: () => import('@features/system/pages/system-sign-in-page').then((m) => m.SystemSignInPage),

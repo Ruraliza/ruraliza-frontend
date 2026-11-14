@@ -6,6 +6,9 @@ import { Button } from '@shared/ui/button';
 import { Icon } from '@shared/ui/icon';
 import { InstallAppButton } from './install-app-button';
 import { Logo } from '@shared/ui/logo';
+import { CurrentUserService } from '@core/session/current-user.service';
+import { ROLE_HOME } from '@core/session/roles';
+import { SystemSessionService } from '@core/session/system-session.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -30,6 +33,16 @@ export class PublicLayout {
   // Na landing o header começa transparente sobre a foto do hero.
   readonly isLanding = computed(() => this.path() === '/');
   readonly transparent = computed(() => this.isLanding() && !this.scrolled() && !this.menuOpen());
+
+  // Quem já entrou vê "Dashboard" no lugar de "Entrar" e "Criar conta": o painel do perfil aberto
+  // ou, só com a sessão da equipe, a área de sistema.
+  private readonly currentUser = inject(CurrentUserService);
+  private readonly systemSession = inject(SystemSessionService);
+  readonly dashboardUrl = computed(() => {
+    const role = this.currentUser.role();
+    if (role) return ROLE_HOME[role];
+    return this.systemSession.user() ? '/sistema' : null;
+  });
 
   readonly links = [
     { label: 'Como funciona', fragment: 'como-funciona' },
