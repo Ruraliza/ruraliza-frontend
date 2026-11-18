@@ -8,22 +8,21 @@ import { CurrentUserService } from '../session/current-user.service';
 export const PREFERENCES_STORAGE_KEY = 'ruraliza.preferences';
 
 // Tema claro por padrão: o app é usado ao ar livre, sob o sol, onde o fundo claro se lê melhor.
-// O WhatsApp só com o sim da pessoa.
-export const DEFAULT_PREFERENCES: AccountPreferences = { theme: 'light', text_size: 'normal', high_contrast: false, whatsapp_alerts: false };
+export const DEFAULT_PREFERENCES: AccountPreferences = { theme: 'light', text_size: 'normal', high_contrast: false };
 
 export type ResolvedTheme = 'light' | 'dark';
 
-// Valor guardado neste aparelho. Versões antigas não tinham `whatsapp_alerts`: vale o padrão (desligado).
+// Valor guardado neste aparelho. Só os campos conhecidos: versões antigas guardavam também `whatsapp_alerts`.
 function parseSaved(value: unknown): AccountPreferences | null {
   if (typeof value !== 'object' || value === null) return null;
-  const { theme, text_size, high_contrast, whatsapp_alerts } = value as Partial<AccountPreferences>;
+  const { theme, text_size, high_contrast } = value as Partial<AccountPreferences>;
   const valid = (theme === 'light' || theme === 'dark' || theme === 'system')
     && (text_size === 'normal' || text_size === 'large')
     && typeof high_contrast === 'boolean';
-  return valid ? { theme, text_size, high_contrast, whatsapp_alerts: whatsapp_alerts === true } : null;
+  return valid ? { theme, text_size, high_contrast } : null;
 }
 
-// Tema (claro, escuro ou do aparelho), letras maiores, alto contraste e avisos no WhatsApp.
+// Tema (claro, escuro ou do aparelho), letras maiores e alto contraste.
 // Vale na hora neste aparelho (localStorage) e, com a conta aberta, fica salvo nela: quem entra em
 // outro aparelho encontra o app do mesmo jeito. Aplica no <html>: data-theme, data-text e data-contrast
 // (as cores e o tamanho do texto estão em styles/tokens.css).

@@ -19,6 +19,57 @@ npm run lint     # ESLint + angular-eslint (inclui acessibilidade dos templates)
 npm run verify   # lint, regras, tipos, testes e build (o mesmo que o CI roda)
 ```
 
+### API, banco e app juntos na sua máquina
+
+Pré-requisitos: PostgreSQL rodando em `localhost:5432` e o [backend](https://github.com/Ruraliza/ruraliza-backend) clonado ao lado deste repositório (`../ruraliza-backend`).
+
+1. **Crie o banco** (uma vez só):
+
+   ```bash
+   createdb ruraliza
+   ```
+
+2. **Configure o `.env` do backend.** Copie o exemplo (`cp .env.example .env`, em `../ruraliza-backend`) e preencha:
+
+   ```
+   DATABASE_URL=postgres://localhost:5432/ruraliza
+   CORS_ORIGINS=http://localhost:4200
+   AUTH_TOKEN_SECRET=qualquer-texto-longo-local
+   ```
+
+   O `CORS_ORIGINS` libera este app a chamar a API. Sem o `AUTH_TOKEN_SECRET`, a sessão cai toda vez que a API recarrega ao salvar.
+
+3. **Suba a API** (terminal 1):
+
+   ```bash
+   cd ../ruraliza-backend
+   npm install      # só na primeira vez
+   npm run dev      # http://localhost:3000/api (documentação em /api/docs), recarrega ao salvar
+   ```
+
+   Na primeira subida, a API cria as tabelas e grava os dados de teste. Nas seguintes, aplica só as migrações novas.
+
+4. **Suba o app** (terminal 2):
+
+   ```bash
+   npm install      # só na primeira vez
+   npm start        # http://localhost:4200, já aponta para http://localhost:3000/api
+   ```
+
+5. **Entre** com a senha `ruraliza123`:
+   - no app (`/entrar`): `produtor@exemplo.com` e `trabalhador@exemplo.com`;
+   - na equipe (`/sistema/entrar`): `admin@exemplo.com` e `tutor@exemplo.com`.
+
+   No "esqueci a senha", o código aparece no terminal da API.
+
+No dia a dia:
+
+- **Os dados ficam no banco:** com `DATABASE_URL`, o que você cria continua lá depois de reiniciar a API.
+- **Recomeçar do zero:** pare a API e rode `dropdb ruraliza && createdb ruraliza`. Na próxima subida, os dados de teste voltam.
+- **Ver o banco:** `psql ruraliza`, ou um cliente como TablePlus ou DBeaver em `localhost:5432`.
+- **Mapa e push:** só funcionam se o `.env` do backend tiver `GOOGLE_MAPS_API_KEY` e as chaves `VAPID_*` (gere com `npx web-push generate-vapid-keys`). Sem elas, o resto do app funciona normalmente.
+- **Testes do backend:** com `CORS_ORIGINS` preenchido no `.env`, o e2e falha na checagem do `WWW-Authenticate`. Rode com `CORS_ORIGINS= npm test`.
+
 Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe produtor ou trabalhador e informa e-mail e senha; os perfis de teste do backend são `produtor@exemplo.com` e `trabalhador@exemplo.com`, senha `ruraliza123`. Eles só existem com a API em `npm run dev` (o seed não roda em produção), e a nota com essas contas só aparece no build de desenvolvimento (`!environment.production`). Quem entrou fica em `sessionStorage`, junto com o **token de sessão** da API: o `authInterceptor` (`core/http/auth.interceptor.ts`) envia `Authorization: Bearer <token>` em toda chamada, e o token também vai em `?access_token=` nas atualizações ao vivo (o `EventSource` não manda cabeçalhos). Quando a API responde 401 com `WWW-Authenticate: Bearer` (sessão vencida ou inválida), a sessão é limpa e a pessoa volta ao login. Os guards só evitam abrir telas sem sessão: quem protege os dados é a API. No backend, os dados ficam em PostgreSQL quando ele tem `DATABASE_URL`; sem ela, vivem em memória e somem quando ele reinicia.
 
 **Trilhas de estudo** (`/trabalhador/trilhas`): o trabalhador filtra as trilhas pelas categorias dos serviços, vê descrição, carga horária e tutores antes de começar e estuda no player (`/trabalhador/trilhas/:id/aulas/:aula`): vídeo do YouTube/Vimeo e texto em Markdown simples (`shared/utils/markdown.ts`, que escapa todo HTML), com módulos e aulas numa barra lateral à direita (no celular, um painel retrátil). Ao concluir a última aula sai o certificado (`shared/domain/ui/certificate-view.ts`, A4 deitado; "Baixar PDF" usa a impressão do navegador). Qualquer pessoa valida um certificado em `/certificados/:código`, sem login.
@@ -90,7 +141,6 @@ No celular, o **perfil** fica no avatar (foto ou emoji) da **barra de cima**, ju
 
 - `NotificationInboxService` (`core/api`) mantém a lista do painel aberto, atualizada por SSE (`LiveUpdatesService.notifications()`); o layout de cada área conecta ao abrir, como as conversas.
 - A tela agrupa por dia ("Hoje", "Ontem", data), destaca os não lidos e escolhe o ícone pela tela que o aviso abre. Tocar marca como lido e abre a tela; *Marcar todas como lidas* zera o sino. Avisos iguais ainda não lidos chegam agrupados, com a contagem.
-- **Avisos no WhatsApp** (cartão no perfil do trabalhador): quando um produtor aceita a candidatura, chega mensagem no WhatsApp com o link do app. Só com o sim da pessoa (`whatsapp_alerts` nas preferências da conta), só para celular com DDD e só se o servidor tiver a integração (`GET /api/config/whatsapp`); sem ela, o cartão explica que ainda não está ligado.
 
 ## Aparência e acessibilidade
 

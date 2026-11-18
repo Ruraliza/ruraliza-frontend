@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 import { UserRole } from '../models/auth.model';
 import { NotificationsPage, NotificationsReadInput, NotificationsReadResponse } from '../models/notification.model';
-import { WhatsAppConfig } from '../models/push.model';
 import { SILENT_ERRORS } from '../http/error.interceptor';
 
 // Central de notificações do perfil (produtor ou trabalhador). Chamadas em segundo plano: sem toast,
@@ -21,11 +20,6 @@ export class NotificationService {
   markRead(role: UserRole, profileId: number, ids?: number[]): Observable<NotificationsReadResponse> {
     const body: NotificationsReadInput = ids ? { ids } : {};
     return this.http.post<NotificationsReadResponse>(`${this.url(role, profileId)}/read`, body, { context: silent() });
-  }
-
-  // Se o servidor manda avisos por WhatsApp (o app só oferece a opção quando manda).
-  whatsappConfig(): Observable<WhatsAppConfig> {
-    return this.http.get<WhatsAppConfig>(`${environment.apiUrl}/config/whatsapp`, { context: silent() });
   }
 
   private url(role: UserRole, profileId: number): string {

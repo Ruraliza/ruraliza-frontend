@@ -27,7 +27,7 @@ cd ../ruraliza-backend
 npm run dev       # http://localhost:3000/api (reinicia ao salvar)
 ```
 
-Sem `DATABASE_URL`, os dados do backend ficam em memória: ele recria os dados de teste a cada subida e tudo o que você criar some quando ele reinicia. Com `DATABASE_URL` (PostgreSQL), o que você criar continua lá e os dados de teste são gravados uma vez só. Variáveis do backend (porta, VAPID, Google Maps, WhatsApp) estão no README e no `.env.example` dele. Mapa, push e avisos no WhatsApp só funcionam se o backend tiver essas chaves; sem elas, as rotas de configuração do backend respondem 503 (segundo o PRODUCT.md dele) e o recurso não liga.
+Sem `DATABASE_URL`, os dados do backend ficam em memória: ele recria os dados de teste a cada subida e tudo o que você criar some quando ele reinicia. Com `DATABASE_URL` (PostgreSQL), o que você criar continua lá e os dados de teste são gravados uma vez só. Variáveis do backend (porta, VAPID, Google Maps) estão no README e no `.env.example` dele. Mapa e push só funcionam se o backend tiver essas chaves; sem elas, as rotas de configuração do backend respondem 503 (segundo o PRODUCT.md dele) e o recurso não liga.
 
 ## Ambientes
 
