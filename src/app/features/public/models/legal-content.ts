@@ -180,7 +180,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     'Usamos seus dados para fazer o app funcionar: cadastro, vagas, candidaturas, conversas, avaliações e trilhas.',
     'Outros usuários veem seu CPF mascarado. Seu telefone só aparece na conversa, quando os dois liberam o WhatsApp.',
     'A localização exata da fazenda só aparece para o trabalhador aceito no serviço.',
-    'Não vendemos seus dados. Avisos por WhatsApp e notificações no celular só com o seu sim.',
+    'Não vendemos seus dados. Notificações no celular só com o seu sim.',
     'Você pode ver, corrigir e apagar seus dados no próprio app.'
   ],
   sections: [
@@ -201,7 +201,7 @@ export const PRIVACY_POLICY: LegalDocument = {
             'Perfil do trabalhador: foto, apresentação, experiência, certificados, cursos e currículo em PDF, se você enviar.',
             'Perfil do produtor e fazendas: foto, endereço, cidade, estado, o ponto marcado no mapa e as fotos das fazendas.',
             'Uso do app: vagas publicadas, candidaturas, serviços, pagamentos simulados, avaliações, mensagens das conversas, avisos (notificações), progresso nas trilhas e certificados.',
-            'Preferências: tema, tamanho das letras, contraste e se você quer avisos no WhatsApp.',
+            'Preferências: tema, tamanho das letras e contraste.',
             'Dados técnicos: a inscrição do navegador para notificações, quando você ativa, e registros de funcionamento do servidor.'
           ]
         },
@@ -216,7 +216,7 @@ export const PRIVACY_POLICY: LegalDocument = {
           list: [
             'Para fazer o app funcionar e cumprir o que você pediu ao se cadastrar (execução de contrato): mostrar vagas, enviar candidaturas, abrir conversas, registrar serviços, avaliações e certificados.',
             'Para manter a plataforma segura, evitar fraudes e analisar denúncias (legítimo interesse).',
-            'Para enviar avisos no WhatsApp e notificações no celular, só quando você ativa (consentimento, que você pode retirar a qualquer momento).',
+            'Para enviar notificações no celular, só quando você ativa (consentimento, que você pode retirar a qualquer momento).',
             'Para cumprir obrigações legais, quando houver.'
           ]
         }
@@ -229,7 +229,7 @@ export const PRIVACY_POLICY: LegalDocument = {
         {
           list: [
             'Com outros usuários, na medida do necessário: o produtor vê o perfil de quem se candidata (com CPF, telefone e e-mail mascarados); o trabalhador vê a vaga com cidade e estado, e o ponto exato da fazenda só depois de aceito. O telefone só é mostrado na conversa quando os dois liberam o WhatsApp.',
-            'Com fornecedores que fazem o app funcionar: hospedagem, mapas (Google Maps), o serviço de notificações do seu navegador e, se você ativar e a integração estiver ligada, o provedor de mensagens de WhatsApp.',
+            'Com fornecedores que fazem o app funcionar: hospedagem, mapas (Google Maps) e o serviço de notificações do seu navegador.',
             'Com autoridades, quando a lei exigir.'
           ]
         },
@@ -254,7 +254,7 @@ export const PRIVACY_POLICY: LegalDocument = {
             'confirmar se tratamos seus dados e acessá-los (eles estão no seu Perfil);',
             'corrigir dados incompletos ou errados (em Editar perfil);',
             'pedir a exclusão dos seus dados (em Excluir conta);',
-            'retirar consentimentos, como os avisos no WhatsApp e as notificações no celular;',
+            'retirar consentimentos, como as notificações no celular;',
             'pedir a portabilidade dos dados e informações sobre com quem eles foram compartilhados.'
           ]
         },

@@ -19,6 +19,7 @@ npm run lint     # ESLint + angular-eslint (inclui acessibilidade dos templates)
 npm run verify   # lint, regras, tipos, testes e build (o mesmo que o CI roda)
 ```
 
+
 Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe produtor ou trabalhador e informa e-mail e senha; os perfis de teste do backend são `produtor@exemplo.com` e `trabalhador@exemplo.com`, senha `ruraliza123`. Eles só existem com a API em `npm run dev` (o seed não roda em produção), e a nota com essas contas só aparece no build de desenvolvimento (`!environment.production`). Quem entrou fica em `sessionStorage`, junto com o **token de sessão** da API: o `authInterceptor` (`core/http/auth.interceptor.ts`) envia `Authorization: Bearer <token>` em toda chamada, e o token também vai em `?access_token=` nas atualizações ao vivo (o `EventSource` não manda cabeçalhos). Quando a API responde 401 com `WWW-Authenticate: Bearer` (sessão vencida ou inválida), a sessão é limpa e a pessoa volta ao login. Os guards só evitam abrir telas sem sessão: quem protege os dados é a API. No backend, os dados ficam em PostgreSQL quando ele tem `DATABASE_URL`; sem ela, vivem em memória e somem quando ele reinicia.
 
 **Trilhas de estudo** (`/trabalhador/trilhas`): o trabalhador filtra as trilhas pelas categorias dos serviços, vê descrição, carga horária e tutores antes de começar e estuda no player (`/trabalhador/trilhas/:id/aulas/:aula`): vídeo do YouTube/Vimeo e texto em Markdown simples (`shared/utils/markdown.ts`, que escapa todo HTML), com módulos e aulas numa barra lateral à direita (no celular, um painel retrátil). Ao concluir a última aula sai o certificado (`shared/domain/ui/certificate-view.ts`, A4 deitado; "Baixar PDF" usa a impressão do navegador). Qualquer pessoa valida um certificado em `/certificados/:código`, sem login.
@@ -90,7 +91,6 @@ No celular, o **perfil** fica no avatar (foto ou emoji) da **barra de cima**, ju
 
 - `NotificationInboxService` (`core/api`) mantém a lista do painel aberto, atualizada por SSE (`LiveUpdatesService.notifications()`); o layout de cada área conecta ao abrir, como as conversas.
 - A tela agrupa por dia ("Hoje", "Ontem", data), destaca os não lidos e escolhe o ícone pela tela que o aviso abre. Tocar marca como lido e abre a tela; *Marcar todas como lidas* zera o sino. Avisos iguais ainda não lidos chegam agrupados, com a contagem.
-- **Avisos no WhatsApp** (cartão no perfil do trabalhador): quando um produtor aceita a candidatura, chega mensagem no WhatsApp com o link do app. Só com o sim da pessoa (`whatsapp_alerts` nas preferências da conta), só para celular com DDD e só se o servidor tiver a integração (`GET /api/config/whatsapp`); sem ela, o cartão explica que ainda não está ligado.
 
 ## Aparência e acessibilidade
 
