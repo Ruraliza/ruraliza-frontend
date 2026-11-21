@@ -5,6 +5,7 @@ import { environment } from '@env/environment';
 import { SessionUser } from '../models/auth.model';
 import { Farmer, FarmerInput } from '../models/farmer.model';
 import { Worker, WorkerInput } from '../models/worker.model';
+import { JobPreferencesInput, JobPreferencesResponse } from '../models/matching.model';
 
 // Perfis de produtor e trabalhador usados por mais de uma feature: cadastro (auth), segundo perfil
 // da conta (account) e os painéis (farmer, worker). O resto de cada perfil fica no data-access da feature.
@@ -29,6 +30,13 @@ export class ProfileService {
 
   createWorker(worker: WorkerInput): Observable<{ message: string; worker: Worker; user: SessionUser; token: string }> {
     return this.http.post<{ message: string; worker: Worker; user: SessionUser; token: string }>(this.workersUrl, worker);
+  }
+
+  // Cadastro com o catálogo de prestadores desligado: grava as preferências de vaga logo depois de criar a conta
+  // (o catálogo começa ligado na API).
+  leaveCatalog(workerId: number): Observable<JobPreferencesResponse> {
+    const preferences: JobPreferencesInput = { categories: [], near: null, alerts: false, catalog: false };
+    return this.http.put<JobPreferencesResponse>(`${this.workersUrl}/${workerId}/job-preferences`, preferences);
   }
 
   // Currículo: o corpo é o próprio PDF (o servidor guarda como chegou, até 5 MB).

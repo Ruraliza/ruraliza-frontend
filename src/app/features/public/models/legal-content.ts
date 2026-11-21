@@ -181,6 +181,7 @@ export const PRIVACY_POLICY: LegalDocument = {
     'Usamos seus dados para fazer o app funcionar: cadastro, vagas, candidaturas, conversas, avaliações e trilhas.',
     'Outros usuários veem seu CPF mascarado. Seu telefone só aparece na conversa, quando os dois liberam o WhatsApp.',
     'A localização exata da fazenda só aparece para o trabalhador aceito no serviço.',
+    'Trabalhador: seu perfil aparece no catálogo de prestadores das vagas nas categorias que você escolheu. Dá para desligar nas preferências.',
     'Não vendemos seus dados. Notificações no celular só com o seu sim.',
     'Você pode ver, corrigir e apagar seus dados no próprio app.'
   ],
@@ -235,6 +236,22 @@ export const PRIVACY_POLICY: LegalDocument = {
           ]
         },
         { p: 'Não vendemos seus dados e não os usamos para publicidade de terceiros. Espaços de patrocínio no app não recebem seus dados pessoais.' }
+      ]
+    },
+    {
+      id: 'catalogo',
+      title: 'Catálogo de prestadores',
+      blocks: [
+        // PENDENTE: revisão jurídica (a mesma prevista para estes textos antes do lançamento).
+        {
+          p: 'Quando um produtor publica uma vaga, o app mostra a ele os trabalhadores que escolheram aquela categoria de serviço e que ' +
+            'estão no catálogo, para que ele possa convidá-los. O catálogo começa ligado. Aparecem só o nome, a foto, a apresentação, a ' +
+            'experiência, os certificados, a nota, o selo de verificado, a faixa de distância até a fazenda (por exemplo, "de 5 a 15 km", ' +
+            'quando você marca "perto de mim"; nunca o km exato) e os motivos da indicação. CPF, telefone, e-mail e a sua localização não aparecem. Quem marcou "perto de mim" ' +
+            'só aparece para vagas dentro do raio escolhido. Você pode desligar o catálogo quando quiser, em Perfil > Seus interesses; ' +
+            'a partir daí seu perfil sai de todos os catálogos na hora. A base legal é o legítimo interesse de aproximar quem oferece e ' +
+            'quem procura trabalho, com a opção de sair a qualquer momento. (Texto pendente de revisão jurídica.)'
+        }
       ]
     },
     {

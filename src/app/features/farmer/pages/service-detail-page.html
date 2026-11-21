@@ -53,6 +53,16 @@
             }
           </section>
 
+          @if (s.status === 'Pending' && !expired()) {
+            <section class="again" aria-labelledby="catalog-title">
+              <div>
+                <h2 id="catalog-title" class="t-label">Quer chamar alguém?</h2>
+                <p class="t-body-sm muted">Veja quem escolheu este tipo de serviço perto da fazenda e mande um convite.</p>
+              </div>
+              <a appButton [routerLink]="['/produtor/servicos', s.id, 'catalogo']"><app-icon name="user" [size]="20" />Ver catálogo de prestadores</a>
+            </section>
+          }
+
           @if (s.status === 'Pending') {
             <div class="form-actions">
               <a appButton variant="secondary" [routerLink]="['/produtor/servicos', s.id, 'editar']">Editar serviço</a>
@@ -116,7 +126,7 @@
             @if (applications.data()?.length) {
               <div class="grid-cards">
                 @for (application of sortedApplications(); track application.id) {
-                  <app-worker-card [worker]="application.worker" [status]="application.status" [reputation]="application.reputation" [verified]="application.verified" [reportable]="true"
+                  <app-worker-card [worker]="application.worker" [status]="application.status" [reputation]="application.reputation" [verified]="application.verified" [invited]="application.invited" [reportable]="true"
                     [note]="application.message" (viewReviews)="showReviews(application)" (report)="reportWorker(application)">
                     @if (s.status === 'Pending' && application.status === 'Pending') {
                       @let talk = chatWith(application);

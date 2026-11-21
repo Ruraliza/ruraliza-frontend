@@ -2,12 +2,12 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { CategoryService } from '@core/api/category.service';
-import { JobPreferences } from '@core/models/matching.model';
+import { JobPreferences, JobPreferencesInput } from '@core/models/matching.model';
 import { MatchingService } from '../data-access/matching.service';
 import { JobInterestsCard } from './job-interests-card';
 
 describe('JobInterestsCard', () => {
-  let saved: JobPreferences[];
+  let saved: JobPreferencesInput[];
 
   let host: HTMLElement;
   const click = (label: string, group: string): void => {
@@ -29,9 +29,9 @@ describe('JobInterestsCard', () => {
           provide: MatchingService,
           useValue: {
             preferences: () => of(current),
-            savePreferences: (_id: number, prefs: JobPreferences) => {
+            savePreferences: (_id: number, prefs: JobPreferencesInput) => {
               saved.push(prefs);
-              return of({ message: 'ok', preferences: { ...prefs, near: prefs.near && { ...prefs.near, latitude: -22.12 } } });
+              return of({ message: 'ok', preferences: { catalog: true, ...prefs, near: prefs.near && { ...prefs.near, latitude: -22.12 } } });
             }
           }
         }
@@ -47,13 +47,13 @@ describe('JobInterestsCard', () => {
   }
 
   it('fills the form with what was saved', () => {
-    const card = render({ categories: ['Plantio'], near: { latitude: -22.12, longitude: -43.21, radius_km: 50 }, alerts: true });
+    const card = render({ categories: ['Plantio'], near: { latitude: -22.12, longitude: -43.21, radius_km: 50 }, alerts: true, catalog: false });
 
-    expect([card.chosen(), card.radius(), card.alerts()]).toEqual([['Plantio'], '50', true]);
+    expect([card.chosen(), card.radius(), card.alerts(), card.catalog()]).toEqual([['Plantio'], '50', true, false]);
   });
 
   it('toggles services and whole groups and saves everything at once', () => {
-    const card = render({ categories: ['Plantio'], near: null, alerts: false });
+    const card = render({ categories: ['Plantio'], near: null, alerts: false, catalog: true });
 
     click('Colheita', 'Lavoura e horta');
     click('Plantio', 'Lavoura e horta');
@@ -61,11 +61,11 @@ describe('JobInterestsCard', () => {
     card.alerts.set(true);
     card.save();
 
-    expect(saved).toEqual([{ categories: ['Colheita', 'Manejo de gado', 'Ordenha'], near: null, alerts: true }]);
+    expect(saved).toEqual([{ categories: ['Colheita', 'Manejo de gado', 'Ordenha'], near: null, alerts: true, catalog: true }]);
   });
 
   it('unmarks the whole group when all of it is chosen', () => {
-    const card = render({ categories: ['Manejo de gado', 'Ordenha', 'Colheita'], near: null, alerts: false });
+    const card = render({ categories: ['Manejo de gado', 'Ordenha', 'Colheita'], near: null, alerts: false, catalog: true });
 
     click('Todo o grupo', 'Animais');
 
@@ -73,10 +73,20 @@ describe('JobInterestsCard', () => {
   });
 
   it('changes the radius only when "perto de mim" is on', () => {
-    const card = render({ categories: [], near: { latitude: -22.12, longitude: -43.21, radius_km: 30 }, alerts: false });
+    const card = render({ categories: [], near: { latitude: -22.12, longitude: -43.21, radius_km: 30 }, alerts: false, catalog: true });
 
     card.setRadius('100');
 
     expect(card.near()?.radius_km).toBe(100);
+  });
+
+  it('turns the catalog off and saves it', () => {
+    const card = render({ categories: ['Plantio'], near: null, alerts: false, catalog: true });
+
+    expect(host.textContent).toContain('Seu perfil aparece para produtores que publicam vagas nas categorias que você escolheu.');
+    card.catalog.set(false);
+    card.save();
+
+    expect(saved).toEqual([{ categories: ['Plantio'], near: null, alerts: false, catalog: false }]);
   });
 });

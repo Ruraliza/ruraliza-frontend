@@ -8,7 +8,8 @@ import { PasswordChangeInput } from '@core/models/auth.model';
 import { Farmer, FarmerUpdate } from '@core/models/farmer.model';
 import { Farm, FarmInput, FarmUpdate } from '@core/models/farm.model';
 import { FarmerServiceItem, Service, ServiceInput, ServiceUpdate, ServiceWithFarm } from '@core/models/service.model';
-import { AnalyzeAction, ApplicationWithWorker, ServiceApplication } from '@core/models/service-application.model';
+import { AnalyzeAction, ApplicationWithWorker, InviteInput, InviteResponse, ServiceApplication } from '@core/models/service-application.model';
+import { CatalogWorker } from '@core/models/matching.model';
 import { FarmerStats } from '@core/models/farm-stats.model';
 import { ServiceStatus } from '@core/models/status';
 
@@ -118,6 +119,17 @@ export class FarmerService {
       `${this.apiUrl}/services/${serviceId}/analyze`,
       { application_id: applicationId, action }
     );
+  }
+
+  // Catálogo de prestadores da vaga aberta: quem escolheu a categoria e deixou o catálogo ligado.
+  getCatalog(serviceId: number): Observable<CatalogWorker[]> {
+    return this.http.get<CatalogWorker[]>(`${this.apiUrl}/services/${serviceId}/catalog`);
+  }
+
+  // Convida um trabalhador do catálogo (a API confere de novo que ele está no catálogo).
+  invite(serviceId: number, workerId: number): Observable<InviteResponse> {
+    const body: InviteInput = { worker_id: workerId };
+    return this.http.post<InviteResponse>(`${this.apiUrl}/services/${serviceId}/invites`, body);
   }
 
   // Abre (ou devolve) a conversa com o candidato, para negociar antes do aceite.

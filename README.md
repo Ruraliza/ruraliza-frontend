@@ -86,9 +86,10 @@ Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe pro
 
 1. `/cadastro/produtor` → cadastre um produtor com senha (ou entre com o de teste em `/entrar`). Em **Perfil**, envie uma foto.
 2. **Fazendas** → cadastre uma fazenda e adicione fotos (até 6; a primeira é a capa).
-3. **＋ Novo serviço** → publique em 2 passos, com descrição e prazo para candidaturas (opcional). Informe o valor estimado e a unidade (por dia, hora, metro, hectare ou empreitada): a vaga mostra "Estimativa: R$ 150,00 por dia · valor final combinado na conversa". Vagas antigas sem valor aparecem como *Valor a combinar*. O tipo de serviço é escolhido em dois níveis: primeiro o grupo (Lavoura e horta, Cercas e construções, Água, Pasto e terreno, Animais, Máquinas, Outros), depois o serviço.
+3. **＋ Novo serviço** → publique em 2 passos, com descrição e prazo para candidaturas (opcional). Informe o valor estimado e a unidade (por dia, hora, metro, hectare ou empreitada): a vaga mostra "Estimativa: R$ 150,00 por dia · valor final combinado na conversa". Vagas antigas sem valor aparecem como *Valor a combinar*. O tipo de serviço é escolhido em dois níveis: primeiro o grupo (Lavoura e horta, Cercas e construções, Água, Pasto e terreno, Animais, Máquinas, Outros), depois o serviço. Depois de publicar, o app abre o **catálogo de prestadores** da vaga (`/produtor/servicos/:id/catalogo`, também pelo detalhe da vaga enquanto ela está aberta): quem escolheu aquele serviço perto da fazenda, com os motivos (a distância vem em faixas, como "De 5 a 15 km da fazenda"), a nota e o selo. *Convidar* manda o convite e o botão vira *Convidado*. Sem ninguém, a tela explica e leva de volta à vaga.
 4. Saia (Perfil → *Sair*) e entre como trabalhador. Em **Perfil**, preencha foto, apresentação, experiência, certificados e cursos.
 5. **Vagas** → busque e filtre (texto, grupo e serviço, carga horária, data de publicação, ordem) → abra a vaga → *Candidatar-me* → escreva uma mensagem (opcional) → confirme.
+   - **Convites** (`/trabalhador/convites`, na sidebar com o selo dos pendentes; no celular, pelo sino e pelo aviso em *Candidaturas*): *Aceitar* vira candidatura e abre a conversa com o produtor; *Recusar* avisa o produtor. Em **Perfil → Seus interesses** (e no cadastro) fica *Aparecer no catálogo de produtores*, ligado por padrão. Para ver um convite pronto, entre como `trabalhador@exemplo.com`; o Severino, convidado que aceitou, aparece como *Convidado* entre os candidatos da vaga 3 do produtor.
 6. Volte ao produtor → **Serviços** (abas por situação, busca e filtros) → abra o serviço → veja o candidato e a mensagem dele → *Conversar*.
 7. Na conversa, um dos dois toca em *Fazer proposta* (valor e unidade; a primeira já vem com a estimativa da vaga) e o outro aceita, recusa ou contrapropõe no cartão. Sem proposta aceita, *Aceitar trabalhador* fica bloqueado, com a explicação.
 8. Com a proposta aceita → *Aceitar trabalhador*. O serviço fica em andamento com o combinado, e os dois podem liberar o WhatsApp.
@@ -125,7 +126,7 @@ O menu de baixo do celular segue a regra do Material e do iOS: **de 3 a 5 destin
 | Área | Menu de baixo (celular) | Só na sidebar (desktop) |
 |---|---|---|
 | Produtor | Início · Serviços · **Novo** · Conversas · Fazendas | Perfil |
-| Trabalhador | Início · Candidaturas · **Buscar** · Conversas · Trilhas | Vagas (a mesma tela de Buscar), Perfil |
+| Trabalhador | Início · Candidaturas · **Buscar** · Conversas · Trilhas | Vagas (a mesma tela de Buscar), Convites (com o selo dos pendentes), Perfil |
 | Administrador | Início · Usuários · Trilhas · Equipe | Perfil |
 | Tutor | Início · **Nova trilha** · Trilhas | Perfil |
 

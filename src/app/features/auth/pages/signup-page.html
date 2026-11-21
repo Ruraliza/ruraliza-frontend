@@ -75,6 +75,14 @@
           }
         </div>
       </app-form-field>
+
+      <app-switch-field
+        fieldId="catalog"
+        [label]="catalogLabel"
+        [hint]="catalogNotice"
+        [checked]="form.controls.catalog.value"
+        (checkedChange)="form.controls.catalog.setValue($event)"
+      />
     }
 
     <div class="terms">
