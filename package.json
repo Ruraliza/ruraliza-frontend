@@ -10,8 +10,9 @@
     "serve:ssr:ruraliza-frontend": "node dist/ruraliza-frontend/server/server.mjs",
     "lint": "eslint .",
     "check:rules": "node scripts/verify-quality-rules.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
-    "verify": "npm run lint && npm run check:rules && npm run typecheck && ng test --watch=false && ng build"
+    "verify": "npm run lint && npm run check:rules && npm run check:contrast && npm run typecheck && ng test --watch=false && ng build"
   },
   "private": true,
   "packageManager": "npm@11.19.0",

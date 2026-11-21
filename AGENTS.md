@@ -15,10 +15,11 @@ Instruções para agentes de IA. São curtas de propósito: os detalhes estão n
 - Desenvolver: `npm start` (http://localhost:4200, com a API rodando)
 - Lint (TypeScript e templates, incluindo acessibilidade): `npm run lint`
 - Autoteste das regras locais de lint: `npm run check:rules`
+- Contraste das cores (tokens) nos quatro temas: `npm run check:contrast`
 - Tipos: `npm run typecheck`
 - Testes: `npx ng test --watch=false` (`npm test` fica observando os arquivos)
 - Build: `npm run build`
-- Verificação completa: `npm run verify` (lint, regras, tipos, testes e build)
+- Verificação completa: `npm run verify` (lint, regras, contraste, tipos, testes e build)
 
 ## Como trabalhar aqui
 

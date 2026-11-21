@@ -43,7 +43,7 @@ src/
     features/   um domínio por pasta; uma feature nunca importa outra
       public/ auth/ account/ farmer/ worker/ system/   (pages/, ui/, data-access/ conforme a área)
 public/                 manifest, ícones, brand, emoji (copiados para a raiz do build)
-scripts/                generate-brand-assets.mjs, fetch-landing-photos.mjs (rodados à mão), verify-quality-rules.mjs (autoteste do lint)
+scripts/                generate-brand-assets.mjs, fetch-landing-photos.mjs (rodados à mão), verify-quality-rules.mjs (autoteste do lint), check-contrast.mjs (contraste dos tokens)
 eslint-rules/           regras locais de lint copiadas do Vibe Coding Toolkit (eslint.config.mjs as usa)
 .claude/skills/         skills de agente do projeto (skills-lock.json diz a fonte de cada uma)
 .github/workflows/      ci.yml (verificações) e deploy.yml (GitHub Pages)

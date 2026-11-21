@@ -23,7 +23,7 @@
   --lime-500:#9DC41F;     /* energia: chips ativos, marcadores, blocos (texto sobre ele: --on-accent) */
   --lime-100:#EEF6D3;
   --orange-500:#EE8A14;   /* acento: CTA secundário, destaques (texto sobre ele: --on-accent) */
-  --orange-700:#B86505;   /* laranja para TEXTO (AA em branco) */
+  --orange-700:#B06104;   /* laranja para TEXTO (AA em branco: 4,6:1; npm run check:contrast) */
   --orange-100:#FDEBD3;
   --on-dark:#FFFFFF;      /* só sobre green-900, green-700 ou foto com overlay */
   --on-accent:#0F1F14;    /* texto sobre lime-500 ou orange-500: escuro em qualquer tema */

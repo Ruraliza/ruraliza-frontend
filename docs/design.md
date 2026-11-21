@@ -35,7 +35,7 @@ Público: produtores e trabalhadores do campo, no celular, muitas vezes ao ar li
 - **Estrelas de avaliação:** `star-input.ts` usa rádios nativos dentro de `fieldset`: funciona com teclado e leitor de tela.
 - **Avisos:** o `toast-container` usa `role="status"` (educado) e `role="alert"` (urgente).
 - **Movimento reduzido:** respeitado em `base.css`; a rolagem suave só liga em `no-preference`.
-- **Letras maiores e alto contraste:** por conta, com atalho **Aa**; texto ≥ 4,5:1 e bordas de campo ≥ 3:1 conferidos nos temas (comentário em `tokens.css`).
+- **Letras maiores e alto contraste:** por conta, com atalho **Aa**; texto ≥ 4,5:1 e bordas de campo ≥ 3:1 nos quatro temas, conferidos pelo `npm run check:contrast` (`scripts/check-contrast.mjs`, também no `npm run verify`).
 - **Sem piscar no tema escuro:** script em `index.html` lê `localStorage` antes do app carregar.
 - **Impressão:** `@media print` esconde as cascas e deixa só o certificado (`.no-print`).
 - **Menu de baixo:** de 3 a 5 destinos, regra testada em `farmer-layout.spec.ts`, `worker-layout.spec.ts` e `system-layout.spec.ts`.

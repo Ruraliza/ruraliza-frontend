@@ -8,8 +8,9 @@ O que cada verificação prova, quando rodar e como revisar. As ferramentas de a
 |---|---|---|
 | `npm run lint` | ESLint com `typescript-eslint`, `angular-eslint` (incluindo `templateAccessibility`), promessas tratadas e nenhum arquivo acima de 350 linhas | Toda mudança de código |
 | `npm run check:rules` | As regras locais de lint (`eslint-rules/`) funcionam: o autoteste do toolkit passa | Ao atualizar `eslint-rules/` |
+| `npm run check:contrast` | As cores de `src/styles/tokens.css` passam no contraste da WCAG nos quatro temas: texto 4,5:1 e borda de campo 3:1 sobre o fundo e os cartões, texto 4,5:1 sobre botões e chips (`scripts/check-contrast.mjs`, 108 pares) | Mudança em `tokens.css` ou cor nova usada como texto |
 | `npm run typecheck` | O app e os testes fecham no `tsc` | Toda mudança de código |
-| `npx ng test --watch=false` | Os 213 testes Vitest (componentes, serviços, regras de menu, utilitários) | Toda mudança de código |
+| `npx ng test --watch=false` | Os 225 testes Vitest (componentes, serviços, regras de menu, utilitários) | Toda mudança de código |
 | `npm run build` | O build de produção com SSR e as rotas pré-renderizadas (`/`, `/creditos`, `/termos`, `/privacidade`) | Antes de entregar |
 | `npm run verify` | Tudo acima, em ordem | Antes de pedir revisão |
 
@@ -25,7 +26,7 @@ O CI (`.github/workflows/ci.yml`) roda `npm ci` e `npm run verify` em cada PR e 
 - Exceções pontuais, cada uma com o motivo no próprio código:
   - `Button` e `CategoryChip` são componentes de atributo (`button[appButton]`, `span[appCategoryChip]`) para manter o elemento nativo.
   - O fundo do `<dialog>` da aula fecha pelo clique; no teclado, o Esc nativo faz o mesmo.
-- O que o lint não cobre (contraste, layout, movimento) é conferido no navegador e com as skills de design (veja [design.md](design.md)).
+- O contraste dos tokens é conferido pelo `npm run check:contrast`. O que nenhum dos dois cobre (contraste de fotos e de combinações fora dos pares do script, layout, movimento) é conferido no navegador e com as skills de design (veja [design.md](design.md)).
 - `quality/no-direct-console` e `quality/no-direct-data-access` não se aplicam: o app não tem logger próprio nem cliente de banco.
 
 ## Adoção do lint (18/10/2026)
