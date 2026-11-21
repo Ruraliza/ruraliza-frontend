@@ -1,8 +1,9 @@
 import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CategoryGroup } from '@core/models/service.model';
 import { TrackTutor } from '@core/models/track.model';
 import { Button } from '@shared/ui/button';
-import { CategoryChip } from '@shared/domain/ui/category-chip';
+import { CategoryGroupPicker } from '@shared/domain/ui/category-group-picker';
 import { FormField } from '@shared/ui/form-field';
 
 export interface TrackGeneralValue {
@@ -16,7 +17,7 @@ export interface TrackGeneralValue {
 // Usado na criação (sem tutores: quem cria vira tutor) e na edição.
 @Component({
   selector: 'app-track-general-form',
-  imports: [ReactiveFormsModule, Button, CategoryChip, FormField],
+  imports: [ReactiveFormsModule, Button, CategoryGroupPicker, FormField],
   template: `
     <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <app-form-field label="Nome da trilha" fieldId="track-title" [control]="form.controls.title">
@@ -30,11 +31,7 @@ export interface TrackGeneralValue {
       <fieldset class="stack-sm">
         <legend class="t-label">Categorias</legend>
         <p class="t-body-sm muted">Os trabalhadores filtram as trilhas pelas mesmas categorias dos serviços.</p>
-        <div class="cluster">
-          @for (c of categories(); track c) {
-            <button appCategoryChip [interactive]="true" [selected]="selectedCategories().includes(c)" [disabled]="readonly()" (click)="toggleCategory(c)">{{ c }}</button>
-          }
-        </div>
+        <app-category-group-picker [groups]="categoryGroups()" [selected]="selectedCategories()" (selectedChange)="setCategories($event)" [disabled]="readonly()" />
         @if (categoryError()) { <p class="field-error t-body-sm">Escolha pelo menos uma categoria.</p> }
       </fieldset>
 
@@ -73,7 +70,7 @@ export interface TrackGeneralValue {
 })
 export class TrackGeneralForm {
   readonly value = input<TrackGeneralValue | null>(null);
-  readonly categories = input.required<string[]>();
+  readonly categoryGroups = input.required<CategoryGroup[]>();
   readonly tutors = input<TrackTutor[] | null>(null); // null = sem escolha de tutores (criação pelo tutor)
   readonly tutorsHint = input('Só os tutores da trilha (e o administrador) podem editá-la. Os nomes aparecem para os alunos.');
   readonly readonly = input(false);
@@ -107,8 +104,8 @@ export class TrackGeneralForm {
     });
   }
 
-  toggleCategory(category: string): void {
-    this.selectedCategories.update((list) => (list.includes(category) ? list.filter((c) => c !== category) : [...list, category]));
+  setCategories(categories: string[]): void {
+    this.selectedCategories.set(categories);
     this.categoryError.set(false);
   }
 
@@ -125,7 +122,7 @@ export class TrackGeneralForm {
 
     const { title, description } = this.form.getRawValue();
     // Na ordem da lista oficial.
-    const categories = this.categories().filter((c) => this.selectedCategories().includes(c));
+    const categories = this.categoryGroups().flatMap((g) => g.services).filter((c) => this.selectedCategories().includes(c));
     this.submitted.emit({ title: title.trim(), description: description.trim(), categories, tutor_ids: this.selectedTutors() });
   }
 }

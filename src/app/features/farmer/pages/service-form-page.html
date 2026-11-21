@@ -48,23 +48,39 @@
               </app-form-field>
 
               <fieldset class="categories">
-                <legend class="t-label">Categoria</legend>
+                <legend class="t-label">Tipo de serviço</legend>
+                <p class="t-body-sm muted">Escolha o grupo e, depois, o serviço.</p>
                 @switch (categories.state().status) {
                   @case ('loading') { <app-skeleton [count]="1" [height]="44" /> }
                   @case ('error') { <app-error-state [message]="categories.error()" (retry)="categories.load()" /> }
                   @case ('success') {
                     <div class="cluster">
-                      @for (category of categories.data(); track category) {
+                      @for (group of categories.data(); track group.name) {
                         <label class="chip-radio">
-                          <input type="radio" formControlName="category" [value]="category">
-                          <span>{{ category }}</span>
+                          <input type="radio" name="category-group" [value]="group.name" [checked]="activeGroup()?.name === group.name" (change)="pickGroup(group.name)">
+                          <span>{{ group.name }}</span>
                         </label>
                       }
                     </div>
+                    @if (activeGroup(); as group) {
+                      @if (group.services.length > 1) {
+                        <fieldset class="services">
+                          <legend class="t-label">Serviço em {{ group.name }}</legend>
+                          <div class="cluster">
+                            @for (category of group.services; track category) {
+                              <label class="chip-radio">
+                                <input type="radio" formControlName="category" [value]="category">
+                                <span>{{ category }}</span>
+                              </label>
+                            }
+                          </div>
+                        </fieldset>
+                      }
+                    }
                   }
                 }
                 @if (form.controls.what.controls.category.touched && form.controls.what.controls.category.invalid) {
-                  <p class="field-error t-body-sm" role="alert">Escolha uma categoria.</p>
+                  <p class="field-error t-body-sm" role="alert">{{ activeGroup() ? 'Escolha o serviço.' : 'Escolha o grupo e o serviço.' }}</p>
                 }
               </fieldset>
             </ng-container>

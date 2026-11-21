@@ -31,12 +31,22 @@
     </div>
 
     @if (categories.state().status === 'success') {
-      <div class="cluster chips" role="group" aria-label="Filtrar por categoria">
-        <button appCategoryChip [interactive]="true" [selected]="!categoria()" (click)="selectCategory(null)">Todas</button>
-        @for (c of categories.data(); track c) {
-          <button appCategoryChip [interactive]="true" [selected]="categoria() === c" (click)="selectCategory(c)">{{ c }}</button>
+      <div class="cluster chips" role="group" aria-label="Filtrar por grupo de serviço">
+        <button appCategoryChip [interactive]="true" [selected]="!activeGroup()" (click)="selectGroup(null)">Todas</button>
+        @for (g of categories.data(); track g.name) {
+          <button appCategoryChip [interactive]="true" [selected]="activeGroup()?.name === g.name" (click)="selectGroup(g.name)">{{ g.name }}</button>
         }
       </div>
+      @if (activeGroup(); as group) {
+        @if (group.services.length > 1) {
+          <div class="cluster chips services" role="group" [attr.aria-label]="'Serviços em ' + group.name">
+            <button appCategoryChip [interactive]="true" [selected]="!categoria()" (click)="selectCategory(null)">Tudo em {{ group.name }}</button>
+            @for (c of group.services; track c) {
+              <button appCategoryChip [interactive]="true" [selected]="categoria() === c" (click)="selectCategory(c)">{{ c }}</button>
+            }
+          </div>
+        }
+      }
     }
 
     @if (panelOpen()) {
@@ -117,7 +127,7 @@
           }
         </div>
       } @else if (anyFilter()) {
-        <app-empty-state icon="search" title="Nenhuma vaga com esses filtros" message="Tente outra palavra, outra categoria ou amplie a carga horária e o período.">
+        <app-empty-state icon="search" title="Nenhuma vaga com esses filtros" message="Tente outra palavra, outro serviço ou amplie a carga horária e o período.">
           <button appButton variant="secondary" type="button" (click)="clearFilters()">Limpar filtros</button>
         </app-empty-state>
       } @else {

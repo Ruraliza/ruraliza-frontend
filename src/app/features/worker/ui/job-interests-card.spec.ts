@@ -9,12 +9,22 @@ import { JobInterestsCard } from './job-interests-card';
 describe('JobInterestsCard', () => {
   let saved: JobPreferences[];
 
+  let host: HTMLElement;
+  const click = (label: string, group: string): void => {
+    const details = [...host.querySelectorAll('details')].find((d) => d.querySelector('summary')?.textContent?.includes(group));
+    const button = [...(details?.querySelectorAll('button') ?? [])].find((b) => b.textContent?.trim() === label);
+    button?.click();
+  };
+
   function render(current: JobPreferences): JobInterestsCard {
     saved = [];
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        { provide: CategoryService, useValue: { getCategories: () => of(['Colheita', 'Plantio', 'Manejo de gado']) } },
+        {
+          provide: CategoryService,
+          useValue: { getGroups: () => of([{ name: 'Lavoura e horta', services: ['Colheita', 'Plantio'] }, { name: 'Animais', services: ['Manejo de gado', 'Ordenha'] }]) }
+        },
         {
           provide: MatchingService,
           useValue: {
@@ -32,6 +42,7 @@ describe('JobInterestsCard', () => {
     fixture.detectChanges();
     TestBed.tick();
     fixture.detectChanges();
+    host = fixture.nativeElement as HTMLElement;
     return fixture.componentInstance;
   }
 
@@ -41,15 +52,24 @@ describe('JobInterestsCard', () => {
     expect([card.chosen(), card.radius(), card.alerts()]).toEqual([['Plantio'], '50', true]);
   });
 
-  it('toggles the categories and saves everything at once', () => {
+  it('toggles services and whole groups and saves everything at once', () => {
     const card = render({ categories: ['Plantio'], near: null, alerts: false });
 
-    card.toggle('Colheita');
-    card.toggle('Plantio');
+    click('Colheita', 'Lavoura e horta');
+    click('Plantio', 'Lavoura e horta');
+    click('Todo o grupo', 'Animais');
     card.alerts.set(true);
     card.save();
 
-    expect(saved).toEqual([{ categories: ['Colheita'], near: null, alerts: true }]);
+    expect(saved).toEqual([{ categories: ['Colheita', 'Manejo de gado', 'Ordenha'], near: null, alerts: true }]);
+  });
+
+  it('unmarks the whole group when all of it is chosen', () => {
+    const card = render({ categories: ['Manejo de gado', 'Ordenha', 'Colheita'], near: null, alerts: false });
+
+    click('Todo o grupo', 'Animais');
+
+    expect(card.chosen()).toEqual(['Colheita']);
   });
 
   it('changes the radius only when "perto de mim" is on', () => {

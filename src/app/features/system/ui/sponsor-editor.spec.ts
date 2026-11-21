@@ -6,7 +6,7 @@ import { SponsorEditor } from './sponsor-editor';
 
 describe('SponsorEditor', () => {
   function render(): { editor: SponsorEditor; saved: SponsorInput[] } {
-    TestBed.configureTestingModule({ providers: [{ provide: CategoryService, useValue: { getCategories: () => of(['Colheita', 'Plantio']) } }] });
+    TestBed.configureTestingModule({ providers: [{ provide: CategoryService, useValue: { getGroups: () => of([{ name: 'Lavoura e horta', services: ['Colheita', 'Plantio'] }]) } }] });
     const fixture = TestBed.createComponent(SponsorEditor);
     fixture.detectChanges();
     const saved: SponsorInput[] = [];

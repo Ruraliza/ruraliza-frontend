@@ -37,7 +37,7 @@ import { TrackGeneralForm, TrackGeneralValue } from '../ui/track-general-form';
         @case ('success') {
           <div class="card">
             <app-track-general-form
-              [categories]="categories.data() ?? []"
+              [categoryGroups]="categories.data() ?? []"
               [tutors]="oversees ? tutors.data() : null"
               tutorsHint="Os tutores escolhidos montam as aulas e publicam a trilha. Você, como administrador, também pode editá-la."
               [saving]="saving()"
@@ -59,7 +59,7 @@ export class TrackNewPage {
 
   // Administrador: não é tutor, então escolhe quem será (a lista de tutores só carrega para ele).
   readonly oversees = inject(SystemSessionService).can('tracks:oversee');
-  readonly categories = new RemoteData(() => inject(CategoryService).getCategories());
+  readonly categories = new RemoteData(() => inject(CategoryService).getGroups());
   readonly tutors = new RemoteData<TrackTutor[]>(() => (this.oversees ? this.service.tutors() : of([])));
   readonly state = computed(() => mergeStates(this.categories.state(), this.tutors.state()));
   readonly saving = signal(false);
