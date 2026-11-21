@@ -11,6 +11,8 @@ import { ToastService } from '@core/toast/toast.service';
 import { cpfValidator } from '@shared/utils/cpf';
 import { noBlockedTerms } from '@shared/utils/moderation';
 import { Button } from '@shared/ui/button';
+import { CATALOG_LABEL, CATALOG_NOTICE } from '@shared/domain/utils/catalog';
+import { SwitchField } from '@shared/ui/switch-field';
 import { FormField } from '@shared/ui/form-field';
 import { Icon } from '@shared/ui/icon';
 import { MaskedInput } from '@shared/ui/masked-input';
@@ -36,7 +38,7 @@ export const ROLE_CHOICES: RoleChoice[] = [
 // `?papel=produtor|trabalhador` já deixa uma alternativa marcada. Sucesso já define o usuário atual e leva ao painel.
 @Component({
   selector: 'app-signup-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, FormField, Icon, MaskedInput, PasswordReveal],
+  imports: [ReactiveFormsModule, RouterLink, Button, FormField, Icon, MaskedInput, PasswordReveal, SwitchField],
   templateUrl: './signup-page.html',
   styles: `
     .draft-note { max-width: 560px; padding: var(--space-4); border-radius: var(--radius-md); background: var(--mint-100); }
@@ -98,6 +100,7 @@ export class SignupPage implements OnInit {
     experience: ['', noBlockedTerms],
     certificates: ['', noBlockedTerms],
     resume: this.fb.control<File | null>(null, resumeValidator), // só trabalhador; enviado depois do cadastro
+    catalog: [true], // só trabalhador: aparecer no catálogo de prestadores (ligado por padrão)
     acceptTerms: [false, Validators.requiredTrue] // Termos de Uso e Política de Privacidade (a API guarda a data do aceite)
   });
 
@@ -110,6 +113,8 @@ export class SignupPage implements OnInit {
   readonly confirmationMessages = CONFIRMATION_MESSAGES;
   readonly resumeMessages = RESUME_MESSAGES;
   readonly acceptedResume = ACCEPTED_RESUME;
+  readonly catalogLabel = CATALOG_LABEL;
+  readonly catalogNotice = CATALOG_NOTICE;
 
   constructor() {
     revalidateWith(this.form.controls.password, this.form.controls.confirmation);
@@ -143,6 +148,7 @@ export class SignupPage implements OnInit {
     this.create(role).subscribe({
       next: ({ user, token }) => {
         this.currentUser.signIn(user, token);
+        if (role === 'worker' && !this.form.controls.catalog.value) this.leaveCatalog(user.id);
         const resume = role === 'worker' ? this.form.controls.resume.value : null;
         if (resume) {
           this.sendResume(user.id, resume);
@@ -156,6 +162,13 @@ export class SignupPage implements OnInit {
         }
       },
       error: () => this.saving.set(false) // a mensagem já saiu no toast
+    });
+  }
+
+  // Desligou o catálogo no cadastro: grava agora que o trabalhador existe. Falhou? Dá para desligar no perfil.
+  private leaveCatalog(workerId: number): void {
+    this.profiles.leaveCatalog(workerId).subscribe({
+      error: () => this.toast.info('Não deu para desligar o catálogo agora. Desligue nas preferências do seu perfil.')
     });
   }
 

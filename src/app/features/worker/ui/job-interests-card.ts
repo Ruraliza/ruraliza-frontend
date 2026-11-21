@@ -11,6 +11,7 @@ import { SegmentOption, SegmentedControl } from '@shared/ui/segmented-control';
 import { Skeleton } from '@shared/ui/skeleton';
 import { SwitchField } from '@shared/ui/switch-field';
 import { RemoteData } from '@shared/utils/remote-data';
+import { CATALOG_LABEL, CATALOG_NOTICE } from '@shared/domain/utils/catalog';
 
 type Radius = '10' | '30' | '50' | '100';
 const RADII: SegmentOption<Radius>[] = [
@@ -21,7 +22,8 @@ const RADII: SegmentOption<Radius>[] = [
 ];
 
 // Cartão "Seus interesses" do perfil do trabalhador (issues #23 e #16): as categorias, "perto de mim"
-// (a localização do aparelho, guardada pela API só aproximada) e os avisos de vaga nova.
+// (a localização do aparelho, guardada pela API só aproximada), os avisos de vaga nova e o catálogo de
+// prestadores (ligado por padrão: o perfil aparece para quem publica vagas nas categorias escolhidas).
 @Component({
   selector: 'app-job-interests-card',
   imports: [Button, CategoryGroupPicker, SegmentedControl, Skeleton, SwitchField],
@@ -64,6 +66,14 @@ const RADII: SegmentOption<Radius>[] = [
           (checkedChange)="alerts.set($event)"
         />
 
+        <app-switch-field
+          fieldId="interests-catalog"
+          [label]="catalogLabel"
+          [hint]="catalogNotice"
+          [checked]="catalog()"
+          (checkedChange)="catalog.set($event)"
+        />
+
         <div><button appButton type="button" [loading]="saving()" (click)="save()">Salvar interesses</button></div>
       }
     </section>
@@ -90,6 +100,9 @@ export class JobInterestsCard implements OnInit {
   readonly chosen = signal<string[]>([]);
   readonly near = signal<JobPreferences['near']>(null);
   readonly alerts = signal(false);
+  readonly catalog = signal(true);
+  readonly catalogLabel = CATALOG_LABEL;
+  readonly catalogNotice = CATALOG_NOTICE;
   readonly saving = signal(false);
   readonly locating = signal(false);
   readonly radii = RADII;
@@ -121,6 +134,7 @@ export class JobInterestsCard implements OnInit {
         this.chosen.set(prefs.categories);
         this.near.set(prefs.near);
         this.alerts.set(prefs.alerts);
+        this.catalog.set(prefs.catalog);
       });
     });
   }
@@ -157,7 +171,7 @@ export class JobInterestsCard implements OnInit {
 
   save(): void {
     this.saving.set(true);
-    this.matching.savePreferences(this.workerId(), { categories: this.chosen(), near: this.near(), alerts: this.alerts() }).subscribe({
+    this.matching.savePreferences(this.workerId(), { categories: this.chosen(), near: this.near(), alerts: this.alerts(), catalog: this.catalog() }).subscribe({
       next: ({ preferences }) => {
         this.saving.set(false);
         this.near.set(preferences.near);

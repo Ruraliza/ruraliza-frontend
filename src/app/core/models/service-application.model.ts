@@ -10,6 +10,7 @@ export interface ServiceApplication {
   status: ApplicationStatus;
   auto_rejected?: boolean; // recusada pelo aceite de outro; volta a Pending se o aceito desistir
   message?: string; // apresentação do trabalhador (até 300 caracteres; telefone e e-mail saem ocultos)
+  invited: boolean; // nasceu de um convite do produtor ("Convidado" na lista de candidatos)
   insertion_date: string;
 }
 
@@ -70,4 +71,46 @@ export interface ProposalResponse {
 export interface ApplyInput {
   worker_id: number;
   message?: string | null; // opcional, até 300 caracteres
+}
+
+export type InviteStatus = 'Pending' | 'Accepted' | 'Declined' | 'Expired';
+
+// Convite do produtor a um trabalhador do catálogo da vaga (GET /farmers/services/:id/catalog). Um por vaga e
+// trabalhador: quem recusou não é convidado de novo. Os pendentes expiram quando a vaga sai de Pending ou vence.
+export interface Invite {
+  id: number;
+  service_id: number;
+  farmer_id: number;
+  worker_id: number;
+  status: InviteStatus;
+  insertion_date: string;
+  answered_at: string | null; // quando foi aceito ou recusado
+}
+
+// POST /farmers/services/:id/invites
+export interface InviteInput {
+  worker_id: number;
+}
+
+export interface InviteResponse {
+  message: string;
+  invite: Invite;
+}
+
+// GET /workers/:id/invites: os pendentes primeiro.
+export interface InviteWithService extends Invite {
+  service: OpenService;
+}
+
+// PATCH /workers/invites/:id
+export type InviteAnswer = 'Accept' | 'Decline';
+
+export interface InviteAnswerInput {
+  action: InviteAnswer;
+}
+
+// No Accept, também a candidatura criada e a conversa aberta com o produtor.
+export interface InviteAnswerResponse extends InviteResponse {
+  application?: ServiceApplication;
+  chat_id?: number;
 }

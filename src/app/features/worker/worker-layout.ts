@@ -4,17 +4,20 @@ import { NotificationInboxService } from '@core/api/notification-inbox.service';
 import { ProfileSummaryService } from '@core/api/profile-summary.service';
 import { AppShell, NavItem, ShellNotifications, ShellProfile } from '@core/layout/app-shell';
 import { CurrentUserService } from '@core/session/current-user.service';
+import { InviteInboxService } from './data-access/invite-inbox.service';
 
 const PROFILE_LINK = '/trabalhador/perfil';
 const NOTIFICATIONS_LINK = '/trabalhador/notificacoes';
 
 // Menu do trabalhador. No celular ficam 5 itens, com "Buscar" no meio: "Vagas" é a mesma tela
-// e fica só na sidebar, e o perfil vai para o avatar da barra de cima.
-export function workerNavItems(unreadChats: number, unreadNotifications = 0): NavItem[] {
+// e fica só na sidebar, e o perfil vai para o avatar da barra de cima. "Convites" fica na sidebar, com o selo
+// dos pendentes; no celular, o convite chega pelo sino e pelo aviso na tela de candidaturas.
+export function workerNavItems(unreadChats: number, unreadNotifications = 0, pendingInvites = 0): NavItem[] {
   return [
     { label: 'Início', icon: 'home', link: '/trabalhador', exact: true },
     { label: 'Vagas', icon: 'briefcase', link: '/trabalhador/vagas', sidebarOnly: true },
     { label: 'Candidaturas', icon: 'list', link: '/trabalhador/candidaturas' },
+    { label: 'Convites', icon: 'send', link: '/trabalhador/convites', sidebarOnly: true, badge: pendingInvites },
     { label: 'Buscar', icon: 'search', link: '/trabalhador/vagas', queryParams: { buscar: '1' }, primary: true },
     { label: 'Conversas', icon: 'chat', link: '/trabalhador/conversas', badge: unreadChats },
     { label: 'Trilhas', icon: 'book', link: '/trabalhador/trilhas' },
@@ -33,8 +36,9 @@ export class WorkerLayout {
   private readonly inbox = inject(ChatInboxService);
   private readonly summary = inject(ProfileSummaryService);
   private readonly alerts = inject(NotificationInboxService);
+  private readonly invites = inject(InviteInboxService);
 
-  readonly items = computed(() => workerNavItems(this.inbox.unread(), this.alerts.unread()));
+  readonly items = computed(() => workerNavItems(this.inbox.unread(), this.alerts.unread(), this.invites.pending()));
   readonly notifications = computed<ShellNotifications>(() => ({ link: NOTIFICATIONS_LINK, unread: this.alerts.unread() }));
   readonly profile = computed<ShellProfile>(() => ({
     link: PROFILE_LINK,
@@ -43,11 +47,12 @@ export class WorkerLayout {
   }));
 
   constructor() {
-    // Conversas (contador do menu), avisos (sino) e nome/foto do avatar enquanto a área estiver aberta.
+    // Conversas (contador do menu), avisos (sino), convites pendentes e nome/foto do avatar enquanto a área estiver aberta.
     const workerId = inject(CurrentUserService).requireId('worker');
     const destroyRef = inject(DestroyRef);
     this.inbox.connect('worker', workerId, destroyRef);
     this.alerts.connect('worker', workerId, destroyRef);
     this.summary.connect('worker', workerId, destroyRef);
+    this.invites.connect(workerId, destroyRef);
   }
 }

@@ -2,6 +2,7 @@ import { Component, computed, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { LiveUpdatesService } from '@core/api/live-updates.service';
+import { InviteInboxService } from '../data-access/invite-inbox.service';
 import { WorkerService } from '../data-access/worker.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { RemoteData } from '@shared/utils/remote-data';
@@ -23,6 +24,14 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
           <h1>Candidaturas</h1>
         </div>
       </div>
+
+      @if (pendingInvites(); as count) {
+        <a class="invites" routerLink="/trabalhador/convites">
+          <app-icon name="send" [size]="20" />
+          <span><strong>{{ count === 1 ? '1 convite' : count + ' convites' }}</strong> de produtor esperando sua resposta</span>
+          <app-icon name="arrow-right" [size]="20" />
+        </a>
+      }
 
       @switch (applications.state().status) {
         @case ('loading') { <app-skeleton [count]="3" [height]="96" /> }
@@ -65,6 +74,11 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
     .row:hover { border-color: var(--line-strong); }
     .what { display: grid; gap: var(--space-1); min-width: 0; }
     .meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); }
+    .invites {
+      display: flex; align-items: center; gap: var(--space-3); min-height: 56px; margin-bottom: var(--space-4); padding: var(--space-3) var(--space-4);
+      border: 2px solid var(--mata); border-radius: var(--radius-lg); background: var(--surface-raised); color: var(--ink); text-decoration: none;
+    }
+    .invites span { flex: 1; }
   `
 })
 export class WorkerApplicationsPage {
@@ -75,6 +89,7 @@ export class WorkerApplicationsPage {
   readonly sorted = computed(() => [...(this.applications.data() ?? [])].sort((a, b) => b.id - a.id));
 
   readonly date = formatDate;
+  readonly pendingInvites = inject(InviteInboxService).pending;
 
   constructor() {
     this.applications.load();

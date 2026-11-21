@@ -5,6 +5,7 @@ import { JobsPage } from './pages/jobs-page';
 import { JobDetailPage } from './pages/job-detail-page';
 import { RecommendedJobsPage } from './pages/recommended-jobs-page';
 import { WorkerApplicationsPage } from './pages/worker-applications-page';
+import { InvitesPage } from './pages/invites-page';
 import { WorkerProfilePage } from './pages/worker-profile-page';
 import { ChatsPage } from './pages/chats-page';
 import { ChatPage } from './pages/chat-page';
@@ -27,6 +28,7 @@ export const WORKER_ROUTES: Routes = [
       { path: 'vagas/para-voce', component: RecommendedJobsPage, title: 'Vagas para você · Ruraliza' },
       { path: 'vagas/:id', component: JobDetailPage, title: 'Vaga · Ruraliza' },
       { path: 'candidaturas', component: WorkerApplicationsPage, title: 'Candidaturas · Ruraliza' },
+      { path: 'convites', component: InvitesPage, title: 'Convites · Ruraliza' },
       { path: 'conversas', component: ChatsPage, title: 'Conversas · Ruraliza' },
       { path: 'conversas/:id', component: ChatPage, title: 'Conversa · Ruraliza' },
       { path: 'trilhas', component: TracksPage, title: 'Trilhas de estudo · Ruraliza' },

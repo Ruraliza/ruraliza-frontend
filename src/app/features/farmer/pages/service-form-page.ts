@@ -253,8 +253,9 @@ export class ServiceFormPage implements OnInit {
       .requestService({ farmer_id: this.farmerId, ...fields })
       .subscribe({
         next: ({ service }) => {
-          this.toast.success('Serviço publicado. Agora é aguardar as candidaturas.');
-          void this.router.navigate(['/produtor/servicos', service.id]);
+          // Logo depois de publicar, o catálogo: quem tem interesse nesse serviço, para convidar.
+          this.toast.success('Serviço publicado. Convide quem tem interesse ou aguarde as candidaturas.');
+          void this.router.navigate(['/produtor/servicos', service.id, 'catalogo']);
         },
         error: () => this.saving.set(false)
       });

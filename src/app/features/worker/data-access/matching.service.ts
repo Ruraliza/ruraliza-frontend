@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
-import { JobPreferences, JobPreferencesResponse, RecommendedJob } from '@core/models/matching.model';
+import { JobPreferences, JobPreferencesInput, JobPreferencesResponse, RecommendedJob } from '@core/models/matching.model';
 
 // Vagas para você: as preferências do trabalhador e as vagas recomendadas.
 @Injectable({ providedIn: 'root' })
@@ -14,7 +14,7 @@ export class MatchingService {
     return this.http.get<JobPreferences>(`${this.apiUrl}/${workerId}/job-preferences`);
   }
 
-  savePreferences(workerId: number, preferences: JobPreferences): Observable<JobPreferencesResponse> {
+  savePreferences(workerId: number, preferences: JobPreferencesInput): Observable<JobPreferencesResponse> {
     return this.http.put<JobPreferencesResponse>(`${this.apiUrl}/${workerId}/job-preferences`, preferences);
   }
 

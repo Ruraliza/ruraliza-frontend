@@ -6,6 +6,7 @@ import { FarmFormPage } from './pages/farm-form-page';
 import { FarmerServicesPage } from './pages/farmer-services-page';
 import { ServiceFormPage } from './pages/service-form-page';
 import { ServiceDetailPage } from './pages/service-detail-page';
+import { CatalogPage } from './pages/catalog-page';
 import { FarmerProfilePage } from './pages/farmer-profile-page';
 import { ChatsPage } from './pages/chats-page';
 import { ChatPage } from './pages/chat-page';
@@ -26,6 +27,7 @@ export const FARMER_ROUTES: Routes = [
       { path: 'servicos/novo', component: ServiceFormPage, title: 'Novo serviço · Ruraliza' },
       { path: 'servicos/:id', component: ServiceDetailPage, title: 'Serviço · Ruraliza' },
       { path: 'servicos/:id/editar', component: ServiceFormPage, title: 'Editar serviço · Ruraliza' },
+      { path: 'servicos/:id/catalogo', component: CatalogPage, title: 'Catálogo de prestadores · Ruraliza' },
       { path: 'conversas', component: ChatsPage, title: 'Conversas · Ruraliza' },
       { path: 'conversas/:id', component: ChatPage, title: 'Conversa · Ruraliza' },
       { path: 'notificacoes', component: NotificationsPage, title: 'Notificações · Ruraliza' },

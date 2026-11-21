@@ -20,6 +20,7 @@ import { VerifiedBadge } from '@shared/domain/ui/verified-badge';
       <div class="who">
         <h3>{{ worker().name }}</h3>
         @if (verified()) { <app-verified-badge /> }
+        @if (invited()) { <span class="invited"><app-icon name="send" [size]="16" />Convidado</span> }
         @if (reputation(); as rep) {
           <p class="rating">
             <app-rating-badge [reputation]="rep" />
@@ -62,6 +63,11 @@ import { VerifiedBadge } from '@shared/domain/ui/verified-badge';
     .who { flex: 1; min-width: 160px; display: grid; gap: 2px; justify-items: start; }
     .rating { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); margin: 0; }
     .bio { color: var(--ink); white-space: pre-line; }
+    .invited {
+      display: inline-flex; align-items: center; gap: var(--space-1); padding: 2px var(--space-2) 2px 6px;
+      border-radius: var(--radius-pill); background: var(--bg-alt); color: var(--ink); border: 1px solid var(--line-strong);
+      font-size: 0.8125rem; line-height: 1.25rem; font-weight: 700; white-space: nowrap;
+    }
     .note { display: grid; gap: var(--space-1); margin: 0; padding: var(--space-3) var(--space-4); border-left: 4px solid var(--mata); border-radius: var(--radius-md); background: var(--bg-alt); }
     .note p { margin: 0; white-space: pre-line; }
     dd { white-space: pre-line; }
@@ -84,6 +90,8 @@ export class WorkerCard {
   readonly reputation = input<WorkerReputation | null>(null);
   readonly reportable = input(false);
   readonly verified = input(false);
+  // Veio de um convite do produtor (catálogo de prestadores).
+  readonly invited = input(false);
   // Mensagem que o trabalhador escreveu ao se candidatar.
   readonly note = input<string | null | undefined>(null);
   readonly viewReviews = output<void>();

@@ -5,7 +5,9 @@ import { environment } from '@env/environment';
 import { PasswordChangeInput } from '@core/models/auth.model';
 import { Worker, WorkerUpdate } from '@core/models/worker.model';
 import { JobFilters, OpenService, Service } from '@core/models/service.model';
-import { ApplicationWithService, ApplyInput, ServiceApplication } from '@core/models/service-application.model';
+import {
+  ApplicationWithService, ApplyInput, InviteAnswer, InviteAnswerInput, InviteAnswerResponse, InviteWithService, ServiceApplication
+} from '@core/models/service-application.model';
 
 // Painel do trabalhador: perfil, foto, vagas, candidaturas e desistência. Ler o perfil, o cadastro e
 // o currículo ficam no ProfileService (@core/api), usado também por outras features.
@@ -42,6 +44,17 @@ export class WorkerService {
 
   deletePhoto(workerId: number): Observable<{ message: string; worker: Worker }> {
     return this.http.delete<{ message: string; worker: Worker }>(`${this.apiUrl}/${workerId}/photo`);
+  }
+
+  // Convites dos produtores (os pendentes primeiro).
+  getInvites(workerId: number): Observable<InviteWithService[]> {
+    return this.http.get<InviteWithService[]>(`${this.apiUrl}/${workerId}/invites`);
+  }
+
+  // Aceitar vira candidatura (com a conversa aberta); recusar avisa o produtor.
+  answerInvite(inviteId: number, action: InviteAnswer): Observable<InviteAnswerResponse> {
+    const body: InviteAnswerInput = { action };
+    return this.http.patch<InviteAnswerResponse>(`${this.apiUrl}/invites/${inviteId}`, body);
   }
 
   getWorkerApplications(workerId: number): Observable<ApplicationWithService[]> {

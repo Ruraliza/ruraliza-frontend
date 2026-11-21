@@ -19,8 +19,8 @@ O Ruraliza (AgTech) conecta produtores rurais a trabalhadores, prestadores de se
 Rotas reais em `src/app/app.routes.ts` e nos `*.routes.ts` de cada feature. O passo a passo de teste está no [README](README.md#fluxo-de-teste).
 
 - **Público:** landing com montador de vaga, cadastro (com aceite dos termos), entrar, esqueci/nova senha, `/certificados/:code`, `/termos`, `/privacidade`, `/ajuda`, `/creditos`.
-- **Produtor:** início, fazendas (fotos e mapa), serviços (abas, busca, filtros na URL), novo serviço em 2 passos, detalhe com candidatos, conversas, notificações, ajuda, perfil.
-- **Trabalhador:** início, vagas e vagas para você, detalhe da vaga, candidaturas, conversas, trilhas e player de aulas, certificados, notificações, ajuda, perfil.
+- **Produtor:** início, fazendas (fotos e mapa), serviços (abas, busca, filtros na URL), novo serviço em 2 passos, catálogo de prestadores da vaga (convites), detalhe com candidatos (etiqueta "Convidado"), conversas, notificações, ajuda, perfil.
+- **Trabalhador:** início, vagas e vagas para você, detalhe da vaga, candidaturas, convites, conversas, trilhas e player de aulas, certificados, notificações, ajuda, perfil.
 - **Sistema:** usuários, equipe, trilhas (editor), moderação, patrocínios, ajuda, perfil.
 - **Transversais:** avaliação dupla e cega, conversa com WhatsApp protegido, tempo real por SSE, push, modo sem internet, tema/letras maiores/alto contraste.
 
