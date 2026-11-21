@@ -22,8 +22,8 @@ export class AppScreen {
     { initials: 'JP', name: 'João Pedro', exp: 'Estudante de agronomia' }
   ];
   readonly jobs = [
-    { name: 'Colheita de café', place: 'Três Rios, RJ', price: 'R$ 1.800,00' },
-    { name: 'Plantio de milho', place: 'Paraíba do Sul, RJ', price: 'R$ 1.200,00' }
+    { name: 'Colheita de café', place: 'Três Rios, RJ', price: 'Estimativa: R$ 180,00 por dia' },
+    { name: 'Plantio de milho', place: 'Paraíba do Sul, RJ', price: 'Estimativa: R$ 120,00 por hectare' }
   ];
 }
 

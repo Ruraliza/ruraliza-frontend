@@ -44,7 +44,7 @@
             <dl class="details">
               <div><dt>Fazenda</dt><dd>{{ s.farm.address }}<br>{{ s.farm.city }}, {{ s.farm.state }}@if (s.farm.deleted_at) {<br><span class="muted">(fazenda removida)</span>}</dd></div>
               <div><dt>Duração</dt><dd>{{ hours() }}</dd></div>
-              <div><dt>Valor</dt><dd class="price">{{ price() }}</dd></div>
+              <div><dt>{{ s.agreement ? 'Combinado' : 'Valor' }}</dt><dd>{{ price() }}@if (!s.agreement && s.price !== null) {<br><span class="muted">valor final combinado na conversa</span>}@if (s.agreement?.notes; as notes) {<br><span class="muted">{{ notes }}</span>}</dd></div>
               <div><dt>Publicado em</dt><dd>{{ publishedAt() }}</dd></div>
               <div><dt>Prazo para candidaturas</dt><dd>{{ deadline() }}</dd></div>
             </dl>
@@ -79,7 +79,7 @@
             <section class="card payment" aria-labelledby="payment-title">
               <div>
                 <h2 id="payment-title" class="t-h3">Serviço terminado?</h2>
-                <p class="muted">Libere o pagamento de {{ price() }} para {{ acceptedWorker()?.name }} e conclua o serviço.</p>
+                <p class="muted">Libere o pagamento para {{ acceptedWorker()?.name }} e conclua o serviço.</p>
                 <p class="t-body-sm sim-note">Simulação: nenhum dinheiro é movimentado.</p>
               </div>
               <div class="actions">
@@ -88,7 +88,7 @@
                     <app-icon name="chat" [size]="20" />{{ chatLabel() }}@if (c.unread) { <span class="unread">{{ c.unread }}</span> }
                   </a>
                 }
-                <button appButton type="button" (click)="ask({ kind: 'pay' })"><app-icon name="money" [size]="20" />Liberar pagamento</button>
+                <button appButton type="button" (click)="askPayment()"><app-icon name="money" [size]="20" />Liberar pagamento</button>
               </div>
             </section>
           }
@@ -96,7 +96,7 @@
           @if (s.status === 'Completed') {
             <section class="done" role="status">
               <app-icon name="check" />
-              <p>Pagamento de {{ price() }} liberado para {{ acceptedWorker()?.name ?? 'o trabalhador' }} (simulação). Serviço concluído.</p>
+              <p>Pagamento liberado para {{ acceptedWorker()?.name ?? 'o trabalhador' }}@if (s.completed_at) { em {{ date(s.completed_at) }}} (simulação). Serviço concluído.</p>
               @if (chat(); as c) {
                 <a appButton variant="secondary" [routerLink]="['/produtor/conversas', c.id]">
                   <app-icon name="chat" [size]="20" />{{ chatLabel() }}@if (c.unread) { <span class="unread">{{ c.unread }}</span> }
@@ -117,9 +117,25 @@
               <div class="grid-cards">
                 @for (application of sortedApplications(); track application.id) {
                   <app-worker-card [worker]="application.worker" [status]="application.status" [reputation]="application.reputation" [verified]="application.verified" [reportable]="true"
-                    (viewReviews)="showReviews(application)" (report)="reportWorker(application)">
+                    [note]="application.message" (viewReviews)="showReviews(application)" (report)="reportWorker(application)">
                     @if (s.status === 'Pending' && application.status === 'Pending') {
-                      <button appButton type="button" (click)="ask({ kind: 'accept', application: application })">Aceitar trabalhador</button>
+                      @let talk = chatWith(application);
+                      @if (talk?.open) {
+                        <a appButton variant="secondary" [routerLink]="['/produtor/conversas', talk!.id]">
+                          <app-icon name="chat" [size]="20" />Conversar@if (talk!.unread) { <span class="unread">{{ talk!.unread }}</span> }
+                        </a>
+                      } @else {
+                        <button appButton variant="secondary" type="button" [loading]="openingChat() === application.id" (click)="openChat(application)">
+                          <app-icon name="chat" [size]="20" />Conversar
+                        </button>
+                      }
+                      @if (application.accepted_proposal; as agreed) {
+                        <button appButton type="button" (click)="ask({ kind: 'accept', application: application })">Aceitar trabalhador</button>
+                        <p class="t-body-sm agreed">Combinado: {{ priceOf(agreed) }}</p>
+                      } @else {
+                        <button appButton type="button" [disabled]="true" aria-describedby="accept-help">Aceitar trabalhador</button>
+                        <p id="accept-help" class="t-body-sm muted">Para aceitar, combinem o valor na conversa: a proposta precisa estar aceita pelos dois.</p>
+                      }
                       <button appButton variant="secondary" type="button" (click)="ask({ kind: 'reject', application: application })">Recusar</button>
                     }
                   </app-worker-card>
@@ -147,4 +163,10 @@
   [loading]="acting()"
   (confirmed)="confirm()"
   (cancelled)="cancel()"
-/>
+>
+  @if (pending()?.kind === 'pay') {
+    <app-form-field label="Total a pagar" fieldId="pay-value" [hint]="payHint()" [control]="payValue" [messages]="payMessages">
+      <input appMask="currency" [formControl]="payValue" inputmode="numeric" placeholder="R$ 0,00">
+    </app-form-field>
+  }
+</app-confirm-dialog>

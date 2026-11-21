@@ -6,7 +6,9 @@ import { Button } from '@shared/ui/button';
 import { CategoryChip } from '@shared/domain/ui/category-chip';
 import { Icon } from '@shared/ui/icon';
 import { MaskedInput } from '@shared/ui/masked-input';
-import { formatBRL, formatHours } from '@shared/utils/format';
+import { formatHours } from '@shared/utils/format';
+import { UNIT_OPTIONS, estimateLabel } from '@shared/domain/utils/agreement';
+import { PriceUnit } from '@core/models/service.model';
 import { draftParams } from '@shared/domain/utils/service-draft';
 import { LANDING_CATEGORIES } from '../models/landing-content';
 import { TalhaoPattern } from './talhao';
@@ -24,12 +26,14 @@ export class JobBuilder {
   private readonly fb = inject(NonNullableFormBuilder);
 
   readonly categories = LANDING_CATEGORIES.map((c) => c.name);
+  readonly units = UNIT_OPTIONS;
 
   readonly form = this.fb.group({
     name: 'Colheita de café',
     category: 'Colheita',
     duration: 40,
-    price: this.fb.control<number | null>(1800)
+    price: this.fb.control<number | null>(180),
+    unit: this.fb.control<PriceUnit>('day')
   });
 
   private readonly value = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
@@ -40,7 +44,7 @@ export class JobBuilder {
       name: v.name?.trim() || 'Nome do serviço',
       category: v.category ?? '',
       hours: formatHours(v.duration ?? 1),
-      price: v.price ? formatBRL(v.price) : 'R$ 0,00'
+      price: v.price ? estimateLabel({ price: v.price, price_unit: v.unit ?? 'day' }) : 'Valor a combinar'
     };
   });
 
@@ -49,7 +53,7 @@ export class JobBuilder {
   }
 
   publish(): void {
-    const { name, category, duration, price } = this.form.getRawValue();
+    const { name, category, duration, price, unit } = this.form.getRawValue();
     void this.router.navigate(['/cadastro'], {
       queryParams: {
         papel: 'produtor',
@@ -57,7 +61,8 @@ export class JobBuilder {
           servico: name.trim(),
           categoria: category,
           duracao: String(duration),
-          valor: price ? String(price) : undefined
+          valor: price ? String(price) : undefined,
+          unidade: price ? unit : undefined
         })
       }
     });

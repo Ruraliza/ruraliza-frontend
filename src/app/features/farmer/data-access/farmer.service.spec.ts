@@ -57,6 +57,14 @@ describe('FarmerService', () => {
     del.flush({ message: 'ok' });
   });
 
+  it('opens the chat with a candidate', () => {
+    service.openChat(3, 11).subscribe();
+
+    const req = http.expectOne(`${base}/services/3/applications/11/chat`);
+    expect(req.request.method).toBe('POST');
+    req.flush({ message: 'ok', chat: {} });
+  });
+
   it('sends application_id and action when analyzing an offer', () => {
     service.analyzeOffer(3, 11, 'Accept').subscribe();
 
@@ -67,10 +75,10 @@ describe('FarmerService', () => {
   });
 
   it('edits and cancels a service', () => {
-    service.updateService(3, { price: 1200 }).subscribe();
+    service.updateService(3, { duration: 12 }).subscribe();
     const patch = http.expectOne(`${base}/services/3`);
     expect(patch.request.method).toBe('PATCH');
-    expect(patch.request.body).toEqual({ price: 1200 });
+    expect(patch.request.body).toEqual({ duration: 12 });
     patch.flush({ message: 'ok', service: {} });
 
     service.cancelService(3).subscribe((res) => expect(res.service.status).toBe('Cancelled'));
@@ -79,11 +87,12 @@ describe('FarmerService', () => {
     cancel.flush({ message: 'ok', service: { status: 'Cancelled' } });
   });
 
-  it('releases the payment of a service', () => {
-    service.processPayment(3).subscribe((res) => expect(res.payment.value).toBe(900));
+  it('releases the payment of a service with the total value', () => {
+    service.processPayment(3, 900).subscribe((res) => expect(res.payment.value).toBe(900));
 
     const req = http.expectOne(`${base}/services/3/payment`);
     expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ value: 900 });
     req.flush({ message: 'ok', service: {}, payment: { value: 900 } });
   });
 

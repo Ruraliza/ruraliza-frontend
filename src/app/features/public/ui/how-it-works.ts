@@ -11,13 +11,13 @@ interface Step {
 
 const STEPS: Record<Role, Step[]> = {
   farmer: [
-    { title: 'Publicar serviço', text: 'Diga o que precisa, em qual fazenda, quantas horas e quanto paga.', screen: 'publish' },
+    { title: 'Publicar serviço', text: 'Diga o que precisa, em qual fazenda, quantas horas e quanto estima pagar.', screen: 'publish' },
     { title: 'Receber candidatos', text: 'Quem sabe fazer se candidata. Você vê experiência e certificados de cada pessoa.', screen: 'candidates' },
-    { title: 'Aceitar e liberar pagamento', text: 'Escolha quem vai executar. Quando o serviço termina, você libera o pagamento pelo app.', screen: 'pay' }
+    { title: 'Combinar, aceitar e pagar', text: 'Combine o valor na conversa e aceite quem vai executar. Quando o serviço termina, você libera o pagamento pelo app.', screen: 'pay' }
   ],
   worker: [
-    { title: 'Encontrar vagas perto', text: 'Filtre por categoria e busque pela sua cidade. As vagas mostram local, horas e valor.', screen: 'jobs' },
-    { title: 'Candidatar-se', text: 'Um toque para se candidatar. Você acompanha a resposta do produtor em Candidaturas.', screen: 'apply' },
+    { title: 'Encontrar vagas perto', text: 'Filtre por categoria e busque pela sua cidade. As vagas mostram local, horas e o valor estimado.', screen: 'jobs' },
+    { title: 'Candidatar-se', text: 'Um toque para se candidatar, com uma mensagem. O produtor chama na conversa e vocês combinam o valor.', screen: 'apply' },
     { title: 'Trabalhar e receber', text: 'Aceito, o serviço fica em andamento. Terminou, o produtor libera o pagamento.', screen: 'earn' }
   ]
 };

@@ -2,7 +2,7 @@ import { Component, ElementRef, afterRenderEffect, input, output, viewChild } fr
 import { Button, ButtonVariant } from './button';
 
 // Confirmação na própria página (sem window.confirm), usando <dialog> modal:
-// foco preso no diálogo e Esc para cancelar.
+// foco preso no diálogo e Esc para cancelar. O conteúdo projetado (ex.: um campo opcional) fica antes dos botões.
 @Component({
   selector: 'app-confirm-dialog',
   imports: [Button],
@@ -10,6 +10,7 @@ import { Button, ButtonVariant } from './button';
     <dialog #dialog aria-labelledby="confirm-title" aria-describedby="confirm-message" (cancel)="onCancel($event)">
       <h2 id="confirm-title">{{ title() }}</h2>
       <p id="confirm-message" class="muted">{{ message() }}</p>
+      <ng-content />
       <div class="actions">
         <button appButton variant="secondary" type="button" [disabled]="loading()" (click)="cancelled.emit()">Cancelar</button>
         <button appButton [variant]="confirmVariant()" type="button" [loading]="loading()" (click)="confirmed.emit()">

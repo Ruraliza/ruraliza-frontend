@@ -1,10 +1,11 @@
+import { servicePrice } from '@shared/domain/utils/agreement';
 import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FarmPhoto } from '@core/models/farm.model';
 import { Service } from '@core/models/service.model';
 import { expiryLabel, isExpired } from '../utils/expiry';
 import { serviceCover } from '../utils/farm-emoji';
-import { formatBRL, formatHours } from '../../utils/format';
+import { formatHours } from '../../utils/format';
 import { CategoryChip } from './category-chip';
 import { Icon } from '../../ui/icon';
 import { StatusBadge } from './status-badge';
@@ -105,7 +106,7 @@ export class ServiceCard {
   // Por que a vaga foi sugerida (vagas para você): até dois motivos, embaixo do valor.
   readonly reasons = input<readonly string[]>([]);
 
-  readonly price = computed(() => formatBRL(this.service().price));
+  readonly price = computed(() => servicePrice(this.service()));
   readonly hours = computed(() => formatHours(this.service().duration));
   readonly expired = computed(() => isExpired(this.service()));
   readonly deadline = computed(() => expiryLabel(this.service()));

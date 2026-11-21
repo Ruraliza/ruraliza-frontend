@@ -34,7 +34,7 @@ describe('WorkerService', () => {
   });
 
   it('sends every filled job filter as a query param and skips the empty ones', () => {
-    service.searchServices({ q: 'café', category: '', min_hours: 8, max_hours: 24, from: '2026-10-01', sort: 'price_desc' }).subscribe();
+    service.searchServices({ q: 'café', category: '', min_hours: 8, max_hours: 24, from: '2026-10-01', sort: 'duration_desc' }).subscribe();
 
     const req = http.expectOne((r) => r.url === `${base}/services`);
     expect(req.request.params.get('q')).toBe('café');
@@ -43,7 +43,7 @@ describe('WorkerService', () => {
     expect(req.request.params.get('max_hours')).toBe('24');
     expect(req.request.params.get('from')).toBe('2026-10-01');
     expect(req.request.params.has('to')).toBe(false);
-    expect(req.request.params.get('sort')).toBe('price_desc');
+    expect(req.request.params.get('sort')).toBe('duration_desc');
     req.flush([]);
   });
 
@@ -68,6 +68,14 @@ describe('WorkerService', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ worker_id: 9 });
     req.flush({ message: 'ok', application: { id: 1, service_id: 5, worker_id: 9, status: 'Pending' } });
+  });
+
+  it('sends the optional message with the application', () => {
+    service.applyForService(5, 9, 'Posso na segunda.').subscribe();
+
+    const req = http.expectOne(`${base}/services/5/apply`);
+    expect(req.request.body).toEqual({ worker_id: 9, message: 'Posso na segunda.' });
+    req.flush({ message: 'ok', application: {} });
   });
 
   it('withdraws from a service with the worker id', () => {

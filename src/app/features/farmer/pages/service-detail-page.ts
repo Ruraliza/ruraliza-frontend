@@ -1,7 +1,13 @@
+import { priceLabel, servicePrice, suggestedTotal } from '@shared/domain/utils/agreement';
 import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
 import { ChatInboxService } from '@core/api/chat-inbox.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { positiveNumberValidator } from '@shared/utils/validators';
+import { FormField } from '@shared/ui/form-field';
+import { MaskedInput } from '@shared/ui/masked-input';
+import { Chat } from '@core/models/chat.model';
 import { Observable } from 'rxjs';
 import { FarmerService } from '../data-access/farmer.service';
 import { LiveUpdatesService } from '@core/api/live-updates.service';
@@ -9,7 +15,7 @@ import { CurrentUserService } from '@core/session/current-user.service';
 import { ToastService } from '@core/toast/toast.service';
 import { ApplicationWithWorker } from '@core/models/service-application.model';
 import { RemoteData, mergeStates } from '@shared/utils/remote-data';
-import { formatBRL, formatDate, formatHours } from '@shared/utils/format';
+import { formatDate, formatHours } from '@shared/utils/format';
 import { Button, ButtonVariant } from '@shared/ui/button';
 import { CategoryChip } from '@shared/domain/ui/category-chip';
 import { ConfirmDialog } from '@shared/ui/confirm-dialog';
@@ -44,7 +50,7 @@ interface DialogCopy {
 
 @Component({
   selector: 'app-service-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, FarmMap, Icon, PhotoStrip, ReportDialog, ReputationDialog, SegmentedControl, ServiceReviews, Skeleton, StatusBadge, WorkerCard],
+  imports: [ReactiveFormsModule, FormField, MaskedInput, RouterLink, Button, CategoryChip, ConfirmDialog, EmptyState, ErrorState, FarmMap, Icon, PhotoStrip, ReportDialog, ReputationDialog, SegmentedControl, ServiceReviews, Skeleton, StatusBadge, WorkerCard],
   templateUrl: './service-detail-page.html',
   styleUrl: './service-detail-page.css'
 })
@@ -57,6 +63,7 @@ export class ServiceDetailPage implements OnInit {
   private readonly live = inject(LiveUpdatesService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly inbox = inject(ChatInboxService);
+  private readonly router = inject(Router);
 
   private readonly serviceId = computed(() => Number(this.id()));
 
@@ -83,8 +90,47 @@ export class ServiceDetailPage implements OnInit {
     () => this.applications.data()?.find((a) => a.status === 'Accepted')?.worker ?? null
   );
 
-  // Conversa com quem foi aceito (abre no aceite) e o contador de não lidas dela.
-  readonly chat = computed(() => this.inbox.forService(this.serviceId()));
+  // Conversa com quem foi aceito e o contador de não lidas dela.
+  readonly chat = computed(() => {
+    const workerId = this.service.data()?.worker_id ?? null;
+    return workerId === null ? null : this.inbox.forService(this.serviceId(), workerId);
+  });
+  // Conversa da negociação com cada candidato (o produtor abre pelo botão "Conversar").
+  chatWith(application: ApplicationWithWorker): Chat | null {
+    return this.inbox.forService(this.serviceId(), application.worker_id);
+  }
+  readonly openingChat = signal<number | null>(null);
+  readonly priceOf = priceLabel;
+  // Total do pagamento: sugerido pela proposta aceita (empreitada, ou valor por hora × horas), sempre editável.
+  readonly payValue = new FormControl<number | null>(null, [Validators.required, positiveNumberValidator]);
+  readonly payMessages = { required: 'Informe o total a pagar.', positive: 'Informe um valor maior que zero.' };
+  readonly date = formatDate;
+  readonly payHint = computed(() => {
+    const agreement = this.service.data()?.agreement;
+    if (!agreement) return 'Informe o total a pagar.';
+    const suggested = suggestedTotal(agreement, this.service.data()?.duration ?? 0);
+    return suggested === null
+      ? `Combinado: ${priceLabel(agreement)}. Informe o total pelo que foi feito.`
+      : `Combinado: ${priceLabel(agreement)}. Sugerimos o total; ajuste se precisar.`;
+  });
+
+  askPayment(): void {
+    const service = this.service.data();
+    this.payValue.reset(service ? suggestedTotal(service.agreement, service.duration) : null);
+    this.ask({ kind: 'pay' });
+  }
+
+  openChat(application: ApplicationWithWorker): void {
+    this.openingChat.set(application.id);
+    this.farmerService.openChat(this.serviceId(), application.id).subscribe({
+      next: ({ chat }) => {
+        this.openingChat.set(null);
+        this.inbox.refresh();
+        void this.router.navigate(['/produtor/conversas', chat.id]);
+      },
+      error: () => this.openingChat.set(null)
+    });
+  }
   readonly chatLabel = computed(() => {
     const chat = this.chat();
     const name = chat?.worker.name.split(' ')[0] ?? '';
@@ -105,7 +151,11 @@ export class ServiceDetailPage implements OnInit {
   readonly reporting = signal<ReportTarget | null>(null);
   // Muda a cada aviso em tempo real: o painel de avaliações recarrega junto.
   readonly tick = signal(0);
-  readonly price = computed(() => formatBRL(this.service.data()?.price ?? 0));
+  // O combinado da proposta aceita (depois do aceite) ou a estimativa da vaga.
+  readonly price = computed(() => {
+    const service = this.service.data();
+    return service ? servicePrice(service) : '';
+  });
   readonly hours = computed(() => formatHours(this.service.data()?.duration ?? 0));
   readonly publishedAt = computed(() => {
     const service = this.service.data();
@@ -135,7 +185,7 @@ export class ServiceDetailPage implements OnInit {
       case 'pay':
         return {
           title: 'Liberar pagamento?',
-          message: `Simulação: registra o pagamento de ${this.price()} para ${this.acceptedWorker()?.name ?? 'o trabalhador'} e conclui o serviço. Nenhum dinheiro é movimentado.`,
+          message: `Simulação: registra o pagamento do total para ${this.acceptedWorker()?.name ?? 'o trabalhador'} e conclui o serviço. Nenhum dinheiro é movimentado.`,
           confirmLabel: 'Liberar pagamento',
           variant: 'primary'
         };
@@ -195,6 +245,10 @@ export class ServiceDetailPage implements OnInit {
   confirm(): void {
     const action = this.pending();
     if (!action) return;
+    if (action.kind === 'pay') {
+      this.payValue.markAsTouched();
+      if (this.payValue.invalid) return;
+    }
 
     const { request, success } = this.buildAction(action);
     this.acting.set(true);
@@ -223,7 +277,7 @@ export class ServiceDetailPage implements OnInit {
         };
       case 'pay':
         return {
-          request: this.farmerService.processPayment(id),
+          request: this.farmerService.processPayment(id, this.payValue.value as number),
           success: 'Pagamento liberado (simulação). Serviço concluído.'
         };
       case 'cancel':

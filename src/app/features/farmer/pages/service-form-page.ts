@@ -10,6 +10,8 @@ import { RemoteData, mergeStates } from '@shared/utils/remote-data';
 import { positiveNumberValidator } from '@shared/utils/validators';
 import { noBlockedTerms } from '@shared/utils/moderation';
 import { draftNumber, draftParams } from '@shared/domain/utils/service-draft';
+import { UNIT_OPTIONS } from '@shared/domain/utils/agreement';
+import { PriceUnit } from '@core/models/service.model';
 import { formatDay, isExpired, todayBr } from '@shared/domain/utils/expiry';
 
 const MAX_DESCRIPTION = 2000;
@@ -20,7 +22,8 @@ import { FormField } from '@shared/ui/form-field';
 import { MaskedInput } from '@shared/ui/masked-input';
 import { Skeleton } from '@shared/ui/skeleton';
 
-// Novo serviço em 2 passos: o quê (nome, categoria) → onde/quanto (fazenda, horas, valor).
+// Novo serviço em 2 passos: o quê (nome, categoria) → onde/quanto (fazenda, horas, valor estimado e unidade).
+// O valor final é combinado na conversa.
 // Com :id na rota (/servicos/:id/editar), o mesmo formulário edita um serviço ainda Pending.
 // Com ?copiar=<id> ("Publicar de novo", issue #32), abre preenchido com os dados de um serviço antigo,
 // menos o prazo: é só ajustar o que mudou. A vaga nova nasce com id próprio e sem candidatos.
@@ -37,10 +40,11 @@ export class ServiceFormPage implements OnInit {
   readonly categoria = input<string>();
   readonly duracao = input<string>();
   readonly valor = input<string>();
+  readonly unidade = input<string>();
   readonly copiar = input<string>(); // id do serviço a copiar
   readonly farmLinkParams = computed(() => ({
     voltar: 'servico',
-    ...draftParams({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor() })
+    ...draftParams({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor(), unidade: this.unidade() })
   }));
 
   private readonly fb = inject(NonNullableFormBuilder);
@@ -100,6 +104,7 @@ export class ServiceFormPage implements OnInit {
       farm_id: this.fb.control<number | null>(null, Validators.required),
       duration: this.fb.control<number | null>(null, [Validators.required, positiveNumberValidator]),
       price: this.fb.control<number | null>(null, [Validators.required, positiveNumberValidator]),
+      price_unit: this.fb.control<PriceUnit>('day'),
       expires_at: ['', (control: AbstractControl<string>) => this.notPastDay(control)]
     })
   });
@@ -124,8 +129,9 @@ export class ServiceFormPage implements OnInit {
     else if (!group.services.includes(category.value)) category.setValue('');
   }
 
-  readonly durationMessages = { positive: 'Informe quantas horas o serviço deve levar (maior que zero).' };
+  readonly units = UNIT_OPTIONS;
   readonly priceMessages = { positive: 'Informe um valor maior que zero.' };
+  readonly durationMessages = { positive: 'Informe quantas horas o serviço deve levar (maior que zero).' };
   readonly descriptionMessages = { maxlength: 'A descrição pode ter no máximo 2000 caracteres.' };
   readonly expiryMessages = { past: 'Escolha hoje ou uma data futura.' };
 
@@ -144,8 +150,10 @@ export class ServiceFormPage implements OnInit {
     if (this.categoria()) what.controls.category.setValue(this.categoria() as string);
     const duration = draftNumber(this.duracao());
     const price = draftNumber(this.valor());
-    if (duration) where.controls.duration.setValue(duration);
+    const unit = UNIT_OPTIONS.find((u) => u.value === this.unidade())?.value;
     if (price) where.controls.price.setValue(price);
+    if (unit) where.controls.price_unit.setValue(unit);
+    if (duration) where.controls.duration.setValue(duration);
   }
 
   constructor() {
@@ -160,7 +168,7 @@ export class ServiceFormPage implements OnInit {
       this.originalExpiry = service.expires_at;
       this.form.setValue({
         what: { name: service.name, description: service.description ?? '', category: service.category },
-        where: { farm_id: service.farm_id, duration: service.duration, price: service.price, expires_at: service.expires_at ?? '' }
+        where: { farm_id: service.farm_id, duration: service.duration, price: service.price, price_unit: service.price_unit ?? 'day', expires_at: service.expires_at ?? '' }
       });
     });
 
@@ -176,6 +184,7 @@ export class ServiceFormPage implements OnInit {
           farm_id: farms.some((f) => f.id === service.farm_id) ? service.farm_id : null,
           duration: service.duration,
           price: service.price,
+          price_unit: service.price_unit ?? 'day',
           expires_at: ''
         }
       });
@@ -222,6 +231,7 @@ export class ServiceFormPage implements OnInit {
       category: what.category,
       duration: place.duration as number,
       price: place.price as number,
+      price_unit: place.price_unit,
       // Na edição, só envia a validade se ela mudou.
       ...(this.isEdit() && expiresAt === this.originalExpiry ? {} : { expires_at: expiresAt })
     };

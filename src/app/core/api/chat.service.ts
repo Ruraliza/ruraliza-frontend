@@ -5,12 +5,13 @@ import { environment } from '@env/environment';
 import { SILENT_ERRORS } from '../http/error.interceptor';
 import { UserRole } from '../models/auth.model';
 import { Chat, ChatDetail, ChatMessageResponse, ChatResponse } from '../models/chat.model';
+import { ProposalAnswer, ProposalInput, ProposalResponse } from '../models/service-application.model';
 
 // Pedidos sem toast de erro: a lista roda em segundo plano (contador do menu), a leitura é
 // automática e o envio mostra a falha na própria mensagem ("Tocar para reenviar").
 const silent = (): { context: HttpContext } => ({ context: new HttpContext().set(SILENT_ERRORS, true) });
 
-// Conversa do serviço entre o produtor e o trabalhador aceito (usada pelos dois painéis).
+// Conversa do serviço entre o produtor e um candidato (usada pelos dois painéis): mensagens, propostas e WhatsApp.
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   private readonly http = inject(HttpClient);
@@ -32,6 +33,16 @@ export class ChatService {
 
   markRead(chatId: number): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.api}/chats/${chatId}/read`, {}, silent());
+  }
+
+  // Proposta de valor e pagamento (a nova substitui a pendente).
+  propose(chatId: number, input: ProposalInput): Observable<ProposalResponse> {
+    return this.http.post<ProposalResponse>(`${this.api}/chats/${chatId}/proposals`, input);
+  }
+
+  // Aceita ou recusa a proposta do outro lado.
+  answerProposal(chatId: number, proposalId: number, action: ProposalAnswer): Observable<ProposalResponse> {
+    return this.http.patch<ProposalResponse>(`${this.api}/chats/${chatId}/proposals/${proposalId}`, { action });
   }
 
   // Libera (ou deixa de compartilhar) o próprio WhatsApp nesta conversa.

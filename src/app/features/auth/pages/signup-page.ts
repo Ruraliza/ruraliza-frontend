@@ -75,6 +75,7 @@ export class SignupPage implements OnInit {
   readonly categoria = input<string>();
   readonly duracao = input<string>();
   readonly valor = input<string>();
+  readonly unidade = input<string>();
 
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly profiles = inject(ProfileService);
@@ -84,7 +85,7 @@ export class SignupPage implements OnInit {
 
   readonly choices = ROLE_CHOICES;
   readonly saving = signal(false);
-  readonly draft = computed(() => ({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor() }));
+  readonly draft = computed(() => ({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor(), unidade: this.unidade() }));
 
   readonly form = this.fb.group({
     role: this.fb.control<UserRole | null>(null, Validators.required),

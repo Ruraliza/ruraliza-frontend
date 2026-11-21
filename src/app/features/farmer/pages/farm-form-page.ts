@@ -128,10 +128,11 @@ export class FarmFormPage implements OnInit {
   readonly categoria = input<string>();
   readonly duracao = input<string>();
   readonly valor = input<string>();
+  readonly unidade = input<string>();
   // Ao voltar para o novo serviço, o rascunho da landing segue junto.
   readonly returnParams = computed(() =>
     this.voltar() === 'servico'
-      ? draftParams({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor() })
+      ? draftParams({ servico: this.servico(), categoria: this.categoria(), duracao: this.duracao(), valor: this.valor(), unidade: this.unidade() })
       : {}
   );
 

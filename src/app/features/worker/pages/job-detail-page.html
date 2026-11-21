@@ -21,9 +21,9 @@
           <p class="muted">{{ j.farm.city }}, {{ j.farm.state }}</p>
         </header>
 
-        <!-- O que a pessoa decide primeiro: quanto paga, quantas horas e até quando. -->
+        <!-- O que a pessoa decide primeiro: quantas horas e até quando (o valor é combinado na conversa). -->
         <dl class="facts">
-          <div><app-icon name="money" [size]="24" /><dd class="money">{{ price() }}</dd><dt>Pagamento</dt></div>
+          <div><app-icon name="money" [size]="24" /><dd class="money">{{ price() }}</dd><dt>{{ priceNote() }}</dt></div>
           <div><app-icon name="clock" [size]="24" /><dd>{{ hours() }}</dd><dt>Duração</dt></div>
           @if (deadlineDay(); as day) {
             <div><app-icon name="alert" [size]="24" /><dd [class.deadline]="!expired()">{{ day }}</dd><dt>{{ expired() ? 'Prazo encerrado' : 'Inscrições até' }}</dt></div>
@@ -58,10 +58,13 @@
               <p class="muted">Situação da sua candidatura:</p>
               <app-status-badge [status]="application.status" />
             </div>
-            @if (application.status === 'Accepted' && chat(); as c) {
+            @if (chat(); as c) {
               <a appButton [variant]="c.unread ? 'primary' : 'secondary'" [routerLink]="['/trabalhador/conversas', c.id]">
                 <app-icon name="chat" [size]="20" />{{ c.open ? 'Conversar com o produtor' : 'Ver conversa' }}@if (c.unread) { <span class="unread">{{ c.unread }}</span> }
               </a>
+            }
+            @if (paid(); as text) {
+              <p class="t-body-sm payment-note" role="status"><app-icon name="money" [size]="18" />{{ text }}</p>
             }
             @switch (withdrawKind()) {
               @case ('application') {
@@ -120,7 +123,16 @@
   [loading]="applying()"
   (confirmed)="apply()"
   (cancelled)="confirmingApply.set(false)"
-/>
+>
+  <label class="apply-note">
+    <span class="t-label">Mensagem para o produtor (opcional)</span>
+    <textarea [formControl]="applyNote" rows="3" maxlength="300" placeholder="Ex.: já colhi café 3 safras, posso a partir de segunda." aria-describedby="apply-note-hint"></textarea>
+    <span id="apply-note-hint" class="t-body-sm muted">
+      @if (applyNote.hasError('blockedTerm')) { Há palavras não permitidas. Reescreva sem palavrões nem ofensas. }
+      @else { {{ applyNote.value.length }}/300. Telefone e e-mail não aparecem para o produtor. }
+    </span>
+  </label>
+</app-confirm-dialog>
 
 <app-confirm-dialog
   [open]="confirmingWithdraw()"

@@ -27,8 +27,8 @@ const COPY: Record<Audience, AudienceCopy> = {
     cta: 'Publicar meu primeiro serviço',
     link: '/cadastro/produtor',
     benefits: [
-      { icon: 'plus', title: 'Publique em poucos passos', text: 'O quê, em qual fazenda, quantas horas e quanto paga.' },
-      { icon: 'user', title: 'Conheça quem se candidata', text: 'Experiência e certificados de cada pessoa antes de aceitar.' },
+      { icon: 'plus', title: 'Publique em poucos passos', text: 'O quê, em qual fazenda, quantas horas e quanto estima pagar.' },
+      { icon: 'user', title: 'Converse antes de aceitar', text: 'Experiência e certificados de cada pessoa, e o valor final combinado na conversa.' },
       { icon: 'list', title: 'Acompanhe cada serviço', text: 'Aguardando, em andamento e concluído, tudo num painel.' },
       { icon: 'money', title: 'Libere o pagamento no app', text: 'Quando o serviço termina. Nesta fase, o pagamento é simulado.' }
     ]
@@ -41,7 +41,7 @@ const COPY: Record<Audience, AudienceCopy> = {
     cta: 'Criar meu perfil',
     link: '/cadastro/trabalhador',
     benefits: [
-      { icon: 'search', title: 'Vagas claras', text: 'Categoria, cidade, horas e valor antes de se candidatar.' },
+      { icon: 'search', title: 'Vagas claras', text: 'Categoria, cidade, horas e valor estimado antes de se candidatar.' },
       { icon: 'check', title: 'Candidatura com um toque', text: 'E a resposta do produtor aparece nas suas candidaturas.' },
       { icon: 'briefcase', title: 'Histórico de serviços', text: 'Os trabalhos que você fez ficam registrados no seu perfil.' },
       { icon: 'sprout', title: 'Trilhas de qualificação', text: 'Cursos práticos com certificado de conclusão da Ruraliza.' }

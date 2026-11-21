@@ -86,12 +86,13 @@ Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe pro
 
 1. `/cadastro/produtor` → cadastre um produtor com senha (ou entre com o de teste em `/entrar`). Em **Perfil**, envie uma foto.
 2. **Fazendas** → cadastre uma fazenda e adicione fotos (até 6; a primeira é a capa).
-3. **＋ Novo serviço** → publique em 2 passos, com descrição e prazo para candidaturas (opcional). O tipo de serviço é escolhido em dois níveis: primeiro o grupo (Lavoura e horta, Cercas e construções, Água, Pasto e terreno, Animais, Máquinas, Outros), depois o serviço.
+3. **＋ Novo serviço** → publique em 2 passos, com descrição e prazo para candidaturas (opcional). Informe o valor estimado e a unidade (por dia, hora, metro, hectare ou empreitada): a vaga mostra "Estimativa: R$ 150,00 por dia · valor final combinado na conversa". Vagas antigas sem valor aparecem como *Valor a combinar*. O tipo de serviço é escolhido em dois níveis: primeiro o grupo (Lavoura e horta, Cercas e construções, Água, Pasto e terreno, Animais, Máquinas, Outros), depois o serviço.
 4. Saia (Perfil → *Sair*) e entre como trabalhador. Em **Perfil**, preencha foto, apresentação, experiência, certificados e cursos.
-5. **Vagas** → busque e filtre (texto, grupo e serviço, carga horária, data de publicação, ordem) → abra a vaga → *Candidatar-me* → confirme.
-6. Volte ao produtor → **Serviços** (abas por situação, busca e filtros) → abra o serviço → veja o candidato → *Aceitar trabalhador*.
-7. Com o serviço em andamento → *Conversar com …* (a conversa abre no aceite) → *Liberar pagamento* (simulação).
-8. Depois do pagamento, os dois avaliam na tela do serviço. Para ver a avaliação cega e a conversa já prontas, entre como `produtor@exemplo.com` (serviço *Ordenha da manhã*: a Maria já avaliou) ou `trabalhador@exemplo.com` (conversa *Reforma do curral* com mensagem não lida). `pedro@exemplo.com` é candidato à vaga 1, para testar o caminho inteiro.
+5. **Vagas** → busque e filtre (texto, grupo e serviço, carga horária, data de publicação, ordem) → abra a vaga → *Candidatar-me* → escreva uma mensagem (opcional) → confirme.
+6. Volte ao produtor → **Serviços** (abas por situação, busca e filtros) → abra o serviço → veja o candidato e a mensagem dele → *Conversar*.
+7. Na conversa, um dos dois toca em *Fazer proposta* (valor e unidade; a primeira já vem com a estimativa da vaga) e o outro aceita, recusa ou contrapropõe no cartão. Sem proposta aceita, *Aceitar trabalhador* fica bloqueado, com a explicação.
+8. Com a proposta aceita → *Aceitar trabalhador*. O serviço fica em andamento com o combinado, e os dois podem liberar o WhatsApp.
+9. Terminado o serviço → *Liberar pagamento* (simulação): o total vem sugerido pela proposta aceita (empreitada, ou valor por hora × horas) e pode ser editado. O trabalhador vê o pagamento (valor e data) na vaga. Depois, os dois avaliam na tela do serviço. Para ver a avaliação cega e a conversa já prontas, entre como `produtor@exemplo.com` (serviço *Ordenha da manhã*: a Maria já avaliou) ou `trabalhador@exemplo.com` (conversa *Reforma do curral* com mensagem não lida). `pedro@exemplo.com` é candidato à vaga 1, com uma proposta esperando o produtor, para testar o caminho inteiro.
 
 ## Fotos, filtros e prazos
 
@@ -103,15 +104,16 @@ Todo perfil tem **senha**, definida no cadastro. Em **Entrar** você escolhe pro
 
 ## Avaliações e conversas
 
-**Avaliação dupla** (`shared/domain/ui/service-reviews.ts`): depois do pagamento, o produtor avalia o trabalhador (pontualidade, empenho, qualidade) e o trabalhador avalia a fazenda (infraestrutura, condições de trabalho, fiel ao anúncio), com estrelas de 1 a 5 (`star-input.ts`, rádios nativos: funciona com teclado e leitor de tela) e comentário opcional. A nota recebida fica escondida até a pessoa avaliar também (ou o prazo de 14 dias acabar); a tela avisa quando o outro lado já avaliou.
+**Avaliação dupla** (`shared/domain/ui/service-reviews.ts`): depois que o serviço é concluído, o produtor avalia o trabalhador (pontualidade, empenho, qualidade) e o trabalhador avalia a fazenda (infraestrutura, condições de trabalho, fiel ao anúncio), com estrelas de 1 a 5 (`star-input.ts`, rádios nativos: funciona com teclado e leitor de tela) e comentário opcional. A nota recebida fica escondida até a pessoa avaliar também (ou o prazo de 14 dias acabar); a tela avisa quando o outro lado já avaliou.
 
 - **Onde a nota aparece:** no card de cada candidato (com "Ver avaliações" e a ordem *Mais bem avaliados*), nas vagas e no detalhe da vaga (nota da fazenda, filtro *Avaliação da fazenda* e ordem *Fazendas mais bem avaliadas*, `?nota=` e `?ordem=rating` na URL), no perfil do trabalhador (*Sua reputação*) e na lista de fazendas do produtor.
 - **Pendências:** o início de cada painel lista *Avalie seus últimos serviços* (`pending-reviews.ts`).
 - O diálogo de avaliações (`reputation-dialog.ts`) mostra a média, uma barra por critério e os comentários, sem identificar quem escreveu.
 
-**Conversas** (`/produtor/conversas` e `/trabalhador/conversas`): abrem quando o produtor aceita a candidatura, para combinar horário, ponto de encontro e o que levar sem expor o WhatsApp.
+**Conversas** (`/produtor/conversas` e `/trabalhador/conversas`): o produtor abre a conversa pelo botão *Conversar* do candidato, antes do aceite, para combinar o valor, o horário, o ponto de encontro e o que levar sem expor o WhatsApp. Ela fecha na recusa, no aceite de outro, na desistência e no cancelamento da vaga.
 
-- **WhatsApp protegido** (`chat-phone-panel.ts`): cada um libera o próprio número; os dois só aparecem (com *Abrir no WhatsApp* e *Ligar*) quando os dois liberaram. Antes disso, número ou e-mail digitado sai oculto, e a tela avisa antes de enviar. A lista de candidatos também não mostra mais telefone nem e-mail.
+- **Proposta** (`chat-negotiation.ts` e `proposal-card.ts`): *Fazer proposta* abre um formulário curto (valor, unidade e observações), que na primeira proposta da conversa já vem com a estimativa da vaga (`estimate` da conversa). Cada proposta vira um cartão na conversa; quem recebeu aceita, recusa ou contrapropõe (o formulário abre preenchido). A proposta aceita libera o aceite da candidatura.
+- **WhatsApp protegido** (`chat-phone-panel.ts`): só depois do aceite, cada um libera o próprio número; os dois só aparecem (com *Abrir no WhatsApp* e *Ligar*) quando os dois liberaram. Antes disso, número ou e-mail digitado sai oculto, e a tela avisa antes de enviar. A lista de candidatos também não mostra mais telefone nem e-mail.
 - **Tempo real:** mensagens, pedidos de WhatsApp e o contador de não lidas do menu chegam por SSE (`LiveUpdatesService.chat()`/`chats()`; o `ChatInboxService` mantém a lista do painel aberto).
 - **Feita para o campo:** respostas rápidas ("Estou a caminho.", "Cheguei na fazenda."), campo de 16 px (o iPhone não dá zoom), Enter envia, e sem sinal a mensagem fica *Não enviada* com um toque para reenviar.
 - **Menu:** *Conversas* entrou no menu com o contador. No celular o trabalhador não tem mais *Vagas* e *Buscar* lado a lado (os dois abriam a mesma tela): fica *Buscar*, e *Vagas* continua na sidebar. O botão central do produtor aparece como *Novo* no menu de baixo.
@@ -138,7 +140,7 @@ No celular, o **perfil** fica no avatar (foto ou emoji) da **barra de cima**, ju
 
 ## Notificações
 
-**Central de notificações** (`/produtor/notificacoes` e `/trabalhador/notificacoes`): o histórico de tudo o que vira push (candidaturas, aceites, recusas, pagamentos, mensagens, avaliações), mesmo para quem não ativou as notificações do celular. O **sino** da barra de cima (no desktop, o item *Notificações* da sidebar) mostra quantos avisos faltam ler.
+**Central de notificações** (`/produtor/notificacoes` e `/trabalhador/notificacoes`): o histórico de tudo o que vira push (candidaturas, propostas, aceites, recusas, conclusões, "paguei"/"recebi", mensagens, avaliações), mesmo para quem não ativou as notificações do celular. O **sino** da barra de cima (no desktop, o item *Notificações* da sidebar) mostra quantos avisos faltam ler.
 
 - `NotificationInboxService` (`core/api`) mantém a lista do painel aberto, atualizada por SSE (`LiveUpdatesService.notifications()`); o layout de cada área conecta ao abrir, como as conversas.
 - A tela agrupa por dia ("Hoje", "Ontem", data), destaca os não lidos e escolhe o ícone pela tela que o aviso abre. Tocar marca como lido e abre a tela; *Marcar todas como lidas* zera o sino. Avisos iguais ainda não lidos chegam agrupados, com a contagem.
