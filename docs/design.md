@@ -56,7 +56,7 @@ Público: produtores e trabalhadores do campo, no celular, muitas vezes ao ar li
   - Trabalhador: o serviço em andamento ou as candidaturas enviadas.
   - Produtor: o serviço com mais candidatos.
   - Os blocos de números do Início saíram.
-- **Foto da vaga:** é a foto da fazenda; sem ela, uma foto da categoria (`serviceCover` e `categoryPhoto` em `shared/domain/utils/farm-emoji.ts`). As fotos são do Unsplash, com créditos em `src/assets/images/landing/credits.json`. Há duas por categoria, quando existem, para vagas vizinhas não repetirem.
+- **Foto da vaga:** é a foto da fazenda; sem ela, uma foto da categoria (`serviceCover` e `categoryPhoto` em `shared/domain/utils/farm-emoji.ts`). As fotos são do Unsplash, com créditos em `src/assets/images/landing/credits.json`. Há duas por categoria, quando existem, para vagas vizinhas não repetirem. Os serviços parecidos dividem o emoji e as fotos (`SERVICE_LOOKS`); um serviço novo que não esteja lá usa as fotos de "Outros".
 - **Ilustração dos estados vazios:** `<app-empty-state [art]="true">` mostra `src/assets/images/ilustracao-sede.webp` (gerada; prompt e origem em `ilustracao-sede.json`). Use só nas listas vazias principais.
 - **Menu de baixo:** o item ativo fica em verde, com um traço curto embaixo. A ação central é um círculo verde de 60px.
 - **Botões:** cantos de 14px e altura de 52px.

@@ -76,7 +76,7 @@ const ACTIONS: Record<ManagedTrack['status'], StatusAction> = {
               <h2 id="dados" class="t-h3">Dados gerais e tutores</h2>
               <app-track-general-form
                 [value]="general()"
-                [categories]="categories.data() ?? []"
+                [categoryGroups]="categories.data() ?? []"
                 [tutors]="tutors.data() ?? []"
                 [readonly]="!t.can_edit"
                 [saving]="savingGeneral()"
@@ -122,7 +122,7 @@ export class TrackEditorPage {
   private readonly toast = inject(ToastService);
 
   readonly track = new RemoteData(() => this.service.get(Number(this.id())));
-  readonly categories = new RemoteData(() => inject(CategoryService).getCategories());
+  readonly categories = new RemoteData(() => inject(CategoryService).getGroups());
   readonly tutors = new RemoteData(() => this.service.tutors());
   readonly state = computed(() => mergeStates(this.track.state(), this.categories.state(), this.tutors.state()));
 

@@ -15,6 +15,8 @@ describe('farm-emoji', () => {
     expect(categoryEmoji('Colheita')).toBe('🌾');
     expect(categoryEmoji('Manejo de gado')).toBe('🐄');
     expect(categoryEmoji('Operação de máquinas')).toBe('🚜');
+    expect(categoryEmoji('Ordenha')).toBe('🐄');
+    expect(categoryEmoji('Limpeza de represa, açude e cisterna')).toBe('🏞️');
     expect(FARM_EMOJIS).toContain(categoryEmoji('Categoria nova'));
   });
 
@@ -22,6 +24,7 @@ describe('farm-emoji', () => {
     expect(categoryPhoto('Pulverização')).toBe('assets/images/landing/cat-pulverizacao-800.webp');
     expect(categoryPhoto('Pulverização', 1)).toBe('assets/images/landing/trilha-defensivos-800.webp');
     expect(categoryPhoto('Manutenção', 7)).toBe('assets/images/landing/cat-manutencao-800.webp');
+    expect(categoryPhoto('Conserto de cerca')).toBe('assets/images/landing/cat-manutencao-800.webp');
     expect(categoryPhoto('Categoria nova')).toBe('assets/images/landing/cat-outros-800.webp');
   });
 });

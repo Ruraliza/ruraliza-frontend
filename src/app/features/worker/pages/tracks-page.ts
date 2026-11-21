@@ -15,8 +15,9 @@ import { TrackCard } from '../ui/track-card';
 
 const SEARCH_DELAY_MS = 350;
 
-// Trilhas de estudo, filtradas pelas categorias dos serviços. A URL guarda os filtros
-// (?q=&categoria=), como nas vagas. As que o trabalhador já começou aparecem primeiro.
+// Trilhas de estudo, filtradas pelos tipos de serviço em dois níveis (grupo > serviço), como nas vagas.
+// A URL guarda os filtros (?q=&grupo=&categoria=). O serviço e a busca vão para a API; o grupo é filtrado
+// aqui, porque a lista de trilhas é pequena. As que o trabalhador já começou aparecem primeiro.
 @Component({
   selector: 'app-tracks-page',
   imports: [RouterLink, Button, CategoryChip, EmptyState, ErrorState, Icon, Skeleton, TrackCard],
@@ -37,12 +38,22 @@ const SEARCH_DELAY_MS = 350;
           <input type="search" placeholder="Buscar por tema ou palavra" [value]="draftQuery()" (input)="onSearch($event)">
         </label>
         @if (categories.state().status === 'success') {
-          <div class="cluster chips" role="group" aria-label="Filtrar por categoria">
-            <button appCategoryChip [interactive]="true" [selected]="!categoria()" (click)="setParams({ categoria: null })">Todas</button>
-            @for (c of categories.data(); track c) {
-              <button appCategoryChip [interactive]="true" [selected]="categoria() === c" (click)="setParams({ categoria: c })">{{ c }}</button>
+          <div class="cluster chips" role="group" aria-label="Filtrar por grupo de serviço">
+            <button appCategoryChip [interactive]="true" [selected]="!activeGroup()" (click)="setParams({ grupo: null, categoria: null })">Todas</button>
+            @for (g of categories.data(); track g.name) {
+              <button appCategoryChip [interactive]="true" [selected]="activeGroup()?.name === g.name" (click)="setParams({ grupo: g.name, categoria: null })">{{ g.name }}</button>
             }
           </div>
+          @if (activeGroup(); as group) {
+            @if (group.services.length > 1) {
+              <div class="cluster chips services" role="group" [attr.aria-label]="'Serviços em ' + group.name">
+                <button appCategoryChip [interactive]="true" [selected]="!categoria()" (click)="setParams({ grupo: group.name, categoria: null })">Tudo em {{ group.name }}</button>
+                @for (c of group.services; track c) {
+                  <button appCategoryChip [interactive]="true" [selected]="categoria() === c" (click)="setParams({ grupo: group.name, categoria: c })">{{ c }}</button>
+                }
+              </div>
+            }
+          }
         }
       </div>
 
@@ -70,7 +81,7 @@ const SEARCH_DELAY_MS = 350;
             <app-empty-state
               icon="book"
               [title]="anyFilter() ? 'Nenhuma trilha encontrada' : 'Ainda não há trilhas'"
-              [message]="anyFilter() ? 'Tente outra categoria ou outra palavra.' : 'Os tutores da Ruraliza estão preparando as primeiras trilhas.'"
+              [message]="anyFilter() ? 'Tente outro serviço ou outra palavra.' : 'Os tutores da Ruraliza estão preparando as primeiras trilhas.'"
             >
               @if (anyFilter()) { <button appButton variant="secondary" type="button" (click)="clearFilters()">Limpar filtros</button> }
             </app-empty-state>
@@ -86,6 +97,7 @@ const SEARCH_DELAY_MS = 350;
     .search input { padding-left: 44px; border-radius: var(--radius-pill); }
     .chips { flex-wrap: nowrap; overflow-x: auto; padding: var(--space-1) 0 var(--space-2); scrollbar-width: thin; }
     @media (min-width: 768px) { .chips { flex-wrap: wrap; overflow-x: visible; } }
+    .services { margin-top: calc(-1 * var(--space-2)); padding-top: var(--space-2); border-top: 1px solid var(--line); }
     .grid-cards > li { display: grid; }
     .resume-list { display: grid; gap: var(--space-4); max-width: 880px; margin: 0; padding: 0; list-style: none; }
   `
@@ -93,6 +105,7 @@ const SEARCH_DELAY_MS = 350;
 export class TracksPage {
   // Query params (withComponentInputBinding).
   readonly q = input<string>();
+  readonly grupo = input<string>();
   readonly categoria = input<string>();
 
   private readonly learning = inject(LearningService);
@@ -106,16 +119,28 @@ export class TracksPage {
     category: this.categoria() || undefined,
     worker_id: this.workerId
   }));
-  readonly anyFilter = computed(() => !!(this.q() || this.categoria()));
+  readonly anyFilter = computed(() => !!(this.q() || this.grupo() || this.categoria()));
 
   readonly draftQuery = linkedSignal(() => this.q() ?? '');
   private searchTimer: ReturnType<typeof setTimeout> | undefined;
 
-  readonly categories = new RemoteData(() => this.categoryService.getCategories());
+  readonly categories = new RemoteData(() => this.categoryService.getGroups());
   readonly tracks = new RemoteData(() => this.learning.listTracks(this.filters()));
 
-  readonly inProgress = computed(() => (this.tracks.data() ?? []).filter((t) => t.progress !== null && t.progress.completed_at === null));
-  readonly others = computed(() => (this.tracks.data() ?? []).filter((t) => t.progress === null || t.progress.completed_at !== null));
+  // Grupo marcado: o da URL ou, num link só com ?categoria=, o grupo desse serviço.
+  readonly activeGroup = computed(() => {
+    const groups = this.categories.data() ?? [];
+    const category = this.categoria();
+    return groups.find((g) => g.name === this.grupo()) ?? groups.find((g) => category !== undefined && g.services.includes(category)) ?? null;
+  });
+  // Com grupo e sem serviço, ficam as trilhas com algum serviço do grupo.
+  private readonly visible = computed(() => {
+    const list = this.tracks.data() ?? [];
+    const group = this.activeGroup();
+    return group && !this.categoria() ? list.filter((t) => t.categories.some((c) => group.services.includes(c))) : list;
+  });
+  readonly inProgress = computed(() => this.visible().filter((t) => t.progress !== null && t.progress.completed_at === null));
+  readonly others = computed(() => this.visible().filter((t) => t.progress === null || t.progress.completed_at !== null));
 
   constructor() {
     this.categories.load();
@@ -136,7 +161,7 @@ export class TracksPage {
   clearFilters(): void {
     clearTimeout(this.searchTimer);
     this.draftQuery.set('');
-    this.setParams({ q: null, categoria: null });
+    this.setParams({ q: null, grupo: null, categoria: null });
   }
 
   setParams(params: Params): void {

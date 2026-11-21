@@ -2,8 +2,10 @@ import { Component, computed, effect, inject, input, output, signal, untracked }
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CategoryService } from '@core/api/category.service';
+import { CategoryGroup } from '@core/models/service.model';
 import { Sponsor, SponsorAudience, SponsorCard, SponsorInput } from '@core/models/sponsor.model';
 import { CategoryChip } from '@shared/domain/ui/category-chip';
+import { CategoryGroupPicker } from '@shared/domain/ui/category-group-picker';
 import { SponsorCardView } from '@shared/domain/ui/sponsor-card';
 import { Button } from '@shared/ui/button';
 import { FormField } from '@shared/ui/form-field';
@@ -23,7 +25,7 @@ const httpsUrl = Validators.pattern(/^https:\/\/\S+\.\S+$/);
 // Formulário do patrocínio com a prévia do cartão como vai aparecer no app. `sponsor` = editar; null = novo.
 @Component({
   selector: 'app-sponsor-editor',
-  imports: [ReactiveFormsModule, Button, CategoryChip, FormField, SegmentedControl, SponsorCardView],
+  imports: [ReactiveFormsModule, Button, CategoryChip, CategoryGroupPicker, FormField, SegmentedControl, SponsorCardView],
   template: `
     <form class="card editor" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <div class="fields">
@@ -61,11 +63,7 @@ const httpsUrl = Validators.pattern(/^https:\/\/\S+\.\S+$/);
         @if (audience() !== 'farmer') {
           <div class="group">
             <p class="t-label">Interesses dos trabalhadores <span class="muted">(nenhum marcado: qualquer um)</span></p>
-            <div class="cluster">
-              @for (c of categoryList(); track c) {
-                <button appCategoryChip [interactive]="true" [selected]="categories().includes(c)" (click)="toggle('categories', c)">{{ c }}</button>
-              }
-            </div>
+            <app-category-group-picker [groups]="categoryGroups()" [(selected)]="categories" />
           </div>
         }
         <div class="pair">
@@ -113,7 +111,7 @@ export class SponsorEditor {
   readonly cancelled = output<void>();
 
   private readonly fb = inject(NonNullableFormBuilder);
-  readonly categoryList = toSignal(inject(CategoryService).getCategories(), { initialValue: [] as string[] });
+  readonly categoryGroups = toSignal(inject(CategoryService).getGroups(), { initialValue: [] as CategoryGroup[] });
   readonly limits = LIMITS;
   readonly audiences = AUDIENCES;
   readonly ufs = UFS;

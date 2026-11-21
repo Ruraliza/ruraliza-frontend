@@ -50,7 +50,7 @@ function positiveOrNull(value: string | undefined): number | null {
   return Number.isFinite(n) && n >= 0 ? n : null;
 }
 
-// Vagas abertas com filtros. A URL é a fonte da verdade (?q=&categoria=&min=&max=&de=&ate=&nota=&ordem=):
+// Vagas abertas com filtros. A URL é a fonte da verdade (?q=&grupo=&categoria=&min=&max=&de=&ate=&nota=&ordem=):
 // voltar do detalhe mantém a busca, e o link da busca pode ser compartilhado.
 @Component({
   selector: 'app-jobs-page',
@@ -62,6 +62,7 @@ export class JobsPage {
   // Query params (withComponentInputBinding).
   readonly buscar = input<string>(); // ?buscar=1 (botão central "Buscar"): foca o campo de busca
   readonly q = input<string>();
+  readonly grupo = input<string>();
   readonly categoria = input<string>();
   readonly min = input<string>();
   readonly max = input<string>();
@@ -90,6 +91,7 @@ export class JobsPage {
     return {
       q: this.q() || undefined,
       category: this.categoria() || undefined,
+      category_group: this.grupo() || undefined,
       min_hours: positiveOrNull(this.min()) ?? undefined,
       max_hours: positiveOrNull(this.max()) ?? undefined,
       from: this.de() || undefined,
@@ -105,14 +107,20 @@ export class JobsPage {
     const f = this.filters();
     return [f.min_hours !== undefined || f.max_hours !== undefined, f.from || f.to, f.min_rating !== undefined, f.sort && f.sort !== 'recent'].filter(Boolean).length;
   });
-  readonly anyFilter = computed(() => !!(this.filters().q || this.filters().category) || this.extraCount() > 0);
+  readonly anyFilter = computed(() => !!(this.filters().q || this.filters().category || this.filters().category_group) || this.extraCount() > 0);
   readonly panelOpen = linkedSignal(() => this.extraCount() > 0);
 
   // Texto digitado; vai para a URL depois de uma pausa na digitação.
   readonly draftQuery = linkedSignal(() => this.q() ?? '');
   private searchTimer: ReturnType<typeof setTimeout> | undefined;
 
-  readonly categories = new RemoteData(() => this.categoryService.getCategories());
+  readonly categories = new RemoteData(() => this.categoryService.getGroups());
+  // Grupo marcado: o da URL ou, num link só com ?categoria=, o grupo desse serviço.
+  readonly activeGroup = computed(() => {
+    const groups = this.categories.data() ?? [];
+    const category = this.categoria();
+    return groups.find((g) => g.name === this.grupo()) ?? groups.find((g) => category !== undefined && g.services.includes(category)) ?? null;
+  });
   readonly jobs = new RemoteData(() => this.workerService.searchServices(this.filters()));
 
   constructor() {
@@ -136,8 +144,13 @@ export class JobsPage {
     this.searchTimer = setTimeout(() => this.setParams({ q: value.trim() || null }), SEARCH_DELAY_MS);
   }
 
+  // Trocar de grupo limpa o serviço; "Todas" limpa os dois.
+  selectGroup(group: string | null): void {
+    this.setParams({ grupo: group, categoria: null });
+  }
+
   selectCategory(category: string | null): void {
-    this.setParams({ categoria: category });
+    this.setParams({ grupo: this.activeGroup()?.name ?? null, categoria: category });
   }
 
   isPreset(preset: (typeof HOUR_PRESETS)[number]): boolean {
@@ -185,7 +198,7 @@ export class JobsPage {
   clearFilters(): void {
     clearTimeout(this.searchTimer);
     this.draftQuery.set('');
-    this.setParams({ q: null, categoria: null, min: null, max: null, de: null, ate: null, nota: null, ordem: null });
+    this.setParams({ q: null, grupo: null, categoria: null, min: null, max: null, de: null, ate: null, nota: null, ordem: null });
   }
 
   private setParams(params: Params): void {

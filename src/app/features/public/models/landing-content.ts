@@ -33,7 +33,7 @@ export const LANDING_CATEGORIES: LandingCategory[] = [
   { name: 'Plantio', photo: 'cat-plantio', description: 'Preparo de mudas, plantio e replantio.' },
   { name: 'Pulverização', photo: 'cat-pulverizacao', description: 'Aplicação costal e mecanizada de defensivos.' },
   { name: 'Operação de máquinas', photo: 'cat-maquinas', description: 'Tratores, colheitadeiras e implementos.' },
-  { name: 'Manejo de gado', photo: 'cat-gado', description: 'Lida com o rebanho, vacinação e ordenha.' },
+  { name: 'Manejo de gado', photo: 'cat-gado', description: 'Lida com o rebanho, trato dos animais e ordenha.' },
   { name: 'Manutenção', photo: 'cat-manutencao', description: 'Cercas, roçada, limpeza de pasto e reparos.' },
   { name: 'Outros', photo: 'cat-outros', description: 'Secagem, beneficiamento e o que mais a safra pedir.' }
 ];

@@ -1,5 +1,6 @@
 import { Component, ElementRef, Injector, OnInit, afterNextRender, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { CategoryService } from '@core/api/category.service';
 import { FarmerService } from '../data-access/farmer.service';
@@ -51,7 +52,7 @@ export class ServiceFormPage implements OnInit {
   private readonly injector = inject(Injector);
 
   readonly farms = new RemoteData(() => this.farmerService.getFarms(this.farmerId));
-  readonly categories = new RemoteData(() => this.categoryService.getCategories());
+  readonly categories = new RemoteData(() => this.categoryService.getGroups());
 
   readonly serviceId = computed(() => (this.id() ? Number(this.id()) : null));
   readonly isEdit = computed(() => this.serviceId() !== null);
@@ -102,6 +103,26 @@ export class ServiceFormPage implements OnInit {
       expires_at: ['', (control: AbstractControl<string>) => this.notPastDay(control)]
     })
   });
+
+  // Categoria em dois níveis: o grupo é só da tela (a vaga guarda o serviço). Sem grupo escolhido,
+  // vale o grupo do serviço já marcado (edição, cópia ou rascunho da landing).
+  private readonly chosenCategory = toSignal(this.form.controls.what.controls.category.valueChanges, { initialValue: '' });
+  private readonly pickedGroup = signal<string | null>(null);
+  readonly activeGroup = computed(() => {
+    const groups = this.categories.data() ?? [];
+    const name = this.pickedGroup() ?? groups.find((g) => g.services.includes(this.chosenCategory()))?.name;
+    return groups.find((g) => g.name === name) ?? null;
+  });
+
+  pickGroup(name: string): void {
+    const group = this.categories.data()?.find((g) => g.name === name);
+    if (!group) return;
+    this.pickedGroup.set(name);
+    const category = this.form.controls.what.controls.category;
+    // Grupo de um serviço só (Máquinas, Outros): já fica escolhido. Trocar de grupo limpa o serviço do outro.
+    if (group.services.length === 1) category.setValue(group.services[0] ?? '');
+    else if (!group.services.includes(category.value)) category.setValue('');
+  }
 
   readonly durationMessages = { positive: 'Informe quantas horas o serviço deve levar (maior que zero).' };
   readonly priceMessages = { positive: 'Informe um valor maior que zero.' };

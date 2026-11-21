@@ -5,7 +5,7 @@ import { MatchingService } from '../data-access/matching.service';
 import { CategoryService } from '@core/api/category.service';
 import { JobPreferences } from '@core/models/matching.model';
 import { ToastService } from '@core/toast/toast.service';
-import { CategoryChip } from '@shared/domain/ui/category-chip';
+import { CategoryGroupPicker } from '@shared/domain/ui/category-group-picker';
 import { Button } from '@shared/ui/button';
 import { SegmentOption, SegmentedControl } from '@shared/ui/segmented-control';
 import { Skeleton } from '@shared/ui/skeleton';
@@ -24,7 +24,7 @@ const RADII: SegmentOption<Radius>[] = [
 // (a localização do aparelho, guardada pela API só aproximada) e os avisos de vaga nova.
 @Component({
   selector: 'app-job-interests-card',
-  imports: [Button, CategoryChip, SegmentedControl, Skeleton, SwitchField],
+  imports: [Button, CategoryGroupPicker, SegmentedControl, Skeleton, SwitchField],
   host: { id: 'interesses' },
   template: `
     <section class="card stack" aria-labelledby="interests-title">
@@ -38,11 +38,8 @@ const RADII: SegmentOption<Radius>[] = [
       } @else {
         <fieldset>
           <legend class="t-label">O que você quer fazer</legend>
-          <div class="cluster">
-            @for (category of categories(); track category) {
-              <button appCategoryChip [interactive]="true" [selected]="chosen().includes(category)" (click)="toggle(category)">{{ category }}</button>
-            }
-          </div>
+          <p class="t-body-sm muted">Abra um grupo e escolha os serviços, ou marque o grupo todo.</p>
+          <app-category-group-picker [groups]="groups()" [(selected)]="chosen" />
         </fieldset>
 
         <app-switch-field
@@ -75,6 +72,7 @@ const RADII: SegmentOption<Radius>[] = [
     :host { display: block; scroll-margin-top: calc(var(--topbar-height) + var(--space-4)); }
     fieldset { display: grid; gap: var(--space-2); margin: 0; padding: 0; border: 0; }
     legend { margin-bottom: var(--space-2); }
+    fieldset p { margin: 0; }
     .radius { display: grid; gap: var(--space-2); margin-top: calc(-1 * var(--space-2)); }
     .radius p { margin: 0; }
   `
@@ -86,7 +84,7 @@ export class JobInterestsCard implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly categoryService = inject(CategoryService);
-  private readonly categoryList = new RemoteData(() => this.categoryService.getCategories());
+  private readonly groupList = new RemoteData(() => this.categoryService.getGroups());
 
   readonly form = new RemoteData(() => this.matching.preferences(this.workerId()));
   readonly chosen = signal<string[]>([]);
@@ -96,7 +94,7 @@ export class JobInterestsCard implements OnInit {
   readonly locating = signal(false);
   readonly radii = RADII;
 
-  readonly categories = computed(() => this.categoryList.data() ?? []);
+  readonly groups = computed(() => this.groupList.data() ?? []);
   readonly radius = computed<Radius>(() => {
     const km = String(this.near()?.radius_km ?? 30);
     return RADII.some((r) => r.value === km) ? (km as Radius) : '30';
@@ -128,12 +126,8 @@ export class JobInterestsCard implements OnInit {
   }
 
   ngOnInit(): void {
-    this.categoryList.load();
+    this.groupList.load();
     this.form.load();
-  }
-
-  toggle(category: string): void {
-    this.chosen.update((list) => (list.includes(category) ? list.filter((c) => c !== category) : [...list, category]));
   }
 
   setRadius(value: Radius): void {
