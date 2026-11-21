@@ -48,8 +48,10 @@ export class ChatInboxService {
     });
   }
 
-  // A conversa mais recente de um serviço (a do trabalhador atual, se alguém desistiu antes).
-  forService(serviceId: number): Chat | null {
-    return this.chats().filter((chat) => chat.service_id === serviceId).sort((a, b) => b.id - a.id)[0] ?? null;
+  // A conversa mais recente de um serviço (para o trabalhador, a dele; para o produtor, passe o candidato).
+  forService(serviceId: number, workerId?: number | null): Chat | null {
+    return this.chats()
+      .filter((chat) => chat.service_id === serviceId && (workerId === undefined || workerId === null || chat.worker_id === workerId))
+      .sort((a, b) => b.id - a.id)[0] ?? null;
   }
 }

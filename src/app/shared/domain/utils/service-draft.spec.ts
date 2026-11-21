@@ -2,7 +2,7 @@ import { draftNumber, draftParams, hasDraft } from './service-draft';
 
 describe('service draft', () => {
   it('keeps only filled fields in the query params', () => {
-    expect(draftParams({ servico: 'Colheita de café', categoria: 'Colheita', duracao: '', valor: undefined })).toEqual({
+    expect(draftParams({ servico: 'Colheita de café', categoria: 'Colheita', duracao: '' })).toEqual({
       servico: 'Colheita de café',
       categoria: 'Colheita'
     });
@@ -10,7 +10,7 @@ describe('service draft', () => {
 
   it('detects whether there is a draft', () => {
     expect(hasDraft({})).toBe(false);
-    expect(hasDraft({ valor: '1800' })).toBe(true);
+    expect(hasDraft({ duracao: '40' })).toBe(true);
   });
 
   it('parses positive numbers and rejects the rest', () => {

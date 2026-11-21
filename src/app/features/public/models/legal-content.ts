@@ -102,7 +102,8 @@ export const TERMS_OF_USE: LegalDocument = {
       id: 'pagamentos',
       title: 'Pagamentos',
       blocks: [
-        { p: 'Nesta fase de testes, o pagamento no app é simulado: o botão "Liberar pagamento" só registra que o serviço foi pago. Nenhum dinheiro passa pelo Ruraliza.' },
+        { p: 'O valor da vaga é uma estimativa do produtor; o valor final é combinado entre produtor e trabalhador na conversa, por proposta.' },
+        { p: 'Nesta fase de testes, o pagamento no app é simulado: o botão "Liberar pagamento" só registra o total informado pelo produtor e conclui o serviço. Nenhum dinheiro passa pelo Ruraliza.' },
         { p: 'O pagamento de verdade é combinado e feito diretamente entre o produtor e o trabalhador. Se um dia o app passar a movimentar pagamentos, haverá regras próprias, apresentadas antes.' }
       ]
     },
@@ -200,7 +201,7 @@ export const PRIVACY_POLICY: LegalDocument = {
             'Cadastro: nome, e-mail, telefone (WhatsApp), CPF e senha (guardada só como código, o hash, nunca o texto).',
             'Perfil do trabalhador: foto, apresentação, experiência, certificados, cursos e currículo em PDF, se você enviar.',
             'Perfil do produtor e fazendas: foto, endereço, cidade, estado, o ponto marcado no mapa e as fotos das fazendas.',
-            'Uso do app: vagas publicadas, candidaturas, serviços, pagamentos simulados, avaliações, mensagens das conversas, avisos (notificações), progresso nas trilhas e certificados.',
+            'Uso do app: vagas publicadas, candidaturas, propostas, serviços, pagamentos simulados, avaliações, mensagens das conversas, avisos (notificações), progresso nas trilhas e certificados.',
             'Preferências: tema, tamanho das letras e contraste.',
             'Dados técnicos: a inscrição do navegador para notificações, quando você ativa, e registros de funcionamento do servidor.'
           ]

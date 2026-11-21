@@ -25,9 +25,17 @@
         </label>
 
         <label class="field">
-          <span class="label">Valor a pagar</span>
+          <span class="label">Valor estimado</span>
           <input appMask="currency" formControlName="price" inputmode="numeric">
         </label>
+
+        <label class="field">
+          <span class="label">Cobrado</span>
+          <select formControlName="unit">
+            @for (u of units; track u.value) { <option [value]="u.value">{{ u.label }}</option> }
+          </select>
+        </label>
+        <p class="note">O valor final você combina com o trabalhador na conversa.</p>
 
         <button appButton type="submit" [block]="true">Publicar de verdade</button>
         <p class="note">Você cria sua conta de produtor e a vaga já vem preenchida.</p>

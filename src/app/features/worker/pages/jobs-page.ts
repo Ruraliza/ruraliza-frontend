@@ -18,8 +18,6 @@ const SEARCH_DELAY_MS = 350;
 
 export const SORT_OPTIONS: { value: JobSort; label: string }[] = [
   { value: 'recent', label: 'Mais recentes' },
-  { value: 'price_desc', label: 'Maior valor' },
-  { value: 'price_asc', label: 'Menor valor' },
   { value: 'duration_asc', label: 'Menos horas' },
   { value: 'duration_desc', label: 'Mais horas' },
   { value: 'rating', label: 'Fazendas mais bem avaliadas' }

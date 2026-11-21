@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ChatResponse } from '@core/models/chat.model';
+import { Payment, PaymentInput } from '@core/models/payment.model';
 import { environment } from '@env/environment';
 import { PasswordChangeInput } from '@core/models/auth.model';
 import { Farmer, FarmerUpdate } from '@core/models/farmer.model';
 import { Farm, FarmInput, FarmUpdate } from '@core/models/farm.model';
 import { FarmerServiceItem, Service, ServiceInput, ServiceUpdate, ServiceWithFarm } from '@core/models/service.model';
 import { AnalyzeAction, ApplicationWithWorker, ServiceApplication } from '@core/models/service-application.model';
-import { Payment } from '@core/models/payment.model';
 import { FarmerStats } from '@core/models/farm-stats.model';
 import { ServiceStatus } from '@core/models/status';
 
@@ -119,10 +120,14 @@ export class FarmerService {
     );
   }
 
-  processPayment(serviceId: number): Observable<{ message: string; service: Service; payment: Payment }> {
-    return this.http.post<{ message: string; service: Service; payment: Payment }>(
-      `${this.apiUrl}/services/${serviceId}/payment`,
-      {}
-    );
+  // Abre (ou devolve) a conversa com o candidato, para negociar antes do aceite.
+  openChat(serviceId: number, applicationId: number): Observable<ChatResponse> {
+    return this.http.post<ChatResponse>(`${this.apiUrl}/services/${serviceId}/applications/${applicationId}/chat`, {});
+  }
+
+  // Libera o pagamento (simulação) do total informado e conclui o serviço.
+  processPayment(serviceId: number, value: number): Observable<{ message: string; service: Service; payment: Payment }> {
+    const body: PaymentInput = { value };
+    return this.http.post<{ message: string; service: Service; payment: Payment }>(`${this.apiUrl}/services/${serviceId}/payment`, body);
   }
 }

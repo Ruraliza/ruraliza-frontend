@@ -9,7 +9,7 @@ import { LiveUpdatesService } from './live-updates.service';
 const chat = (id: number, serviceId: number, unread: number): Chat => ({
   id, service_id: serviceId, service_name: 'Colheita', farmer_id: 1, worker_id: 2,
   farmer: { name: 'João', photo_url: null, phone: null }, worker: { name: 'Maria', photo_url: null, phone: null },
-  farmer_shares_phone: false, worker_shares_phone: false, open: true, closes_at: null, unread, last_message: null,
+  farmer_shares_phone: false, worker_shares_phone: false, hired: true, open: true, closes_at: null, unread, last_message: null,
   insertion_date: '2026-10-01T12:00:00.000Z'
 });
 

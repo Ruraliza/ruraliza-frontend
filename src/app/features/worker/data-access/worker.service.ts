@@ -5,7 +5,7 @@ import { environment } from '@env/environment';
 import { PasswordChangeInput } from '@core/models/auth.model';
 import { Worker, WorkerUpdate } from '@core/models/worker.model';
 import { JobFilters, OpenService, Service } from '@core/models/service.model';
-import { ApplicationWithService, ServiceApplication } from '@core/models/service-application.model';
+import { ApplicationWithService, ApplyInput, ServiceApplication } from '@core/models/service-application.model';
 
 // Painel do trabalhador: perfil, foto, vagas, candidaturas e desistência. Ler o perfil, o cadastro e
 // o currículo ficam no ProfileService (@core/api), usado também por outras features.
@@ -69,11 +69,9 @@ export class WorkerService {
     return this.http.get<OpenService>(`${this.apiUrl}/services/${serviceId}`, { params });
   }
 
-  applyForService(serviceId: number, workerId: number): Observable<{ message: string; application: ServiceApplication }> {
-    return this.http.post<{ message: string; application: ServiceApplication }>(
-      `${this.apiUrl}/services/${serviceId}/apply`,
-      { worker_id: workerId }
-    );
+  applyForService(serviceId: number, workerId: number, message?: string): Observable<{ message: string; application: ServiceApplication }> {
+    const body: ApplyInput = message ? { worker_id: workerId, message } : { worker_id: workerId };
+    return this.http.post<{ message: string; application: ServiceApplication }>(`${this.apiUrl}/services/${serviceId}/apply`, body);
   }
 
   // Desiste: candidatura pendente é removida; se já aceito, o serviço volta a Pending.

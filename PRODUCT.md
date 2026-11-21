@@ -8,7 +8,7 @@ O Ruraliza (AgTech) conecta produtores rurais a trabalhadores, prestadores de se
 
 ## Quem usa
 
-- **Produtor** (`/produtor`): cadastra fazendas, publica e gerencia serviços, analisa candidatos, libera o pagamento e avalia o trabalhador.
+- **Produtor** (`/produtor`): cadastra fazendas, publica e gerencia serviços (com valor estimado), conversa com os candidatos e combina o valor por proposta, aceita, libera o pagamento (simulado) e avalia o trabalhador.
 - **Trabalhador, prestador ou estudante** (`/trabalhador`): busca e recebe recomendações de vagas, se candidata, conversa, estuda trilhas, recebe certificados e avalia a fazenda.
 - **Conta com os dois perfis:** a mesma pessoa troca de painel pela página de perfil.
 - **Equipe** (`/sistema`, sem cadastro público): **Administrador** (usuários, equipe, trilhas, ajuda, patrocínios, moderação) e **Tutor** (trilhas de que é tutor). O cargo define o menu.
@@ -33,7 +33,7 @@ Fatos observados:
 - **Tudo em português do Brasil** (rotas, textos, datas no horário de Brasília). Nomes de componentes em inglês.
 - **Backend com PostgreSQL opcional:** com `DATABASE_URL` os dados continuam depois de reiniciar; sem ela, ficam em memória e somem. Os textos públicos (perguntas frequentes, Termos e Política de Privacidade) ainda descrevem os dados em memória: atualize-os antes de ligar o banco em produção.
 - **Sessão em `sessionStorage`:** vale enquanto a aba está aberta. Reabrir o app sem sinal pede para entrar de novo.
-- **Pagamento é simulado** e **e-mail não existe**: a API nunca devolve o código de redefinição, então em produção o "esqueci a senha" não tem como concluir (`TODO(email)`); em desenvolvimento, o código sai no terminal da API.
+- **Pagamento é simulado** (o produtor informa o total combinado; nenhum dinheiro é movimentado) e **e-mail não existe**: a API nunca devolve o código de redefinição, então em produção o "esqueci a senha" não tem como concluir (`TODO(email)`); em desenvolvimento, o código sai no terminal da API.
 - Os guards só evitam abrir telas sem sessão; quem protege os dados é a API.
 
 ## Fora do escopo (hoje)

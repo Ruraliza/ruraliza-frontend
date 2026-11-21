@@ -104,9 +104,16 @@
                 <input type="number" formControlName="duration" inputmode="decimal" min="0" step="1" placeholder="8">
               </app-form-field>
 
-              <app-form-field label="Valor a pagar" fieldId="price" hint="Valor total do serviço." [control]="form.controls.where.controls.price" [messages]="priceMessages">
-                <input appMask="currency" formControlName="price" inputmode="numeric" placeholder="R$ 0,00">
-              </app-form-field>
+              <div class="estimate">
+                <app-form-field label="Valor estimado" fieldId="price" hint="Quanto você estima pagar. O valor final é combinado com o trabalhador na conversa." [control]="form.controls.where.controls.price" [messages]="priceMessages">
+                  <input appMask="currency" formControlName="price" inputmode="numeric" placeholder="R$ 0,00">
+                </app-form-field>
+                <app-form-field label="Cobrado" fieldId="price_unit" [control]="form.controls.where.controls.price_unit">
+                  <select formControlName="price_unit">
+                    @for (u of units; track u.value) { <option [value]="u.value">{{ u.label }}</option> }
+                  </select>
+                </app-form-field>
+              </div>
 
               @if (expiredNote(); as note) {
                 <p class="expired-note" role="note">{{ note }}</p>

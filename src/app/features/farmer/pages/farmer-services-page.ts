@@ -17,7 +17,7 @@ import { Skeleton } from '@shared/ui/skeleton';
 import { searchable } from '@shared/utils/search';
 
 type Tab = 'abertos' | 'andamento' | 'concluidos' | 'cancelados';
-type Sort = 'recentes' | 'candidatos' | 'valor' | 'prazo';
+type Sort = 'recentes' | 'candidatos' | 'prazo';
 
 const TAB_STATUS: Record<Tab, ServiceStatus> = {
   abertos: 'Pending',
@@ -29,13 +29,12 @@ const TAB_LABEL: Record<Tab, string> = { abertos: 'Abertos', andamento: 'Em anda
 const EMPTY_COPY: Record<Tab, { title: string; message: string }> = {
   abertos: { title: 'Nenhum serviço aberto', message: 'Publique um serviço para começar a receber candidaturas.' },
   andamento: { title: 'Nenhum serviço em andamento', message: 'Quando você aceitar um trabalhador, o serviço aparece aqui.' },
-  concluidos: { title: 'Nenhum serviço concluído ainda', message: 'Serviços com pagamento liberado aparecem aqui.' },
+  concluidos: { title: 'Nenhum serviço concluído ainda', message: 'Serviços marcados como concluídos aparecem aqui.' },
   cancelados: { title: 'Nenhum serviço cancelado', message: 'Serviços que você cancelar ficam guardados aqui.' }
 };
 const SORTS: { value: Sort; label: string }[] = [
   { value: 'recentes', label: 'Mais recentes' },
   { value: 'candidatos', label: 'Mais candidaturas para analisar' },
-  { value: 'valor', label: 'Maior valor' },
   { value: 'prazo', label: 'Prazo mais próximo' }
 ];
 const SEARCH_DELAY_MS = 300;
@@ -112,7 +111,6 @@ export class FarmerServicesPage {
     const compare: Record<Sort, (a: FarmerServiceItem, b: FarmerServiceItem) => number> = {
       recentes: byRecent,
       candidatos: (a, b) => b.applications_pending - a.applications_pending || byRecent(a, b),
-      valor: (a, b) => b.price - a.price || byRecent(a, b),
       // Sem prazo vai para o fim.
       prazo: (a, b) => (a.expires_at ?? '9999').localeCompare(b.expires_at ?? '9999') || byRecent(a, b)
     };

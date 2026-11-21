@@ -1,7 +1,10 @@
+import { FINAL_PRICE_NOTE, priceLabel, servicePrice } from '@shared/domain/utils/agreement';
 import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Location } from '@angular/common';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { noBlockedTerms } from '@shared/utils/moderation';
 import { WorkerService } from '../data-access/worker.service';
 import { ChatInboxService } from '@core/api/chat-inbox.service';
 import { LiveUpdatesService } from '@core/api/live-updates.service';
@@ -30,7 +33,7 @@ import { ServiceReviews } from '@shared/domain/ui/service-reviews';
 
 @Component({
   selector: 'app-job-detail-page',
-  imports: [RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, RatingBadge, ReportDialog, ReputationDialog, ServiceReviews, Skeleton, StatusBadge, VerifiedBadge],
+  imports: [ReactiveFormsModule, RouterLink, Button, CategoryChip, ConfirmDialog, ErrorState, FarmMap, Icon, PhotoStrip, RatingBadge, ReportDialog, ReputationDialog, ServiceReviews, Skeleton, StatusBadge, VerifiedBadge],
   templateUrl: './job-detail-page.html',
   styleUrl: './job-detail-page.css'
 })
@@ -67,7 +70,22 @@ export class JobDetailPage implements OnInit {
     const job = this.job.data();
     return job ? pointOf(job.farm) : null;
   });
-  readonly price = computed(() => formatBRL(this.job.data()?.price ?? 0));
+  // O combinado (só para o trabalhador aceito) ou a estimativa da vaga ("Valor a combinar" nas antigas).
+  readonly price = computed(() => {
+    const job = this.job.data();
+    return job ? servicePrice(job) : '';
+  });
+  readonly priceNote = computed(() => {
+    const job = this.job.data();
+    if (!job) return 'Valor';
+    if (job.agreement) return 'Combinado';
+    return job.price !== null ? FINAL_PRICE_NOTE : 'Valor';
+  });
+  // O pagamento liberado pelo produtor (só o trabalhador aceito recebe).
+  readonly paid = computed(() => {
+    const payment = this.job.data()?.payment;
+    return payment ? `Pagamento de ${formatBRL(payment.value)} liberado em ${formatDate(payment.paid_at)} (simulação).` : null;
+  });
   protected readonly cover = serviceCover;
   readonly hours = computed(() => formatHours(this.job.data()?.duration ?? 0));
   readonly publishedAt = computed(() => {
@@ -93,12 +111,14 @@ export class JobDetailPage implements OnInit {
   readonly applyMessage = computed(() => {
     const job = this.job.data();
     if (!job) return '';
-    return `${job.name} em ${job.farm.city}, ${job.farm.state}: ${this.hours()} por ${this.price()}. ` +
+    return `${job.name} em ${job.farm.city}, ${job.farm.state}: ${this.hours()}, ${job.price !== null && job.price_unit !== null ? `estimativa de ${priceLabel({ amount: job.price, unit: job.price_unit })}` : 'valor a combinar'} (o valor final é combinado na conversa). ` +
       'O produtor verá seu perfil (foto, apresentação, experiência, certificados e cursos). ' +
       'Enquanto a candidatura estiver aguardando, você pode cancelá-la.';
   });
 
   readonly confirmingApply = signal(false);
+  // Mensagem opcional da candidatura (até 300 caracteres, sem palavrões).
+  readonly applyNote = new FormControl('', { nonNullable: true, validators: [Validators.maxLength(300), noBlockedTerms] });
   readonly applying = signal(false);
   readonly confirmingWithdraw = signal(false);
   readonly withdrawing = signal(false);
@@ -113,7 +133,7 @@ export class JobDetailPage implements OnInit {
     return null;
   });
 
-  // Conversa com o produtor (abre quando ele aceita a candidatura).
+  // Conversa com o produtor (o produtor abre a partir da candidatura, para negociar).
   readonly chat = computed(() => this.inbox.forService(this.serviceId()));
   readonly applicationTitle = computed(() => {
     const job = this.job.data();
@@ -156,11 +176,13 @@ export class JobDetailPage implements OnInit {
   }
 
   apply(): void {
+    if (this.applyNote.invalid) return;
     this.applying.set(true);
-    this.workerService.applyForService(this.serviceId(), this.workerId).subscribe({
+    this.workerService.applyForService(this.serviceId(), this.workerId, this.applyNote.value.trim() || undefined).subscribe({
       next: () => {
         this.applying.set(false);
         this.confirmingApply.set(false);
+        this.applyNote.reset();
         this.toast.success('Candidatura enviada! Agora é aguardar a resposta do produtor.');
         this.applications.refresh();
       },

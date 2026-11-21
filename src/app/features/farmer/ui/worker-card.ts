@@ -29,6 +29,9 @@ import { VerifiedBadge } from '@shared/domain/ui/verified-badge';
       </div>
       @if (status(); as s) { <app-status-badge [status]="s" /> }
     </div>
+    @if (note(); as text) {
+      <blockquote class="note"><p class="t-label">Mensagem da candidatura</p><p>{{ text }}</p></blockquote>
+    }
     @if (worker().bio; as bio) { <p class="bio">{{ bio }}</p> }
     <dl class="details">
       <div><dt>Experiência</dt><dd>{{ worker().experience || 'Não informada' }}</dd></div>
@@ -59,6 +62,8 @@ import { VerifiedBadge } from '@shared/domain/ui/verified-badge';
     .who { flex: 1; min-width: 160px; display: grid; gap: 2px; justify-items: start; }
     .rating { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); margin: 0; }
     .bio { color: var(--ink); white-space: pre-line; }
+    .note { display: grid; gap: var(--space-1); margin: 0; padding: var(--space-3) var(--space-4); border-left: 4px solid var(--mata); border-radius: var(--radius-md); background: var(--bg-alt); }
+    .note p { margin: 0; white-space: pre-line; }
     dd { white-space: pre-line; }
     .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
     .actions:empty { display: none; }
@@ -79,6 +84,8 @@ export class WorkerCard {
   readonly reputation = input<WorkerReputation | null>(null);
   readonly reportable = input(false);
   readonly verified = input(false);
+  // Mensagem que o trabalhador escreveu ao se candidatar.
+  readonly note = input<string | null | undefined>(null);
   readonly viewReviews = output<void>();
   readonly report = output<void>();
 

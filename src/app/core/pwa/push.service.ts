@@ -17,7 +17,7 @@ function toInput(subscription: PushSubscription): PushSubscriptionInput {
   return { endpoint: endpoint ?? subscription.endpoint, keys: { p256dh: keys?.['p256dh'] ?? '', auth: keys?.['auth'] ?? '' } };
 }
 
-// Notificações push (candidaturas, aceites, pagamentos), mesmo com o app fechado.
+// Notificações push (candidaturas, propostas, aceites, pagamentos), mesmo com o app fechado.
 // A inscrição é do navegador (SwPush) e fica guardada na conta, no backend. O backend ainda guarda
 // tudo em memória, então sempre que há conta aberta e inscrição ativa ela é reenviada (`sync`).
 // O clique na notificação é tratado pelo service worker do Angular (abre o app na tela indicada).

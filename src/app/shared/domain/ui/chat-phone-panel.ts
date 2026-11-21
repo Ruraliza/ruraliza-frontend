@@ -8,6 +8,7 @@ import { whatsappLink } from '../utils/chat';
 
 // Topo da conversa: o WhatsApp de cada um fica protegido até os dois liberarem (consentimento duplo).
 // Mostra quem já liberou e, com os dois, o número do outro com "Abrir no WhatsApp" e "Ligar".
+// Antes do aceite (negociação), não dá para liberar: o painel só explica quando vai ser possível.
 @Component({
   selector: 'app-chat-phone-panel',
   imports: [Button, Icon],
@@ -29,7 +30,7 @@ import { whatsappLink } from '../utils/chat';
       @if (both() && other().phone; as phone) {
         <a appButton [href]="wa(phone)" target="_blank" rel="noopener">Abrir no WhatsApp</a>
         <a appButton variant="secondary" [href]="'tel:' + phone">Ligar</a>
-      } @else if (chat().open && !mine()) {
+      } @else if (chat().open && chat().hired && !mine()) {
         <button appButton [variant]="theirs() ? 'primary' : 'secondary'" type="button" (click)="shareRequested.emit()">Liberar meu WhatsApp</button>
       }
       @if (chat().open && mine()) {
@@ -80,12 +81,14 @@ export class ChatPhonePanel {
     if (this.both()) return 'WhatsApp liberado';
     if (this.theirs()) return `${this.otherFirst()} quer trocar WhatsApp`;
     if (this.mine()) return `Falta ${this.otherFirst()} liberar`;
+    if (!this.chat().hired) return 'WhatsApp depois do aceite';
     return 'Seu WhatsApp está protegido';
   });
   readonly message = computed(() => {
     if (this.both()) return `Vocês dois liberaram. Este é o número de ${this.otherFirst()}:`;
     if (this.theirs()) return 'Libere o seu também para os dois números aparecerem.';
     if (this.mine()) return 'Seu número aparece quando os dois tiverem liberado.';
+    if (!this.chat().hired) return 'Combinem o valor por aqui. Telefone e e-mail ficam ocultos; o WhatsApp pode ser liberado depois que o produtor aceitar.';
     return 'Os números só aparecem quando vocês dois liberarem. Até lá, combinem tudo por aqui.';
   });
 

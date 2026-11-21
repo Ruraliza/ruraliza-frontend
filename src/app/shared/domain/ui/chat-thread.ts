@@ -16,7 +16,10 @@ import { ErrorState } from '../../ui/error-state';
 import { Icon } from '../../ui/icon';
 import { Skeleton } from '../../ui/skeleton';
 import { Avatar } from './avatar';
+import { ChatNegotiation } from './chat-negotiation';
 import { ChatPhonePanel } from './chat-phone-panel';
+import { ProposalCard } from './proposal-card';
+import { proposalCards } from '../utils/agreement';
 import { ReportDialog, ReportTarget } from './report-dialog';
 import { QUICK_REPLIES, dayKey, dayLabel, hasContact, messageTime } from '../utils/chat';
 
@@ -33,11 +36,11 @@ const MAX_MESSAGE = 1000;
 let nextKey = 0;
 
 // A conversa de um serviço. A lista se atualiza sozinha (SSE); abrir marca como lida.
-// No topo fica o WhatsApp (app-chat-phone-panel): protegido até os dois liberarem. Sem sinal, a
-// mensagem fica como "Não enviada" e um toque reenvia.
+// No topo fica o WhatsApp (app-chat-phone-panel): protegido até os dois liberarem. Antes do aceite, a negociação
+// (app-chat-negotiation) e o cartão de cada proposta. Sem sinal, a mensagem fica como "Não enviada" e um toque reenvia.
 @Component({
   selector: 'app-chat-thread',
-  imports: [RouterLink, Avatar, ChatPhonePanel, ConfirmDialog, ErrorState, Icon, ReportDialog, Skeleton],
+  imports: [RouterLink, Avatar, ChatNegotiation, ChatPhonePanel, ConfirmDialog, ErrorState, Icon, ProposalCard, ReportDialog, Skeleton],
   template: `
     <div class="container thread">
       <a class="back-link" [routerLink]="listLink()">← Conversas</a>
@@ -65,7 +68,10 @@ let nextKey = 0;
                 } @else {
                   @let m = row.message;
                   <li [class]="'msg ' + side(m)">
-                    @if (m.sender === 'system') {
+                    @if (cards().get(m.id); as p) {
+                      <app-proposal-card [proposal]="p" [role]="role()" [chatId]="c.id" [negotiating]="negotiation.negotiating()" [otherName]="otherFirst()"
+                        (answered)="chat.refresh()" (counter)="negotiation.open($event)" />
+                    } @else if (m.sender === 'system') {
                       <p class="system">{{ m.body }}</p>
                     } @else {
                       <p class="bubble"><span class="visually-hidden">{{ side(m) === 'mine' ? 'Você' : otherFirst() }}: </span>{{ m.body }}</p>
@@ -85,6 +91,8 @@ let nextKey = 0;
                 </li>
               }
             </ol>
+
+            <app-chat-negotiation #negotiation [chat]="c" [role]="role()" (sent)="chat.refresh()" />
 
             @if (c.open) {
               <form class="composer" (submit)="submit($event)">
@@ -145,6 +153,7 @@ export class ChatThread {
   readonly confirmingShare = signal(false);
   readonly sharing = signal(false);
   readonly maxMessage = MAX_MESSAGE;
+  readonly cards = computed(() => proposalCards(this.chat.data()));
   readonly time = messageTime;
 
   readonly other = computed<ChatPerson>(() => {

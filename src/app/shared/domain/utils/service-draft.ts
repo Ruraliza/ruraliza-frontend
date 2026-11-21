@@ -6,10 +6,11 @@ export interface ServiceDraft {
   servico?: string;
   categoria?: string;
   duracao?: string;
-  valor?: string;
+  valor?: string; // valor estimado
+  unidade?: string; // unidade do valor (hour, day, meter, hectare, fixed)
 }
 
-export const DRAFT_KEYS = ['servico', 'categoria', 'duracao', 'valor'] as const;
+export const DRAFT_KEYS = ['servico', 'categoria', 'duracao', 'valor', 'unidade'] as const;
 
 // Só os campos preenchidos, para não sujar a URL.
 export function draftParams(draft: ServiceDraft): Params {

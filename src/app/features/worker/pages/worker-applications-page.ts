@@ -5,7 +5,7 @@ import { LiveUpdatesService } from '@core/api/live-updates.service';
 import { WorkerService } from '../data-access/worker.service';
 import { CurrentUserService } from '@core/session/current-user.service';
 import { RemoteData } from '@shared/utils/remote-data';
-import { formatBRL, formatDate } from '@shared/utils/format';
+import { formatDate } from '@shared/utils/format';
 import { Button } from '@shared/ui/button';
 import { EmptyState } from '@shared/ui/empty-state';
 import { ErrorState } from '@shared/ui/error-state';
@@ -38,7 +38,7 @@ import { StatusBadge } from '@shared/domain/ui/status-badge';
                       <span class="t-body-sm muted meta">
                         <app-icon name="map-pin" [size]="16" />{{ application.service.farm.city }}, {{ application.service.farm.state }}
                       </span>
-                      <span class="t-body-sm muted">{{ brl(application.service.price) }}, candidatura enviada em {{ date(application.insertion_date) }}</span>
+                      <span class="t-body-sm muted">Candidatura enviada em {{ date(application.insertion_date) }}</span>
                     </span>
                     <app-status-badge [status]="application.status" />
                   </a>
@@ -74,7 +74,6 @@ export class WorkerApplicationsPage {
   readonly applications = new RemoteData(() => this.workerService.getWorkerApplications(this.workerId));
   readonly sorted = computed(() => [...(this.applications.data() ?? [])].sort((a, b) => b.id - a.id));
 
-  readonly brl = formatBRL;
   readonly date = formatDate;
 
   constructor() {

@@ -44,7 +44,7 @@ export function groupByDay(items: readonly AppNotification[], now = new Date()):
       <div class="page-header">
         <div>
           <h1>Notificações</h1>
-          <p class="muted">Candidaturas, aceites, pagamentos, mensagens e avaliações, mesmo com as notificações do celular desligadas.</p>
+          <p class="muted">Candidaturas, propostas, aceites, pagamentos, mensagens e avaliações, mesmo com as notificações do celular desligadas.</p>
         </div>
         @if (inbox.unread()) {
           <button appButton variant="ghost" type="button" (click)="inbox.markRead()"><app-icon name="check" [size]="20" />Marcar todas como lidas</button>
