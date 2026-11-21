@@ -78,7 +78,7 @@ Regra de imports e de componentes: README, seção [Estrutura](../README.md#estr
 ## Build e deploy
 
 - `npm run build` gera `dist/ruraliza-frontend/{browser,server}`. Orçamentos de produção: 500 kB (aviso) e 1 MB (erro) no bundle inicial; 4 kB e 8 kB por estilo de componente.
-- `.github/workflows/deploy.yml`: em push na `main`, Node 22, `npm ci`, `ng build --configuration production --base-href /ruraliza-frontend/`, copia `index.html` para `404.html` e publica `dist/ruraliza-frontend/browser` no GitHub Pages. O fluxo não roda testes; quem verifica é o `ci.yml` (ver [quality.md](quality.md)).
+- `.github/workflows/deploy.yml`: em push na `main` (ou à mão, em *Run workflow*). O job `build` usa Node 22, roda `npm ci` e `ng build --configuration production --base-href /ruraliza-frontend/`, copia `index.html` para `404.html` e envia `dist/ruraliza-frontend/browser` como artefato. O job `deploy` (`needs: build`) publica esse artefato no GitHub Pages. Se só o deploy falhar, *Re-run failed jobs* refaz só ele, com o mesmo artefato. O fluxo não roda testes; quem verifica é o `ci.yml` (ver [quality.md](quality.md)).
 - O servidor Express (`serve:ssr:ruraliza-frontend`) existe, mas o que o deploy publica é só a pasta `browser`, estática.
 
 ## Decisões

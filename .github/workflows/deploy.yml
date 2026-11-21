@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  # Publicar de novo sem um commit novo (Actions > Deploy Angular to GitHub Pages > Run workflow).
+  workflow_dispatch:
 
 # Permissões necessárias para o GitHub Pages
 permissions:
@@ -15,11 +17,12 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+# Dois jobs, como no modelo oficial do GitHub Pages. Com o deploy no mesmo job do upload, a API às vezes
+# ainda não lista o artefato recém-enviado ("No artifacts named github-pages"); e rodar de novo o job
+# repete o upload e deixa dois artefatos com o mesmo nome. Em jobs separados, o deploy só começa depois
+# que o build terminou, e "Re-run failed jobs" refaz apenas o deploy, com o mesmo artefato.
 jobs:
-  build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -50,6 +53,14 @@ jobs:
         with:
           path: 'dist/ruraliza-frontend/browser'
 
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Deploy no GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
