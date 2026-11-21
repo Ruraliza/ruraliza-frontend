@@ -32,18 +32,19 @@ import { RevealDirective } from './reveal.directive';
     h2 { font: 800 clamp(2.125rem, 5vw, 3.5rem)/1.02 var(--font-display); letter-spacing: -0.03em; }
     .support { margin: var(--space-4) 0 var(--space-12); font-size: 1.125rem; line-height: 1.75rem; color: var(--ink-muted); max-width: 48ch; text-wrap: pretty; }
 
-    .bento { display: grid; gap: var(--space-3); grid-template-columns: repeat(2, 1fr); grid-auto-rows: 180px; }
-    .tile { position: relative; overflow: hidden; border-radius: var(--radius-lg); color: var(--on-dark); }
+    /* No toque a frase fica sempre visível: a linha cresce se o texto não couber em 180px. */
+    .bento { display: grid; gap: var(--space-3); grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(180px, auto); }
+    .tile { position: relative; overflow: hidden; border-radius: var(--radius-lg); color: var(--on-dark); display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; }
     .tile--0 { grid-column: span 2; grid-row: span 2; }
     .img { position: absolute; inset: 0; }
     .img ::ng-deep img { transition: transform .6s var(--ease-out); }
     .tile:hover .img ::ng-deep img { transform: scale(1.04); }
     .caption {
-      position: absolute; inset: auto 0 0; display: grid; gap: var(--space-1);
-      padding: var(--space-12) var(--space-4) var(--space-4);
+      position: relative; display: grid; gap: var(--space-1);
+      padding: var(--space-8) var(--space-4) var(--space-4);
       background: linear-gradient(0deg, rgba(0,40,20,.88) 0%, rgba(0,40,20,.6) 55%, transparent 100%);
     }
-    h3 { font: 700 1.25rem/1.15 var(--font-display); }
+    h3 { font: 700 clamp(1rem, 5.2vw, 1.25rem)/1.15 var(--font-display); overflow-wrap: break-word; }
     .tile--0 h3 { font-size: clamp(1.625rem, 3vw, 2.25rem); }
     .caption p { font-size: 0.875rem; line-height: 1.25rem; }
 
