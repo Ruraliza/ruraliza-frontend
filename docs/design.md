@@ -18,7 +18,7 @@ Público: produtores e trabalhadores do campo, no celular, muitas vezes ao ar li
     - Aliases das áreas logadas: `--surface*`, `--mata*`, `--broto*`, `--ipe*` e `--money`.
     - O lima e o laranja ficam só na landing. Texto sobre dourado, lima ou laranja usa `--on-accent`.
   - **Temas por atributo no `<html>`** (aplicados pelo `PreferencesService`): `data-theme="dark"`, `data-contrast="high"` (também combinado com o escuro) e `data-text="large"`, que só muda o `font-size` da raiz.
-  - **Tipografia:** uma família só, a Figtree, de 400 a 800 (Google Fonts em `index.html`), com títulos em 750/800. A escala é em `rem`, nas classes `.t-*` e nos títulos de `base.css`; por isso as letras maiores funcionam.
+  - **Tipografia:** Bricolage Grotesque (600 a 800) nos títulos, pelo `--font-display`, e Figtree (400 a 800) no texto, pelo `--font-sans` (Google Fonts em `index.html`). A escala é em `rem`, nas classes `.t-*` e nos títulos de `base.css`; por isso as letras maiores funcionam.
   - **Espaço e forma:** escala de espaços (`--space-*`), raios (`--radius-*`), sombras, anel de foco, curva de movimento, alturas da barra de cima, do menu de baixo e da sidebar.
 - **Utilitários de layout** em `src/styles/layout.css`: `.container`, `.page`, `.stack*`, `.cluster`, `.card`, `.grid-cards`, `.grid-metrics`, `.form`, `.details`. `.prose` (markdown das aulas) fica em `base.css`.
 - **Movimento:** `src/styles/motion.css` (revelação ao rolar, marca-texto lima da landing). `base.css` zera animações com `prefers-reduced-motion: reduce`.
