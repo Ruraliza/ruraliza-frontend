@@ -43,7 +43,7 @@ import { AuthPrefill, readAuthPrefill } from '../models/auth-prefill';
         </div>
       </form>
 
-      @if (devBuild) {
+      @if (showTestAccounts) {
         <app-test-accounts [accounts]="testAccounts" (pick)="useTestAccount($event)">
           <p class="t-body-sm">Administrador: entre pelo <a routerLink="/sistema/entrar">acesso da equipe</a> com <b>admin&#64;exemplo.com</b>.</p>
         </app-test-accounts>
@@ -61,8 +61,8 @@ export class SignInPage {
   // Vindo da redefinição de senha (ou de volta do "esqueci a senha"): já preenche o e-mail.
   private readonly initial = readAuthPrefill(inject(Location));
 
-  // Contas de teste do seed da API: a nota só aparece no build de desenvolvimento.
-  readonly devBuild = !environment.production;
+  // Contas de teste do seed da API: aparecem conforme environment.showTestAccounts.
+  readonly showTestAccounts = environment.showTestAccounts;
   readonly testAccounts = APP_TEST_ACCOUNTS;
   readonly saving = signal(false);
 

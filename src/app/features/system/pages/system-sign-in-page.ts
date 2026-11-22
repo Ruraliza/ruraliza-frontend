@@ -38,7 +38,7 @@ import { SYSTEM_TEST_ACCOUNTS, TEST_PASSWORD, TestAccount, TestAccounts } from '
         </div>
       </form>
 
-      @if (devBuild) {
+      @if (showTestAccounts) {
         <app-test-accounts [accounts]="testAccounts" (pick)="useTestAccount($event)" />
       }
     </div>
@@ -50,8 +50,8 @@ export class SystemSignInPage {
   private readonly session = inject(SystemSessionService);
   private readonly router = inject(Router);
 
-  // Administrador de teste do seed da API: a nota só aparece no build de desenvolvimento.
-  readonly devBuild = !environment.production;
+  // Administrador de teste do seed da API: aparecem conforme environment.showTestAccounts.
+  readonly showTestAccounts = environment.showTestAccounts;
   readonly testAccounts = SYSTEM_TEST_ACCOUNTS;
   readonly saving = signal(false);
 
