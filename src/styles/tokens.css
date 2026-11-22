@@ -43,8 +43,8 @@
   --money:var(--gold-700);  /* valores em reais */
   --scrim:rgba(8,24,16,.5);
 
-  /* --- Tipografia: uma família só, do título à legenda --- */
-  --font-display:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  /* --- Tipografia: Bricolage Grotesque nos títulos, Figtree no texto --- */
+  --font-display:"Bricolage Grotesque","Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-sans:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
 
   /* --- Espaço, forma, profundidade --- */
