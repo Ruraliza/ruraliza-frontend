@@ -6,8 +6,8 @@ import { environment } from '@env/environment';
 import { SystemSignInPage } from './system-sign-in-page';
 
 describe('SystemSignInPage', () => {
-  const production = environment.production;
-  afterEach(() => { environment.production = production; });
+  const showTestAccounts = environment.showTestAccounts;
+  afterEach(() => { environment.showTestAccounts = showTestAccounts; });
 
   function setup(): HTMLElement {
     TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
@@ -16,16 +16,16 @@ describe('SystemSignInPage', () => {
     return fixture.nativeElement as HTMLElement;
   }
 
-  it('mostra o administrador de teste no build de desenvolvimento', () => {
-    environment.production = false;
+  it('mostra o administrador de teste com showTestAccounts ligado', () => {
+    environment.showTestAccounts = true;
     const text = setup().textContent ?? '';
 
     expect(text).toContain('admin@exemplo.com');
     expect(text).toContain('ruraliza123');
   });
 
-  it('não mostra o administrador de teste no build de produção', () => {
-    environment.production = true;
+  it('não mostra o administrador de teste com showTestAccounts desligado', () => {
+    environment.showTestAccounts = false;
     const text = setup().textContent ?? '';
 
     expect(text).not.toContain('admin@exemplo.com');
@@ -33,7 +33,7 @@ describe('SystemSignInPage', () => {
   });
 
   it('entra com o administrador de teste', () => {
-    environment.production = false;
+    environment.showTestAccounts = true;
     setup().querySelector<HTMLButtonElement>('button[aria-label="Entrar como Administrador"]')?.click();
 
     const req = TestBed.inject(HttpTestingController).expectOne((r) => r.url.endsWith('/login'));
